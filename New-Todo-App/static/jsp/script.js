@@ -47,8 +47,8 @@ const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Frida
     const paddingDays = weekdays.indexOf(dateString.split(', ')[0]);
 
     document.getElementById('monthDisplay').innerText = 
-        `${dt.toLocaleDateString('en-us', { month: 'long' })} ${year}`;
-
+    
+    `${dt.toLocaleDateString('en-us', { month: 'long' })} ${year}`;
     calendar.innerHTML = '';
 
     for(let i = 1; i <= paddingDays + daysInMonth; i++) {
@@ -63,6 +63,10 @@ const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Frida
 
         if (i - paddingDays === day && nav === 0) {
             daySquare.id = 'currentDay';
+            if (eventForDay) {
+                console.log("current day")
+            }
+
         }
 
         if (eventForDay) {
