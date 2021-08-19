@@ -9,12 +9,14 @@ from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 
 '''
+
 python3 app.py to run
 
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 
 pyenv activate New-Todo-App
+
 '''
 app = Flask(__name__)
 
