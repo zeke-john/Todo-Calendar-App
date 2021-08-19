@@ -15,7 +15,6 @@ eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 
 pyenv activate New-Todo-App
-
 '''
 app = Flask(__name__)
 
