@@ -1,3 +1,11 @@
+'''
+python3 app.py to run
+
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+
+pyenv activate New-Todo-App
+'''
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from django.shortcuts import render
@@ -8,7 +16,6 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 
-
 app = Flask(__name__)
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -18,7 +25,6 @@ filename = os.path.join(dir_path, 'test_log.log')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-
 
 SECRET_KEY = os.urandom(32)
 app.config['SECRET_KEY'] = SECRET_KEY
@@ -51,6 +57,7 @@ def clear():
     db.session.query(Todo).delete()
     db.session.commit()
     return redirect(url_for("home"))
+
 @app.route("/add", methods=["POST"])
 def add():
     name = request.form.get("name")
