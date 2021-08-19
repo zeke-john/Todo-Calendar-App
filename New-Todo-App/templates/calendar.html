@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <link rel="apple-touch-icon" sizes="60x60" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="57x57" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="shortcut icon" href="{{url_for('static', filename='img/logo.png') }}" type="image/x-icon">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="static/styles/style.css">
+</head>
+<a class="ui huge circular icon button" class="myButton" href="/home"> <i class="home icon"></i></a>
+<style>
+.myButton {
+    display:block;
+    float:left;
+}
+</style>
+<body>   
+    <div style="margin-top: 15px;" class="center aligned ui container">
+        <h1 class="ui center aligned header" >Calendar</h1>
+        <div id="container">
+            <div id="header">
+                <div id="monthDisplay"></div>
+            </div>
+        
+            <div id="weekdays">
+                <div>Sunday</div>
+                <p>‏‏‎ ‎ ‎ ‎</p>
+                <div>Monday</div>
+                <p>‏‏‎  ‎ ‎ ‎ ‎‎</p>
+                <div>Tuesday</div>
+                <p>‏‏‎ ‎ ‎ ‎ ‎ ‎</p>
+                <div>Wednesday</div>
+                <p>‏‏‎ ‎</p>
+                <div>Thursday</div>
+                <p>‏‏‎ ‎ ‎ ‎</p>
+                <div>Friday</div>
+                <p>‏‏‎  ‎ ‎ ‎ ‎ ‎‎</p>
+                <div>Saturday</div>
+            </div>
+        
+            <div id="calendar"></div>
+            </div>
+        
+            <div id="newEventModal">
+            <h2>New Event</h2>
+        
+            <input id="eventTitleInput" placeholder="Event Title" />
+        
+            <button id="saveButton">Save</button>
+            <button id="cancelButton">Cancel</button>
+            </div>
+        
+            <div id="deleteEventModal">
+            <h2>Event</h2>
+        
+            <p id="eventText"></p>
+        
+            <button id="deleteButton">Delete</button>
+            <button id="closeButton">Close</button>
+            </div>
+    
+        <div id="modalBackDrop"></div>
+    
+        <script src="./static/jsp/script.js"></script>
+
+    </div>
+</body>
+
+</html>

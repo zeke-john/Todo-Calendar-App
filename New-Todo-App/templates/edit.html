@@ -30,10 +30,18 @@
     <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
     <script src="https://cdn.rawgit.com/mdehoog/Semantic-UI/6e6d051d47b598ebab05857545f242caf2b4b48c/dist/semantic.min.js"></script>
 
-  </head>
+</head>
 
 <body>   
-    <div style="margin-top: 50px;" class="ui container">
+    <a class="ui huge circular icon button" class="myButton" href="/home"> <i class="home icon"></i></a>
+    <style>
+    .myButton {
+        padding: 10px;
+        display:block;
+        float:right;
+    }
+    </style>
+    <div style="margin-top: 10px;" class="ui container">
         <h1 class="ui center aligned header" >Edit Task</h1>
         <br>
         <form class="ui form" action="/edit/{{name_to_update.id}}" method="post">
@@ -64,9 +72,9 @@
                             ampm: false,
                             type: 'time',
                             onChange: function (time, text) {
-                              var newValue = text;
+                                var newValue = text;
                             },
-                          });
+                        });
                         </script>
                 </div>
             </div>
@@ -76,7 +84,6 @@
         <br>
             </form>
                 <button class="ui brown button" type="submit" >Save</button>
-                <a class="ui blue button" href="/">Go back</a>
         </form>
         <hr>
 

@@ -1,12 +1,3 @@
-'''
-python3 app.py to run
-
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-
-pyenv activate New-Todo-App
-
-'''
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from django.shortcuts import render
@@ -17,6 +8,15 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 
+'''
+python3 app.py to run
+
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+
+pyenv activate New-Todo-App
+
+'''
 app = Flask(__name__)
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -107,7 +107,9 @@ def edit(todo_id):
             form=form, 
             name_to_update=name_to_update)
 
-
+@app.route("/calendar", methods=["GET", "POST"])
+def calendar():
+    return render_template("calendar.html")
 
 if __name__ == "__main__":
     db.create_all()
