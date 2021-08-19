@@ -41,7 +41,20 @@
       }
     </style>
     <div style="margin-top: 10px;" class="ui container">
-        <h1 class="ui center aligned header" >Todo App</h1>
+        <h1 class="ui center aligned header" >Today</h1>
+        <h3 style="font-weight: 100;" class="ui center aligned header" id="date"> </h3>
+        <script>
+          var dateObj = new Date()
+          var weekday = dateObj.toLocaleString("default", { weekday: "long" })
+          const options = { 
+            month: 'long', 
+            day: 'numeric'
+          };
+  
+          date = weekday + " " + new Date().toLocaleDateString('en-US', options);
+          console.log(date)
+          document.getElementById("date").innerHTML = date;
+          </script>
         <form class="ui form" action="/add" method="post">
             <div class="field">
               <style>
@@ -340,7 +353,7 @@
 
           notification.onclick = function(event) {
                 event.preventDefault(); // prevent the browser from focusing the Notification's tab
-                window.open('http://192.168.1.21:5000/', '_blank');
+                window.open('http://192.168.1.27:5000/', '_blank');
                 notification.close();
               }
             }
