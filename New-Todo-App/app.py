@@ -7,6 +7,7 @@ import json
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
+from flask import jsonify
 
 '''
 
@@ -111,6 +112,10 @@ def edit(todo_id):
 @app.route("/calendar", methods=["GET", "POST"])
 def calendar():
     return render_template("calendar.html")
+
+@app.route("/calendar/<int:i>", methods=["GET", "POST"])
+def calendarDays():
+        return render_template("calendarDay.html")
 
 if __name__ == "__main__":
     db.create_all()
