@@ -52,7 +52,6 @@
           };
   
           date = weekday + " " + new Date().toLocaleDateString('en-US', options);
-          console.log(date)
           document.getElementById("date").innerHTML = date;
           </script>
         <form class="ui form" action="/add" method="post">
@@ -342,6 +341,11 @@
               var timeout = (then.getTime() - now.getTime());
               setTimeout(function() { window.location.reload(true); }, timeout);
           }
+          
+          refreshAt(0,00, 0);
+          if (time == '0:00'){
+              document.getElementsByClassName("ui yellow button")[0].click();
+          }
 
             var name = "{{todo.name}}"
             //console.log(name)
@@ -375,20 +379,13 @@
               console.log(complete)
               showNotification()
             }
-            else {
-              //keep waiting
-            }
 
-        
         </script>
         
       </div>
     <div>
         {% endfor %}
     </div>
-    <script>
-      console.log(time)
-    </script>
 </body>
 
 </html>
