@@ -63,11 +63,8 @@ const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Frida
 
         if (i - paddingDays === day && nav === 0) {
             daySquare.id = 'currentDay';
-            if (eventForDay) {
-                console.log("current day")
-            }
-
         }
+    
 
         if (eventForDay) {
             const eventDiv = document.createElement('div');
@@ -76,8 +73,17 @@ const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Frida
             daySquare.appendChild(eventDiv);
         }
 
-        daySquare.addEventListener('click', () => openModal(dayString));
-        } else {
+        if(daySquare.id !='currentDay'){
+            daySquare.addEventListener('click', () => openModal(dayString));
+        } 
+
+        if (daySquare.id == 'currentDay'){
+            daySquare.addEventListener('click', () => location = "http://192.168.1.27:5000/");
+        }
+
+
+        }
+        else {
         daySquare.classList.add('padding');
         }
 
