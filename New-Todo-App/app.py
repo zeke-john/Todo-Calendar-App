@@ -95,12 +95,10 @@ def edit(todo_id):
         name_to_update.start = request.form['start']
         try:
             db.session.commit()
-            flash("Edited Succsessfully!")
             return render_template("edit.html", 
             form=form, 
             name_to_update=name_to_update)
         except:
-            flash("Error!")
             return render_template("edit.html", 
             form=form, 
             name_to_update=name_to_update)

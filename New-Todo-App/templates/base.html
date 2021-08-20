@@ -271,7 +271,7 @@
         
         <style>
           .ui.white.segment.Change:hover  { 
-            background-color: rgb(250, 250, 250)!important;
+            background-color: rgb(252, 252, 252)!important;
             color: rgb(0, 0, 0)!important;
         }
 
@@ -291,7 +291,7 @@
             <br>
             <a class="ui linkedin button" href="/update/{{ todo.id }}" >Update Status</a>
             <a class="ui google plus  button" href="/delete/{{ todo.id }}"> Remove</a>
-            <a class="ui black button" href="{{url_for('edit', todo_id=todo.id)}}"> Edit</a>
+            <a class="ui black icon button" href="{{url_for('edit', todo_id=todo.id)}}"> <i class="edit icon"></i></a>
           <script>
 
                 // get current miltary time
