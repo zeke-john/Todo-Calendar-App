@@ -48,7 +48,20 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     const daySquare = document.createElement('div');
     daySquare.classList.add('day');
     daySquare.id = i
-    daySquare.addEventListener('click', () => console.log(i));
+    function sendUserInfo(){
+        let userInfo = {
+            'name': daySquare.id,    
+        }
+        const request = new XMLHttpRequest()
+        request.open('POST',   `/processUserInfo/${JSON.stringify(userInfo)}`)
+        request.onload = () => {
+            const flaskMessage = request.responseText
+            //console.log(flaskMessage)
+        }
+        request.send()
+    }
+
+    daySquare.addEventListener('click', () => sendUserInfo());
 
     const dayString = `${month + 1}/${i - paddingDays}/${year}`;
 
@@ -69,7 +82,7 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     }
 
     if(daySquare.id !='currentDay'){
-        daySquare.addEventListener('click', () => location = `http://192.168.1.27:5000/calendar/${i}`);
+        daySquare.addEventListener('click', () => location = `http://192.168.1.27:5000/calendar/${daySquare.id}`);
     } 
 
     if (daySquare.id == 'currentDay'){

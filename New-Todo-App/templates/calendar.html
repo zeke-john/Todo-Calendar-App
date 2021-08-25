@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 
-  <link rel="apple-touch-icon" sizes="60x60" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="60x60" href="{{ url_for('static', filename='img/logo.png') }}">
     <link rel="apple-touch-icon" sizes="57x57" href="{{ url_for('static', filename='img/logo.png') }}">
     <link rel="apple-touch-icon" sizes="72x72" href="{{ url_for('static', filename='img/logo.png') }}">
     <link rel="apple-touch-icon" sizes="76x76" href="{{ url_for('static', filename='img/logo.png') }}">
@@ -27,14 +27,14 @@
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="static/styles/style.css">
 </head>
-<a class="ui huge circular icon button" class="myButton" href="/home"> <i class="home icon"></i></a>
-<style>
-.myButton {
-    display:block;
-    float:left;
-}
-</style>
-<body>   
+<body> 
+    <a class="ui huge circular icon button" class="myButton" href="/home"> <i class="home icon"></i></a>
+    <style>
+    .myButton {
+        display:block;
+        float:left;
+    }
+    </style>  
     <div style="margin-top: 15px;" class="center aligned ui container">
         <h1 class="ui center aligned header" >Calendar</h1>
         <div id="container">
@@ -63,8 +63,7 @@
             <div id="calendar"></div>
             </div>
 
-        <script src="./static/jsp/script.js"></script>
-    </form>
+        <script src="/static/jsp/script.js"></script>
     </div>
 </body>
 

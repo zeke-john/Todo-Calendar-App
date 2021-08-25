@@ -31,6 +31,7 @@ db = SQLAlchemy(app)
 
 SECRET_KEY = os.urandom(32)
 app.config['SECRET_KEY'] = SECRET_KEY
+
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
@@ -50,7 +51,7 @@ def home():
     return render_template("base.html", todo_list=todo_list)
 
 @app.route("/")
-def dash():
+def entry():
     return redirect(url_for("home"))
 
 @app.route("/clear")
@@ -111,9 +112,15 @@ def edit(todo_id):
 def calendar():
     return render_template("calendar.html")
 
-@app.route("/calendar/<int:i>", methods=["GET", "POST"])
-def calendarDays():
-        return render_template("calendarDay.html")
+@app.route('/processUserInfo/<string:userInfo>', methods=['POST', 'GET'])
+def processUserInfo(userInfo):
+    userInfo = json.loads(userInfo)
+    global id
+    id = userInfo['name']
+
+@app.route(f"/calendar/<int:{id}>" , methods=["GET", "POST"])
+def calendarDay():
+    return render_template("calendarDay.html")
 
 if __name__ == "__main__":
     db.create_all()
