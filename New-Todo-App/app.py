@@ -10,14 +10,12 @@ from wtforms.validators import DataRequired
 from flask import jsonify
 
 '''
-
 python3 app.py to run
 
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 
 pyenv activate New-Todo-App
-
 '''
 app = Flask(__name__)
 
@@ -112,15 +110,14 @@ def edit(todo_id):
 def calendar():
     return render_template("calendar.html")
 
-@app.route('/processUserInfo/<string:userInfo>', methods=['POST', 'GET'])
+
+@app.route('/calendar/<userInfo>', methods=['POST', 'GET'])
 def processUserInfo(userInfo):
     userInfo = json.loads(userInfo)
-    global id
-    id = userInfo['name']
-
-@app.route(f"/calendar/<int:{id}>" , methods=["GET", "POST"])
-def calendarDay():
-    return render_template("calendarDay.html")
+    global dayId
+    dayId = userInfo
+    print(dayId)
+    return f'{dayId}'
 
 if __name__ == "__main__":
     db.create_all()

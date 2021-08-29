@@ -48,21 +48,6 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     const daySquare = document.createElement('div');
     daySquare.classList.add('day');
     daySquare.id = i
-    function sendUserInfo(){
-        let userInfo = {
-            'name': daySquare.id,    
-        }
-        const request = new XMLHttpRequest()
-        request.open('POST',   `/processUserInfo/${JSON.stringify(userInfo)}`)
-        request.onload = () => {
-            const flaskMessage = request.responseText
-            //console.log(flaskMessage)
-        }
-        request.send()
-    }
-
-    daySquare.addEventListener('click', () => sendUserInfo());
-
     const dayString = `${month + 1}/${i - paddingDays}/${year}`;
 
     if (i > paddingDays) {
@@ -80,9 +65,24 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
         eventDiv.innerText = eventForDay.title;
         daySquare.appendChild(eventDiv);
     }
-
+    
     if(daySquare.id !='currentDay'){
-        daySquare.addEventListener('click', () => location = `http://192.168.1.27:5000/calendar/${daySquare.id}`);
+            
+        function sendUserInfo(){
+            let userInfo = daySquare.id
+            const request = new XMLHttpRequest()
+            request.open('POST',   `/calendar/${JSON.stringify(userInfo)}`)
+            request.onload = () => {
+                const flaskMessage = request.responseText
+                console.log(flaskMessage)
+                
+            }
+            request.send()
+            daySquare.addEventListener('click', () => location = `http://192.168.1.27:5000/calendar/${JSON.stringify(userInfo)}`);
+        }
+
+        daySquare.addEventListener('click', () => sendUserInfo());
+
     } 
 
     if (daySquare.id == 'currentDay'){
