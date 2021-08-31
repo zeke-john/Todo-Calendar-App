@@ -48,6 +48,9 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     const daySquare = document.createElement('div');
     daySquare.classList.add('day');
     daySquare.id = i
+    //console.log(daySquare.id)
+    daySquare.rad = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+ Math.random().toString(36).substring(2, 15);
+    //console.log(daySquare.rad)
     const dayString = `${month + 1}/${i - paddingDays}/${year}`;
 
     if (i > paddingDays) {
@@ -56,32 +59,23 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
 
     if (i - paddingDays === day && nav === 0) {
         daySquare.id = 'currentDay';
-    }
-
-
-    if (eventForDay) {
-        const eventDiv = document.createElement('div');
-        eventDiv.classList.add('event');
-        eventDiv.innerText = eventForDay.title;
-        daySquare.appendChild(eventDiv);
+        daySquare.rad = 'currentDay';
     }
     
     if(daySquare.id !='currentDay'){
-            
         function sendUserInfo(){
             let userInfo = daySquare.id
+            const userdayid = daySquare.rad
             const request = new XMLHttpRequest()
-            request.open('POST',   `/calendar/${JSON.stringify(userInfo)}`)
+            request.open('POST',   `/calendar/${JSON.stringify(userInfo)}/${JSON.stringify(userdayid)}`)
             request.onload = () => {
-                const flaskMessage = request.responseText
-                console.log(flaskMessage)
-                
+                //console.log(userInfo)
+                //console.log(userdayid)
             }
             request.send()
-            daySquare.addEventListener('click', () => location = `http://192.168.1.27:5000/calendar/${JSON.stringify(userInfo)}`);
+            daySquare.addEventListener('click', () => location = `http://192.168.1.27:5000/calendar/${JSON.stringify(userInfo)}/${JSON.stringify(userdayid)}`);
         }
-
-        daySquare.addEventListener('click', () => sendUserInfo());
+        daySquare.addEventListener('mouseenter', () => sendUserInfo());
 
     } 
 

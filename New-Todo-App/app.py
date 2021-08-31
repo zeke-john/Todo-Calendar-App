@@ -111,13 +111,13 @@ def calendar():
     return render_template("calendar.html")
 
 
-@app.route('/calendar/<userInfo>', methods=['POST', 'GET'])
-def processUserInfo(userInfo):
+@app.route('/calendar/<userInfo>/<userdayid>', methods=['POST', 'GET'])
+def processUserInfo(userInfo, userdayid):
     userInfo = json.loads(userInfo)
-    global dayId
-    dayId = userInfo
-    print(dayId)
-    return f'{dayId}'
+    userdayid = json.loads(userdayid)
+    print(userInfo)
+    print(userdayid)
+    return render_template('calendarDay.html')
 
 if __name__ == "__main__":
     db.create_all()
