@@ -64,16 +64,16 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     
     if(daySquare.id !='currentDay'){
         function sendUserInfo(){
-            let userInfo = daySquare.id
-            const userdayid = daySquare.rad
+            var userInfo = daySquare.id
+            console.log(daysInMonth)
             const request = new XMLHttpRequest()
-            request.open('POST',   `/calendar/${JSON.stringify(userInfo)}/${JSON.stringify(userdayid)}`)
+            request.open('POST',   `/calendar/${JSON.stringify(userInfo)}/${JSON.stringify(daysInMonth)}`)
             request.onload = () => {
                 //console.log(userInfo)
                 //console.log(userdayid)
             }
             request.send()
-            daySquare.addEventListener('click', () => location = `http://192.168.1.27:5000/calendar/${JSON.stringify(userInfo)}/${JSON.stringify(userdayid)}`);
+            daySquare.addEventListener('click', () => location = `http://192.168.1.27:5000/calendar/${JSON.stringify(userInfo)}/${JSON.stringify(daysInMonth)}`);
         }
         daySquare.addEventListener('mouseenter', () => sendUserInfo());
 
