@@ -41,7 +41,15 @@
     </style> 
 
 <div style="margin-top: 10px;" class="ui container">
-        <h1 class="ui center aligned header" >Today</h1>
+        <h1 style="font-weight: 100;" class="ui center aligned header" id="date"></h1>
+        <script>
+        const options = { 
+        month: 'long', 
+        };
+
+        date = new Date().toLocaleDateString('en-US', options);
+        document.getElementById("date").innerHTML = date;
+        </script>
         <form class="ui form" action="/add" method="post">
             <div class="field">
             <style>
