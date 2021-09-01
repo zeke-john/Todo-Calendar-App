@@ -115,16 +115,21 @@ def calendar():
 def processUserInfo(userInfo, daysInMonth):
     days = json.loads(daysInMonth)
     days = int(days)
-    
     userInfo = json.loads(userInfo)
+    if userInfo.isnumeric() == False:
+        return render_template("404.html")
     userInfo = int(userInfo)
     
     if userInfo > days:
-        return render_template("error.html")
+        return render_template("404.html")
     if userInfo < 1:
-        return render_template("error.html")
+        return render_template("404.html")
 
     return render_template('calendarDay.html')
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template("404.html")
 
 if __name__ == "__main__":
     db.create_all()
