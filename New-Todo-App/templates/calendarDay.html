@@ -41,14 +41,11 @@
     </style> 
 
 <div style="margin-top: 10px;" class="ui container">
-        <h1 style="font-weight: 100;" class="ui center aligned header" id="date"></h1>
+        <h1 class="ui center aligned header" id="date"></h1>
         <script>
-        const options = { 
-        month: 'long', 
-        };
-
-        date = new Date().toLocaleDateString('en-US', options);
-        document.getElementById("date").innerHTML = date;
+            var getDate = localStorage.getItem("date")
+            document.getElementById("date").innerHTML = getDate;
+            //console.log(getDate)
         </script>
         <form class="ui form" action="/add" method="post">
             <div class="field">
@@ -194,7 +191,7 @@
                     if (e.results[0].isFinal) {
                         p = document.createElement("p");
                         $("#description").val(text); // set the input val to the speech transcript
-                        console.log(text)
+                        //console.log(text)
                     }
                 });
                 };
