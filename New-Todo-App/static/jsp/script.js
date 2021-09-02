@@ -37,7 +37,7 @@ const dateString = firstDayOfMonth.toLocaleDateString('en-us', {
     month: 'numeric',
     day: 'numeric',
 });
-const paddingDays = weekdays.indexOf(dateString.split(', ')[0]);
+const paddingDays = weekdays.indexOf(dateString.split(', ')[0]);    
 
 document.getElementById('monthDisplay').innerText = 
 
@@ -47,10 +47,7 @@ calendar.innerHTML = '';
 for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     const daySquare = document.createElement('div');
     daySquare.classList.add('day');
-    daySquare.id = i
-    //console.log(daySquare.id)
-    daySquare.rad = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+ Math.random().toString(36).substring(2, 15);
-    //console.log(daySquare.rad)
+    daySquare.id = i - paddingDays
     const dayString = `${month + 1}/${i - paddingDays}/${year}`;
 
     if (i > paddingDays) {
@@ -59,20 +56,28 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
 
     if (i - paddingDays === day && nav === 0) {
         daySquare.id = 'currentDay';
-        daySquare.rad = 'currentDay';
     }
+    
     
     if(daySquare.id !='currentDay'){
         function sendUserInfo(){
             var userInfo = daySquare.id
-            console.log(daysInMonth)
+            //console.log(daysInMonth)
             const request = new XMLHttpRequest()
             request.open('POST',   `/calendar/${JSON.stringify(userInfo)}/${JSON.stringify(daysInMonth)}`)
             request.onload = () => {
-                //console.log(userInfo)
-                //console.log(userdayid)
+                const options = { 
+                    month: 'long', 
+                };  
+                
+                date = new Date().toLocaleDateString('en-US', options);
+                date = date + " " + userInfo
+                date = date
+                //console.log(date)
+                localStorage.setItem("date", date);
             }
             request.send()
+
             daySquare.addEventListener('click', () => location = `http://192.168.1.27:5000/calendar/${JSON.stringify(userInfo)}/${JSON.stringify(daysInMonth)}`);
         }
         daySquare.addEventListener('mouseenter', () => sendUserInfo());
@@ -82,7 +87,7 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     if (daySquare.id == 'currentDay'){
         daySquare.addEventListener('click', () => location = "http://192.168.1.27:5000/");
     }
-
+    
 
     }
     else {
