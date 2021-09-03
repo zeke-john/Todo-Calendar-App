@@ -36,6 +36,7 @@ class Todo(db.Model):
     complete = db.Column(db.Boolean)
     description = db.Column(db.String(150))
     start = db.Column(db.String(150))
+    
 
 class UserForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
@@ -115,9 +116,8 @@ def calendar():
 def processUserInfo(userInfo, daysInMonth):
     days = json.loads(daysInMonth)
     days = int(days)
+
     userInfo = json.loads(userInfo)
-    if userInfo.isnumeric() == False:
-        return render_template("404.html")
     userInfo = int(userInfo)
     
     if userInfo > days:
@@ -127,9 +127,14 @@ def processUserInfo(userInfo, daysInMonth):
 
     return render_template('calendarDay.html')
 
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("404.html")
+
+@app.errorhandler(500)
+def page_not_found(e):
+    return render_template("500.html")
 
 if __name__ == "__main__":
     db.create_all()
