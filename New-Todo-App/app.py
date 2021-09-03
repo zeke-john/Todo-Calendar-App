@@ -112,14 +112,18 @@ def calendar():
     return render_template("calendar.html")
 
 
-@app.route('/calendar/<userInfo>/<daysInMonth>', methods=['POST', 'GET'])
-def processUserInfo(userInfo, daysInMonth):
+@app.route('/calendar/<userInfo>/<daysInMonth>/<userMonth>', methods=['POST', 'GET'])
+def processUserInfo(userInfo, daysInMonth, userMonth):
     days = json.loads(daysInMonth)
     days = int(days)
-
     userInfo = json.loads(userInfo)
+    if userInfo.isnumeric() == False:
+        return render_template("404.html")
     userInfo = int(userInfo)
     
+    userMonth = json.loads(userMonth)
+    userMonth = int(userMonth)
+
     if userInfo > days:
         return render_template("404.html")
     if userInfo < 1:
