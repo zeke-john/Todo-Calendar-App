@@ -47,7 +47,8 @@
             document.getElementById("date").innerHTML = getDate;
             //console.log(getDate)
         </script>
-        <form class="ui form" action="/add" method="post">
+
+        <form class="ui form" action="/calendar/{{userInfo}}/{{daysInMonth}}/{{userMonth}}/add" method="post">
             <div class="field">
             <style>
                 .left {
@@ -84,7 +85,7 @@
                     
                 }
 
-                .button1 {
+                .button3 {
                 background: grey;
                 animation-name: none;
                 animation-duration: 999s;
@@ -99,7 +100,7 @@
                 }
             }
 
-            .button2 {
+            .button4 {
                 background: grey;
                 animation-name: none;
                 animation-duration: 999s;
@@ -117,7 +118,7 @@
             <script>
 
                 window.onload = () => {
-                const button = document.getElementById('button1');
+                const button = document.getElementById('button3');
                 button.addEventListener('click', () => {
                     if (button.style['animation-name'] === 'flash') {
                     recognition.stop();
@@ -151,13 +152,13 @@
                     if (e.results[0].isFinal) {
                         p = document.createElement("p");
                         //console.log(text)
-                        $("#name").val(text); // set the input val to the speech transcript
+                        $("#new_name").val(text); // set the input val to the speech transcript
 
                     }
                 });
                 };
 
-                const button2 = document.getElementById('button2');
+                const button2 = document.getElementById('button4');
                 button2.addEventListener('click', () => {
                     if (button2.style['animation-name'] === 'flash') {
                     recognition2.stop();
@@ -190,7 +191,7 @@
 
                     if (e.results[0].isFinal) {
                         p = document.createElement("p");
-                        $("#description").val(text); // set the input val to the speech transcript
+                        $("#new_description").val(text); // set the input val to the speech transcript
                         //console.log(text)
                     }
                 });
@@ -199,9 +200,9 @@
     </script>
         <label>Name</label>
             <div class="input-group">
-                <input  type="text" name="name" autocomplete="off" placeholder="Enter Name" id="name" maxlength="80" required>
+                <input  type="text" name="new_name" autocomplete="off" placeholder="Enter Name" id="new_name" maxlength="80" required>
                 <span class="input-group-btn">
-                <a class="ui icon button" id="button1"> <i class="microphone icon"></i></a>
+                <a class="ui icon button" id="button3"> <i class="microphone icon"></i></a>
                 </span>
             </div>
                 <br>
@@ -210,9 +211,9 @@
             <div class="field">
             <label >Description</label>
             <div class="input-group">
-                <input  type="text" name="description" autocomplete="off" placeholder="Enter Description" id="description" maxlength="150"required>
+                <input  type="text" name="new_description" autocomplete="off" placeholder="Enter Description" id="new_description" maxlength="150"required>
                 <span class="input-group-btn">
-                <a class="ui icon button" id="button2"> <i class="microphone icon"></i></a>
+                <a class="ui icon button" id="button4"> <i class="microphone icon"></i></a>
                 </span>
             </div>
                 <br>
@@ -220,12 +221,12 @@
                 <br>
                 <div class="field">
                 <label >Start Time</label>
-                <div class="ui calendar" id="start">
+                <div class="ui calendar" id="new_start">
                     <div class="ui input left icon">
                     <i class="time icon"></i>
-                    <input  type="text" name="start" autocomplete="off"  placeholder="Select Time" maxlength="5" required>
+                    <input  type="text" name="new_start" autocomplete="off"  placeholder="Select Time" maxlength="5" required>
                     <script>
-                        $('#start').calendar({
+                        $('#new_start').calendar({
                             ampm: false,
                             type: 'time',
                             onChange: function (time, text) {
@@ -238,11 +239,11 @@
             </form>
                 <br>
                 <button class="ui brown button" type="submit" >Add</button>
-                <a class="ui yellow button" href="/clear" >Clear</a>
+                <a class="ui yellow button" href="/calendar/{{userInfo}}/{{daysInMonth}}/{{userMonth}}/clear" >Clear</a>
         </form>
 
         <hr>
-        {% for todo in todo_list %}
+        {% for new_todo in new_todo_list %}
         <div class="ui white segment Change">
         <table class="ui definition table">
         
@@ -251,15 +252,15 @@
 
         <body>
             <tr>  
-            <td class="one wide column">‏‏‎‎‎ {{todo.id}}</td>
-            <td><h4> {{todo.name}} </a></h4></td>
-            <td class="two wide column"> <h4> ‎{{todo.start}} </h4></td>
+            <td class="one wide column">‏‏‎‎‎ {{new_todo.new_id}}</td>
+            <td><h4> {{new_todo.new_name}} </a></h4></td>
+            <td class="two wide column"> <h4> ‎{{new_todo.new_start}} </h4></td>
             </tr>
         </body>
         </table>
 
         <div class="ui compact segment">
-        <p>{{todo.description}}</p>
+        <p>{{new_todo.new_description}}</p>
         </div>     
         
         <style>
@@ -269,7 +270,7 @@
         }
 
         </style>
-            {% if todo.complete == False %}
+            {% if new_todo.new_complete == False %}
             <span class="ui gray label" >Status: Not Complete</span> 
             <script>
             complete = false
@@ -282,9 +283,8 @@
             {% endif %}
             <br>
             <br>
-            <a class="ui linkedin button" href="/update/{{ todo.id }}" >Update Status</a>
-            <a class="ui google plus  button" href="/delete/{{ todo.id }}"> Remove</a>
-            <a class="ui black icon button" href="{{url_for('edit', todo_id=todo.id)}}"> <i class="edit icon"></i></a>
+            <a class="ui linkedin button" href="/calendar/{{userInfo}}/{{daysInMonth}}/{{userMonth}}/update/{{ new_todo.new_id }}" >Update Status</a>
+            <a class="ui google plus  button" href="/calendar/{{userInfo}}/{{daysInMonth}}/{{userMonth}}/delete/{{ new_todo.new_id }}"> Remove</a>
     </div>
     <div>
         {% endfor %}
