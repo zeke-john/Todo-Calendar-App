@@ -79,14 +79,14 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
             }
             request.send()
 
-            daySquare.addEventListener('click', () => location = `http://192.168.1.27:5000/calendar/${JSON.stringify(userInfo)}/${JSON.stringify(daysInMonth)}/${JSON.stringify(userMonth)}`);
+            daySquare.addEventListener('click', () => location = ``);
         }
         daySquare.addEventListener('mouseenter', () => sendUserInfo());
 
     } 
 
     if (daySquare.id == 'currentDay'){
-        daySquare.addEventListener('click', () => location = "http://192.168.1.27:5000/");
+        daySquare.addEventListener('click', () => location = "http://192.168.1.20:5000/home");
     }
     
 
