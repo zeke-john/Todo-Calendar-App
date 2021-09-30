@@ -62,6 +62,7 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     if(daySquare.id !='currentDay'){
         function sendUserInfo(){
             var userInfo = daySquare.id
+            console.log(userInfo)
             var userMonth = month + 1
             //console.log(daysInMonth)
             const request = new XMLHttpRequest()
@@ -79,7 +80,7 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
             }
             request.send()
 
-            daySquare.addEventListener('click', () => location = ``);
+            daySquare.addEventListener('click', () => location = `/calendar/${JSON.stringify(userInfo)}/${JSON.stringify(daysInMonth)}/${JSON.stringify(userMonth)}`);
         }
         daySquare.addEventListener('mouseenter', () => sendUserInfo());
 
