@@ -87,7 +87,7 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     } 
 
     if (daySquare.id == 'currentDay'){
-        daySquare.addEventListener('click', () => location = "http://192.168.1.20:5000/home");
+        daySquare.addEventListener('click', () => location = "http://192.168.1.10:5000/home");
     }
     
 

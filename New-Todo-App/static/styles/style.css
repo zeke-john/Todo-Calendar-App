@@ -15,9 +15,9 @@ button {
 
 #header {
   padding: 10px;
-  color: #6bda70;
+  color: #469ec9;
   font-size: 26px;
-  font-family: sans-serif;
+  font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
   display: flex;
   justify-content: space-between;
   padding-left: 150px;
@@ -29,10 +29,11 @@ button {
 #weekdays {
   width: 100%;
   display: flex;
-  color: #247BA0;
+  color: black;
   padding-top: 10px;
   font-size: 15px;
   padding-left: 150px;
+  font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
 }
 #weekdays div {
   width: 100px;
@@ -60,7 +61,7 @@ button {
   
 }
 .day:hover {
-  background-color: #e8faed;
+  background-color: #e8f4fa;
 }
 
 .day + #currentDay {

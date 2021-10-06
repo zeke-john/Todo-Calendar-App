@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from django.shortcuts import render
 import os
-from datetime import datetime
+from datetime import date, datetime
 import json
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
@@ -36,9 +36,11 @@ class Todo(db.Model):
     complete = db.Column(db.Boolean)
     description = db.Column(db.String(150))
     start = db.Column(db.String(150))
-    day = db.Column(db.Integer)
-    days_month = db.Column(db.Integer)
-    month = db.Column(db.Integer)
+    date = db.Column(db.String(150))
+    day = db.Column(db.String(150))
+    month = db.Column(db.String(150))
+    year = db.Column(db.String(150))
+
 
 class UserForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
@@ -55,21 +57,37 @@ def home():
 def entry():
     return redirect(url_for("home"))
 
-@app.route("/clear")
-def clear():
-    todo_list = Todo.query.all()
-    todo_list[:] = []
-    db.session.query(Todo).delete()
-    db.session.commit()
-    return redirect(url_for("home"))
-
 @app.route("/add", methods=["POST"])
 def add():
     name = request.form.get("name")
     description = request.form.get("description")
     start = request.form.get("start")
-    new_todo = Todo(name=name, complete=False, description=description, start=start)
+    date = request.form.get("day")
+    punctuation='!?,.:;"\')(_-'
+    new_day ='' # Creating empty string
+    for i in date:
+        if(i not in punctuation):
+                    new_day += i
+    new_day = new_day.split()
+
+    month = new_day[0]
+    day = new_day[1]
+    year = new_day[2]
+    date = ''
+    date = f'{month} {day} {year}'
+    print(date)
+    print(month)
+    new_todo = Todo(name=name, complete=False, description=description, start=start, date=date, month=month, day=day, year=year)
+
     db.session.add(new_todo)
+    db.session.commit()
+    return redirect(url_for("home"))
+
+@app.route("/clear")
+def clear():
+    todo_list = Todo.query.all()
+    todo_list[:] = []
+    db.session.query(Todo).delete()
     db.session.commit()
     return redirect(url_for("home"))
 
