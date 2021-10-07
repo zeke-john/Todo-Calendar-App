@@ -61,26 +61,20 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     
     if(daySquare.id !='currentDay'){
         function sendUserInfo(){
-            var userInfo = daySquare.id
-            console.log(userInfo)
-            var userMonth = month + 1
-            //console.log(daysInMonth)
-            const request = new XMLHttpRequest()
-            request.open('POST',   `/calendar/${JSON.stringify(userInfo)}/${JSON.stringify(daysInMonth)}/${JSON.stringify(userMonth)}`)
-            request.onload = () => {
-                const options = { 
-                    month: 'long', 
-                };  
-                
-                date = new Date().toLocaleDateString('en-US', options);
-                date = date + " " + userInfo
-                date = date
-                //console.log(date)
-                localStorage.setItem("date", date);
-            }
-            request.send()
-
-            daySquare.addEventListener('click', () => location = `/calendar/${JSON.stringify(userInfo)}/${JSON.stringify(daysInMonth)}/${JSON.stringify(userMonth)}`);
+            var day_hover = daySquare.id
+            console.log(day_hover)
+            var dateObj = new Date()
+            var monthuser = dateObj.toLocaleString("default", { month: "long" })
+            console.log(monthuser)
+            var yearuser = dateObj.toLocaleString("default", { year: "numeric" })
+            console.log(yearuser)
+            const options = { 
+                month: 'long',
+                year: 'numeric' 
+            };
+            endpoint = "/calendar/" + day_hover + "/" + monthuser + "/" + yearuser
+            daySquare.addEventListener('click', () => location = endpoint);
+            console.log(endpoint)
         }
         daySquare.addEventListener('mouseenter', () => sendUserInfo());
 

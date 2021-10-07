@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from django.shortcuts import render
 import os
-from datetime import date, datetime
+import datetime
 import json
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
@@ -63,6 +63,7 @@ def add():
     description = request.form.get("description")
     start = request.form.get("start")
     date = request.form.get("day")
+    
     punctuation='!?,.:;"\')(_-'
     new_day ='' # Creating empty string
     for i in date:
@@ -75,12 +76,24 @@ def add():
     year = new_day[2]
     date = ''
     date = f'{month} {day} {year}'
-    print(date)
-    print(month)
+
     new_todo = Todo(name=name, complete=False, description=description, start=start, date=date, month=month, day=day, year=year)
 
-    db.session.add(new_todo)
-    db.session.commit()
+    month = datetime.date.today().strftime("%B")
+    year = datetime.date.today().strftime("%Y")
+    now = datetime.datetime.now()
+    day = now.day
+
+    curr_day = f"{month} {day} {year}"
+
+    if date == curr_day:
+        db.session.add(new_todo)
+        db.session.commit()
+    if date != curr_day:
+        
+        db.session.add(new_todo)
+        db.session.commit()
+    
     return redirect(url_for("home"))
 
 @app.route("/clear")
