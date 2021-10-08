@@ -42,11 +42,54 @@
 
 <div style="margin-top: 10px;" class="ui container">
         <h1 class="ui center aligned header" id="date">  </h1>
+        <form class="ui form" action="/add" method="post"></form>
         <script>
             var getDate = localStorage.getItem("date")
             document.getElementById("date").innerHTML = getDate;
         </script>
+        <h2 style="font-weight: 100;" class="ui center aligned header"> Task List </h2>
+        <hr>
+        <br>    
+        {% for todo in todo_list %}
+        <div class="ui white segment Change">
+        <table class="ui definition table">
+            <body>
+            <tr>  
+                <td class="one wide column">‏‏‎‎‎ㅤ{{todo.id}}</td>
+                <td><h4>ㅤ {{todo.name}} </a></h4></td>
+                <td class="two wide column"> <h4> ‎{{todo.start}} </h4></td>
+            </tr>
+            </body>
+        </table>
 
+        <div class="ui compact segment">
+            <p>{{todo.description}}</p>
+        </div>     
+        <style>
+            .ui.white.segment.Change:hover  { 
+            background-color: rgb(252, 252, 252)!important;
+            color: rgb(0, 0, 0)!important;
+        }
+        </style>        
+            {% if todo.complete == False %}
+            <span class="ui gray label">Status: Not Complete</span> 
+            <script>
+                complete = false
+            </script>
+
+            
+            {% else %}
+            <span  class="ui green label" >Status: Completed</span>
+            <script>
+                complete = true
+            </script>
+            {% endif %}
+            
+            <br>
+            <br>
+            <a class="ui linkedin button" href="/update/{{ todo.id }}" >Update Status</a>
+            <a class="ui google plus  button" href="/delete/{{ todo.id }}"> Remove</a>
+            {% endfor %}
 
     <script src="/static/jsp/script.js"></script>
     </div>

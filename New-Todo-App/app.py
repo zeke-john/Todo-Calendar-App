@@ -8,7 +8,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 from flask import jsonify
-
+import calendar as cal
 '''
 python3 app.py to run
 
@@ -53,11 +53,30 @@ def home():
     todo_list = Todo.query.all()
     return render_template("base.html", todo_list=todo_list)
 
-@app.route("/")
-def entry():
-    return redirect(url_for("home"))
+@app.route("/calendar", methods=["GET", "POST"])
+def calendar():
+    return render_template("calendar.html")
 
-@app.route("/add", methods=["POST"])
+@app.route('/calendar/<day_hover>/<monthuser>/<yearuser>', methods=['POST', 'GET'])
+def calendarDay(day_hover, monthuser, yearuser):
+    todo_list = Todo.query.all()
+    monthuser = json.loads(monthuser)
+
+    day_hover = json.loads(day_hover)
+    day_hover = int(day_hover)
+
+    yearuser = json.loads(yearuser)
+    now = datetime.datetime.now()
+    daysinmonth = cal.monthrange(now.year, now.month)[1]
+
+    if day_hover > daysinmonth:
+        return render_template("404.html")
+    if day_hover < 1:
+        return render_template("404.html")
+
+    return render_template('calendarDay.html', todo_list=todo_list, monthuser=monthuser , day_hover=day_hover, yearuser=yearuser)
+
+@app.route("/add", methods=["POST"] )
 def add():
     name = request.form.get("name")
     description = request.form.get("description")
@@ -89,12 +108,11 @@ def add():
     if date == curr_day:
         db.session.add(new_todo)
         db.session.commit()
+        return redirect(url_for("home"))
     if date != curr_day:
-        
         db.session.add(new_todo)
         db.session.commit()
-    
-    return redirect(url_for("home"))
+        return redirect(url_for("home"))
 
 @app.route("/clear")
 def clear():
@@ -139,28 +157,6 @@ def edit(todo_id):
         return render_template("edit.html", 
             form=form, 
             name_to_update=name_to_update)
-
-@app.route("/calendar", methods=["GET", "POST"])
-def calendar():
-    return render_template("calendar.html")
-
-@app.route('/calendar/<userInfo>/<daysInMonth>/<userMonth>', methods=['POST', 'GET'])
-def calendarDay(userInfo, daysInMonth, userMonth):
-    daysInMonth = json.loads(daysInMonth)
-    daysInMonth = int(daysInMonth)
-
-    userInfo = json.loads(userInfo)
-    userInfo = int(userInfo)
-
-    userMonth = json.loads(userMonth)
-    userMonth = int(userMonth)
-
-    if userInfo > daysInMonth:
-        return render_template("404.html")
-    if userInfo < 1:
-        return render_template("404.html")
-
-    return render_template('calendarDay.html', daysInMonth=daysInMonth , userInfo=userInfo, userMonth=userMonth)
 
 @app.errorhandler(404)
 def page_not_found(e):

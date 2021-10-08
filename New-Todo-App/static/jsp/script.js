@@ -61,6 +61,7 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     
     if(daySquare.id !='currentDay'){
         function sendUserInfo(){
+
             var day_hover = daySquare.id
             console.log(day_hover)
             var dateObj = new Date()
@@ -72,16 +73,30 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
                 month: 'long',
                 year: 'numeric' 
             };
+
+            const request = new XMLHttpRequest()
+            request.open('POST',   `/calendar/${JSON.stringify(day_hover)}/${JSON.stringify(monthuser)}/${JSON.stringify(yearuser)}`)
+            request.onload = () => {
+                const options = { 
+                    month: 'long', 
+                };  
+                
+                date = new Date().toLocaleDateString('en-US', options);
+                date = date + " " + day_hover
+                date = date
+                //console.log(date)
+                localStorage.setItem("date", date);
+            }
+            request.send()
             endpoint = "/calendar/" + day_hover + "/" + monthuser + "/" + yearuser
-            daySquare.addEventListener('click', () => location = endpoint);
-            console.log(endpoint)
+            daySquare.addEventListener('click', () => location = `/calendar/${JSON.stringify(day_hover)}/${JSON.stringify(monthuser)}/${JSON.stringify(yearuser)}`);
         }
         daySquare.addEventListener('mouseenter', () => sendUserInfo());
 
     } 
 
     if (daySquare.id == 'currentDay'){
-        daySquare.addEventListener('click', () => location = "http://192.168.1.10:5000/home");
+        daySquare.addEventListener('click', () => location = "http://192.168.1.20:5000/home");
     }
     
 

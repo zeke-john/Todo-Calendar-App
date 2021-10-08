@@ -54,7 +54,7 @@
           date = weekday + " " + new Date().toLocaleDateString('en-US', options);
           document.getElementById("date").innerHTML = date;
           </script>
-        <form class="ui form" action="/add" method="post">
+        <form class="ui form" action="/add" method="post" >
             <div class="field">
               <style>
                 .left {
@@ -217,7 +217,7 @@
             <div class="field">
               <label >Description</label>
               <div class="input-group">
-                <input  type="text" name="description" autocomplete="off" placeholder="Enter Description" id="description" spellcheck="true"  maxlength="300"required>
+                <input  type="text" name="description" autocomplete="off" placeholder="Enter Description" id="description" spellcheck="true"  maxlength="300" required>
                 <span class="input-group-btn">
                   <a class="ui icon button" id="button2"> <i class="microphone icon"></i></a>
                 </span>
