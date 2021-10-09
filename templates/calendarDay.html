@@ -50,7 +50,7 @@
         <h2 style="font-weight: 100;" class="ui center aligned header"> Task List </h2>
         <hr>
         <br>    
-        {% for todo in todo_list %}
+        {% for todo in calendar_todo_list %}
         <div class="ui white segment Change">
         <table class="ui definition table">
             <body>
@@ -82,15 +82,18 @@
             <span  class="ui green label" >Status: Completed</span>
             <script>
                 complete = true
-            </script>
+            </script>               
             {% endif %}
             
             <br>
             <br>
             <a class="ui linkedin button" href="/update/{{ todo.id }}" >Update Status</a>
             <a class="ui google plus  button" href="/delete/{{ todo.id }}"> Remove</a>
-            {% endfor %}
-
+        
+        </div>
+    <div>
+        {% endfor %}
+    </div>
     <script src="/static/jsp/script.js"></script>
     </div>
 </body>

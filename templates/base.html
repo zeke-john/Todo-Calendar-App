@@ -258,12 +258,12 @@
                     <br>
             </form>
                 <br>
-                <button class="ui brown button" type="submit" >Add</button>
+                <button class="ui brown button" type="submit" >Add</button> 
                 <a class="ui yellow button" href="/clear" >Clear</a>
         </form>
 
         <hr>
-        {% for todo in todo_list %}
+        {% for todo in home_todo_list %}
         <div class="ui white segment Change">
         <table class="ui definition table">
           <body>
@@ -368,7 +368,7 @@
 
           notification.onclick = function(event) {
                 event.preventDefault(); // prevent the browser from focusing the Notification's tab
-                window.open('http://192.168.1.10:5000/home', '_blank');
+                window.open('http://192.168.1.10:2000/home', '_blank');
                 notification.close();
               }
             }

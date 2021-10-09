@@ -16,6 +16,15 @@ eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 
 pyenv activate New-Todo-App
+
+sqlite3
+sqlite> .open "db.sqlite"
+sqlite> .databases
+sqlite> .tables
+sqlite> .headers on
+sqlite> .mode column
+SELECT * FROM todo;
+SELECT * FROM todo WHERE __ = '_';
 '''
 app = Flask(__name__)
 
@@ -41,40 +50,11 @@ class Todo(db.Model):
     month = db.Column(db.String(150))
     year = db.Column(db.String(150))
 
-
 class UserForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
     description = StringField("Description", validators=[DataRequired()])
     start = StringField("Start Time", validators=[DataRequired()])
     submit = SubmitField("Submit")
-
-@app.route("/home")
-def home():
-    todo_list = Todo.query.all()
-    return render_template("base.html", todo_list=todo_list)
-
-@app.route("/calendar", methods=["GET", "POST"])
-def calendar():
-    return render_template("calendar.html")
-
-@app.route('/calendar/<day_hover>/<monthuser>/<yearuser>', methods=['POST', 'GET'])
-def calendarDay(day_hover, monthuser, yearuser):
-    todo_list = Todo.query.all()
-    monthuser = json.loads(monthuser)
-
-    day_hover = json.loads(day_hover)
-    day_hover = int(day_hover)
-
-    yearuser = json.loads(yearuser)
-    now = datetime.datetime.now()
-    daysinmonth = cal.monthrange(now.year, now.month)[1]
-
-    if day_hover > daysinmonth:
-        return render_template("404.html")
-    if day_hover < 1:
-        return render_template("404.html")
-
-    return render_template('calendarDay.html', todo_list=todo_list, monthuser=monthuser , day_hover=day_hover, yearuser=yearuser)
 
 @app.route("/add", methods=["POST"] )
 def add():
@@ -98,29 +78,57 @@ def add():
 
     new_todo = Todo(name=name, complete=False, description=description, start=start, date=date, month=month, day=day, year=year)
 
-    month = datetime.date.today().strftime("%B")
-    year = datetime.date.today().strftime("%Y")
+    curr_month = datetime.date.today().strftime("%B")
+    curr_year = datetime.date.today().strftime("%Y")
     now = datetime.datetime.now()
-    day = now.day
+    curr_day = now.day
 
-    curr_day = f"{month} {day} {year}"
+    curr_date = f"{curr_month} {curr_day} {curr_year}"
 
-    if date == curr_day:
-        db.session.add(new_todo)
-        db.session.commit()
-        return redirect(url_for("home"))
-    if date != curr_day:
-        db.session.add(new_todo)
-        db.session.commit()
-        return redirect(url_for("home"))
-
-@app.route("/clear")
-def clear():
-    todo_list = Todo.query.all()
-    todo_list[:] = []
-    db.session.query(Todo).delete()
+    db.session.add(new_todo)
     db.session.commit()
     return redirect(url_for("home"))
+
+
+@app.route("/home")
+def home():
+    curr_month = datetime.date.today().strftime("%B")
+    curr_year = datetime.date.today().strftime("%Y")
+    now = datetime.datetime.now()
+    curr_day = now.day
+
+    curr_date = f"{curr_month} {curr_day} {curr_year}"
+    home_todo_list = Todo.query.filter_by(date=curr_date).all() #where date = to the present
+    return render_template("base.html", home_todo_list=home_todo_list)
+
+@app.route("/calendar", methods=["GET", "POST"])
+def calendar():
+    return render_template("calendar.html")
+
+@app.route('/calendar/<day_hover>/<monthuser>/<yearuser>', methods=['POST', 'GET'])
+def calendarDay(day_hover, monthuser, yearuser):
+    curr_month = datetime.date.today().strftime("%B")
+    curr_year = datetime.date.today().strftime("%Y")
+    now = datetime.datetime.now()
+    curr_day = now.day
+
+    curr_date = f"{curr_month} {curr_day} {curr_year}"
+    calendar_todo_list = Todo.query.filter(Todo.date != curr_date).all() # then save it to the calendar day that has the same day as the selected one   t
+    monthuser = json.loads(monthuser)
+
+    day_hover = json.loads(day_hover)
+    day_hover = int(day_hover)
+
+    yearuser = json.loads(yearuser)
+    now = datetime.datetime.now()
+    daysinmonth = cal.monthrange(now.year, now.month)[1]
+
+    if day_hover > daysinmonth:
+        return render_template("404.html")
+    if day_hover < 1:
+        return render_template("404.html")
+
+    return render_template('calendarDay.html', calendar_todo_list=calendar_todo_list, monthuser=monthuser , day_hover=day_hover, yearuser=yearuser)
 
 @app.route("/update/<int:todo_id>")
 def update(todo_id):
@@ -133,6 +141,21 @@ def update(todo_id):
 def delete(todo_id):
     todo = Todo.query.filter_by(id=todo_id).first()
     db.session.delete(todo)
+    db.session.commit()
+    return redirect(url_for("home"))
+
+
+@app.route("/clear")
+def clear():
+    curr_month = datetime.date.today().strftime("%B")
+    curr_year = datetime.date.today().strftime("%Y")
+    now = datetime.datetime.now()
+    curr_day = now.day
+
+    curr_date = f"{curr_month} {curr_day} {curr_year}"
+    home_todo_list = Todo.query.filter_by(date=curr_date).all()  
+    for o in home_todo_list:
+        db.session.delete(o)
     db.session.commit()
     return redirect(url_for("home"))
 
@@ -169,4 +192,4 @@ def page_not_found(e):
 if __name__ == "__main__":
     db.create_all()
     app.run(debug=True, host=os.getenv('IP', '0.0.0.0'),
-            port=int(os.getenv('PORT', 5000)))
+            port=int(os.getenv('PORT', 2000)))

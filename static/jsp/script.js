@@ -88,7 +88,6 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
                 localStorage.setItem("date", date);
             }
             request.send()
-            endpoint = "/calendar/" + day_hover + "/" + monthuser + "/" + yearuser
             daySquare.addEventListener('click', () => location = `/calendar/${JSON.stringify(day_hover)}/${JSON.stringify(monthuser)}/${JSON.stringify(yearuser)}`);
         }
         daySquare.addEventListener('mouseenter', () => sendUserInfo());
@@ -96,7 +95,7 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     } 
 
     if (daySquare.id == 'currentDay'){
-        daySquare.addEventListener('click', () => location = "http://192.168.1.20:5000/home");
+        daySquare.addEventListener('click', () => location = "http://192.168.1.10:2000/home");
     }
     
 
