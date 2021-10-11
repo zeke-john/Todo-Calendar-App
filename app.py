@@ -112,15 +112,20 @@ def calendarDay(day_hover, monthuser, yearuser):
     now = datetime.datetime.now()
     curr_day = now.day
 
-    curr_date = f"{curr_month} {curr_day} {curr_year}"
-    calendar_todo_list = Todo.query.filter(Todo.date != curr_date).all() # then save it to the calendar day that has the same day as the selected one   t
     monthuser = json.loads(monthuser)
-
     day_hover = json.loads(day_hover)
     day_hover = int(day_hover)
 
     yearuser = json.loads(yearuser)
     now = datetime.datetime.now()
+
+
+    curr_date = f"{curr_month} {curr_day} {curr_year}"
+    calendar_todo_list = Todo.query.filter(Todo.date != curr_date).all() # the todo list for all the days besides today
+    calendayDay_todo_list = calendar_todo_list
+
+    # the todo list for each particular day, save it to the calendar day that has the same day as the selected one
+
     daysinmonth = cal.monthrange(now.year, now.month)[1]
 
     if day_hover > daysinmonth:
@@ -143,7 +148,7 @@ def delete(todo_id):
     db.session.delete(todo)
     db.session.commit()
     return redirect(url_for("home"))
-
+    
 
 @app.route("/clear")
 def clear():
@@ -156,6 +161,14 @@ def clear():
     home_todo_list = Todo.query.filter_by(date=curr_date).all()  
     for o in home_todo_list:
         db.session.delete(o)
+    db.session.commit()
+    return redirect(url_for("home"))
+
+@app.route("/clearAll")
+def clearAll():
+    all_todo_list = Todo.query.all()
+    all_todo_list[:] = []
+    db.session.query(Todo).delete()
     db.session.commit()
     return redirect(url_for("home"))
 

@@ -259,7 +259,8 @@
             </form>
                 <br>
                 <button class="ui brown button" type="submit" >Add</button> 
-                <a class="ui yellow button" href="/clear" >Clear</a>
+                <a class="ui yellow button" href="/clear" >Clear Today</a>
+                <a class="ui blue button" href="/clearAll" >Clear All</a>
         </form>
 
         <hr>
@@ -300,7 +301,7 @@
             
             <br>
             <br>
-            <a class="ui linkedin button" href="/update/{{ todo.id }}" >Update Status</a>
+            <a class="ui linkedin button" href="/update/{{ todo.id }}"   >Update Status</a>
             <a class="ui google plus  button" href="/delete/{{ todo.id }}"> Remove</a>
             <a class="ui black icon button" href="{{url_for('edit', todo_id=todo.id)}}"> <i class="edit icon"></i></a>
           <script>
@@ -353,8 +354,8 @@
               setTimeout(function() { window.location.reload(true); }, timeout);
           }
           
-          refreshAt(24,0, 00);
-          if (time == '24:00'){
+          refreshAt(12,05, 0);
+          if (time == '14:05'){
               document.getElementsByClassName("ui yellow button")[0].click();
           }
 

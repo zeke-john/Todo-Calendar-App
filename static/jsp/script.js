@@ -81,8 +81,13 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
                     month: 'long', 
                 };  
                 
-                date = new Date().toLocaleDateString('en-US', options);
-                date = date + " " + day_hover
+                monthdisplay = new Date().toLocaleDateString('en-US', options);
+                const sss = { 
+                    year: 'numeric',
+                };  
+                
+                yeardisplay = new Date().toLocaleDateString('en-US', sss);
+                date = monthdisplay + " " + day_hover + " " + yeardisplay
                 date = date
                 //console.log(date)
                 localStorage.setItem("date", date);
