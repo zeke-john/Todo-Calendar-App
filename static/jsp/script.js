@@ -87,10 +87,11 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
                 };  
                 
                 yeardisplay = new Date().toLocaleDateString('en-US', sss);
-                date = monthdisplay + " " + day_hover + " " + yeardisplay
-                date = date
+                dateuser = monthdisplay + " " + day_hover + ", " + yeardisplay
+                dateuser = dateuser
+
                 //console.log(date)
-                localStorage.setItem("date", date);
+                localStorage.setItem("date", dateuser);
             }
             request.send()
             daySquare.addEventListener('click', () => location = `/calendar/${JSON.stringify(day_hover)}/${JSON.stringify(monthuser)}/${JSON.stringify(yearuser)}`);

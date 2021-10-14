@@ -56,40 +56,6 @@ class UserForm(FlaskForm):
     start = StringField("Start Time", validators=[DataRequired()])
     submit = SubmitField("Submit")
 
-@app.route("/add", methods=["POST"] )
-def add():
-    name = request.form.get("name")
-    description = request.form.get("description")
-    start = request.form.get("start")
-    date = request.form.get("day")
-    
-    punctuation='!?,.:;"\')(_-'
-    new_day ='' # Creating empty string
-    for i in date:
-        if(i not in punctuation):
-                    new_day += i
-    new_day = new_day.split()
-
-    month = new_day[0]
-    day = new_day[1]
-    year = new_day[2]
-    date = ''
-    date = f'{month} {day} {year}'
-
-    new_todo = Todo(name=name, complete=False, description=description, start=start, date=date, month=month, day=day, year=year)
-
-    curr_month = datetime.date.today().strftime("%B")
-    curr_year = datetime.date.today().strftime("%Y")
-    now = datetime.datetime.now()
-    curr_day = now.day
-
-    curr_date = f"{curr_month} {curr_day} {curr_year}"
-
-    db.session.add(new_todo)
-    db.session.commit()
-    return redirect(url_for("home"))
-
-
 @app.route("/home")
 def home():
     curr_month = datetime.date.today().strftime("%B")
@@ -119,11 +85,11 @@ def calendarDay(day_hover, monthuser, yearuser):
     yearuser = json.loads(yearuser)
     now = datetime.datetime.now()
 
+    date_user = f"{monthuser} {day_hover} {yearuser}"   
 
-    curr_date = f"{curr_month} {curr_day} {curr_year}"
-    calendar_todo_list = Todo.query.filter(Todo.date != curr_date).all() # the todo list for all the days besides today
-    calendayDay_todo_list = calendar_todo_list
-
+    calendar_todo_list = Todo.query.filter(Todo.date.endswith(date_user)).all()
+    
+    # the todo list for all the days besides today
     # the todo list for each particular day, save it to the calendar day that has the same day as the selected one
 
     daysinmonth = cal.monthrange(now.year, now.month)[1]
@@ -134,6 +100,51 @@ def calendarDay(day_hover, monthuser, yearuser):
         return render_template("404.html")
 
     return render_template('calendarDay.html', calendar_todo_list=calendar_todo_list, monthuser=monthuser , day_hover=day_hover, yearuser=yearuser)
+
+@app.route("/add", methods=["POST"] )
+def add():
+    name = request.form.get("name")
+    description = request.form.get("description")
+    start = request.form.get("start")
+    date = request.form.get("day")
+    
+    punctuation='!?,.:;"\')(_-'
+    new_day ='' # Creating empty string
+    for i in date:
+        if(i not in punctuation):
+                    new_day += i
+    new_day = new_day.split()
+
+    month = new_day[0]
+    day = new_day[1]
+    year = new_day[-1]
+    date = f'{month} {day} {year}'
+
+    new_todo = Todo(name=name, complete=False, description=description, start=start, date=date, month=month, day=day, year=year)
+
+    curr_month = datetime.date.today().strftime("%B")
+    curr_year = datetime.date.today().strftime("%Y")
+    now = datetime.datetime.now()
+    curr_day = now.day
+
+    curr_date = f"{curr_month} {curr_day} {curr_year}"
+
+    db.session.add(new_todo)
+    db.session.commit()
+    return redirect(url_for("home"))
+
+@app.route('/calendar/"<day_hover>"/"<monthuser>"/"<yearuser>"/update/<int:todo_id>', methods=['POST', 'GET'])
+def update_cal(todo_id, day_hover, monthuser, yearuser):
+    print(monthuser)
+    monthuser = json.loads(monthuser)
+    day_hover = json.loads(day_hover)
+    day_hover = int(day_hover)
+    yearuser = json.loads(yearuser)
+
+    todo = Todo.query.filter_by(id=todo_id).first()
+    todo.complete = not todo.complete
+    db.session.commit()
+    return redirect(url_for("calendarDay", yearuser=yearuser, monthuser=monthuser, day_hover=day_hover, todo_id=todo_id))
 
 @app.route("/update/<int:todo_id>")
 def update(todo_id):
@@ -148,7 +159,6 @@ def delete(todo_id):
     db.session.delete(todo)
     db.session.commit()
     return redirect(url_for("home"))
-    
 
 @app.route("/clear")
 def clear():
