@@ -89,7 +89,7 @@
             <br>
             <a class="ui linkedin button" href='/calendar/{{day_hover}}/{{monthuser}}/{{yearuser}}/update/{{ todo.id }}' >Update Status</a>
             <a class="ui google plus  button" href="/calendar/{{day_hover}}/{{monthuser}}/{{yearuser}}/delete/{{ todo.id }}"> Remove </a>
-            <a class="ui black icon button" href="{{url_for('edit', todo_id=todo.id)}}"> <i class="edit icon"></i></a>
+            <a class="ui black icon button" href="{{url_for('edit_cal', todo_id=todo.id, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser)}}"> <i class="edit icon"></i></a>
         </div>
     <div>
         {% endfor %}

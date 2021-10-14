@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <link rel="apple-touch-icon" sizes="60x60" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="57x57" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="shortcut icon" href="{{url_for('static', filename='img/logo.png') }}" type="image/x-icon">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App - Edit Task</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.rawgit.com/mdehoog/Semantic-UI/6e6d051d47b598ebab05857545f242caf2b4b48c/dist/semantic.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+    <script src="https://cdn.rawgit.com/mdehoog/Semantic-UI/6e6d051d47b598ebab05857545f242caf2b4b48c/dist/semantic.min.js"></script>
+
+</head>
+
+<body>   
+    <a class="ui huge circular icon button" class="myButton" href="/calendar/{{day_hover}}/{{monthuser}}/{{yearuser}}"> <i class="arrow left icon"></i></a>
+    <style>
+    .myButton {
+        padding: 10px;
+        display:block;
+        float:right;
+    }
+    </style>
+    <div style="margin-top: 10px;" class="ui container">
+        <h1 class="ui center aligned header" >Edit Task</h1>
+        <br>
+        <form class="ui form" action="/calendar/{{day_hover}}/{{monthuser}}/{{yearuser}}/edit/{{name_to_update.id}}" method="post">
+            <div class="field">
+
+            <label>Name</label>
+                <div class="input-group">
+                <input  type="text" name="name" autocomplete="off" placeholder="Edit Name" id="name" maxlength="80" value="{{name_to_update.name}}" required>
+                </div>
+                <br>
+
+            <div class="field">
+                <label >Description</label>
+                <div class="input-group">
+                <input  type="text" name="description" autocomplete="off" placeholder="Edit Description" id="description" maxlength="150" value="{{name_to_update.description}}"required>
+                </div>
+                <br>
+
+            <div class="field">
+                <label >Start Time</label>
+                <div class="ui calendar" id="start">
+                <div class="input-group">
+                    <div class="ui input left icon">
+                        <i class="time icon"></i>
+                    <input  type="text" name="start" autocomplete="off" placeholder="Edit Start Time" id="start" maxlength="150" value="{{name_to_update.start}}"required>
+                    <script>
+                        $('#start').calendar({
+                            ampm: false,
+                            type: 'time',
+                            onChange: function (time, text) {
+                                var newValue = text;
+                            },
+                        });
+                        </script>
+                </div>
+            </div>
+        </div>
+
+        
+        <br>
+            </form>
+                <button class="ui brown button" type="submit" >Save</button>
+        </form>
+        <hr>
+
+    </div>
+</body>
+
+</html>

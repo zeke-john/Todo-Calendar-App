@@ -212,6 +212,32 @@ def edit(todo_id):
             form=form, 
             name_to_update=name_to_update)
 
+@app.route("/calendar/<day_hover>/<monthuser>/<yearuser>/edit/<int:todo_id>", methods=["GET", "POST"])
+def edit_cal(todo_id, day_hover, monthuser, yearuser):
+    curr_month = datetime.date.today().strftime("%B")
+    day_hover = json.loads(day_hover)
+    monthuser = curr_month
+    yearuser = json.loads(yearuser)
+    form = UserForm()
+    name_to_update = Todo.query.get_or_404(todo_id)
+    if request.method == "POST":
+        name_to_update.name = request.form['name']
+        name_to_update.description = request.form['description']
+        name_to_update.start = request.form['start']
+        try:
+            db.session.commit()
+            return render_template("editCal.html", 
+            form=form, 
+            name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
+        except:
+            return render_template("editCal.html", 
+            form=form, 
+            name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
+    else:
+        return render_template("editCal.html", 
+            form=form, 
+            name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("404.html")
