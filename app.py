@@ -74,16 +74,10 @@ def calendar():
 @app.route('/calendar/<day_hover>/<monthuser>/<yearuser>', methods=['POST', 'GET'])
 def calendarDay(day_hover, monthuser, yearuser):
     curr_month = datetime.date.today().strftime("%B")
-    curr_year = datetime.date.today().strftime("%Y")
-    now = datetime.datetime.now()
-    curr_day = now.day
-
-    monthuser = json.loads(monthuser)
+    monthuser = curr_month
     day_hover = json.loads(day_hover)
     day_hover = int(day_hover)
-
     yearuser = json.loads(yearuser)
-    now = datetime.datetime.now()
 
     date_user = f"{monthuser} {day_hover} {yearuser}"   
 
@@ -92,6 +86,7 @@ def calendarDay(day_hover, monthuser, yearuser):
     # the todo list for all the days besides today
     # the todo list for each particular day, save it to the calendar day that has the same day as the selected one
 
+    now = datetime.datetime.now()
     daysinmonth = cal.monthrange(now.year, now.month)[1]
 
     if day_hover > daysinmonth:
@@ -133,19 +128,6 @@ def add():
     db.session.commit()
     return redirect(url_for("home"))
 
-@app.route('/calendar/"<day_hover>"/"<monthuser>"/"<yearuser>"/update/<int:todo_id>', methods=['POST', 'GET'])
-def update_cal(todo_id, day_hover, monthuser, yearuser):
-    print(monthuser)
-    monthuser = json.loads(monthuser)
-    day_hover = json.loads(day_hover)
-    day_hover = int(day_hover)
-    yearuser = json.loads(yearuser)
-
-    todo = Todo.query.filter_by(id=todo_id).first()
-    todo.complete = not todo.complete
-    db.session.commit()
-    return redirect(url_for("calendarDay", yearuser=yearuser, monthuser=monthuser, day_hover=day_hover, todo_id=todo_id))
-
 @app.route("/update/<int:todo_id>")
 def update(todo_id):
     todo = Todo.query.filter_by(id=todo_id).first()
@@ -153,12 +135,38 @@ def update(todo_id):
     db.session.commit()
     return redirect(url_for("home"))
 
+@app.route('/calendar/<day_hover>/<monthuser>/<yearuser>/update/<int:todo_id>', methods=['POST', 'GET'])
+def update_cal(todo_id, day_hover, monthuser, yearuser):
+    curr_month = datetime.date.today().strftime("%B")
+    day_hover = json.loads(day_hover)
+    monthuser = curr_month
+    yearuser = json.loads(yearuser)
+
+    todo = Todo.query.filter_by(id=todo_id).first()
+    todo.complete = not todo.complete
+    db.session.commit()
+    return redirect(url_for("calendarDay", yearuser=yearuser, monthuser=monthuser, day_hover=day_hover, todo_id=todo_id))
+
+
 @app.route("/delete/<int:todo_id>")
 def delete(todo_id):
     todo = Todo.query.filter_by(id=todo_id).first()
     db.session.delete(todo)
     db.session.commit()
     return redirect(url_for("home"))
+
+
+@app.route('/calendar/<day_hover>/<monthuser>/<yearuser>/delete/<int:todo_id>', methods=['POST', 'GET'])
+def delete_cal(todo_id, day_hover, monthuser, yearuser):
+    curr_month = datetime.date.today().strftime("%B")
+    day_hover = json.loads(day_hover)
+    monthuser = curr_month
+    yearuser = json.loads(yearuser)
+
+    todo = Todo.query.filter_by(id=todo_id).first()
+    db.session.delete(todo)
+    db.session.commit()
+    return redirect(url_for("calendarDay", yearuser=yearuser, monthuser=monthuser, day_hover=day_hover, todo_id=todo_id))
 
 @app.route("/clear")
 def clear():
