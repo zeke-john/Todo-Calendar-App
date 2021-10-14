@@ -63,12 +63,9 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
         function sendUserInfo(){
 
             var day_hover = daySquare.id
-            console.log(day_hover)
             var dateObj = new Date()
             var monthuser = dateObj.toLocaleString("default", { month: "long" })
-            console.log(monthuser)
             var yearuser = dateObj.toLocaleString("default", { year: "numeric" })
-            console.log(yearuser)
             const options = { 
                 month: 'long',
                 year: 'numeric' 
@@ -90,7 +87,6 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
                 dateuser = monthdisplay + " " + day_hover + ", " + yeardisplay
                 dateuser = dateuser
 
-                //console.log(date)
                 localStorage.setItem("date", dateuser);
             }
             request.send()
