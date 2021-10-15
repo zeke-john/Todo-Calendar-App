@@ -74,16 +74,16 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
             const request = new XMLHttpRequest()
             request.open('POST',   `/calendar/${JSON.stringify(day_hover)}/${JSON.stringify(monthuser)}/${JSON.stringify(yearuser)}`)
             request.onload = () => {
-                const options = { 
+                const month_options = { 
                     month: 'long', 
                 };  
                 
-                monthdisplay = new Date().toLocaleDateString('en-US', options);
-                const sss = { 
+                monthdisplay = new Date().toLocaleDateString('en-US', month_options);
+                const year_option = { 
                     year: 'numeric',
                 };  
                 
-                yeardisplay = new Date().toLocaleDateString('en-US', sss);
+                yeardisplay = new Date().toLocaleDateString('en-US', year_option);
                 dateuser = monthdisplay + " " + day_hover + ", " + yeardisplay
                 dateuser = dateuser
 

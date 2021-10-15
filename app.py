@@ -82,7 +82,8 @@ def calendarDay(day_hover, monthuser, yearuser):
     date_user = f"{monthuser} {day_hover} {yearuser}"   
 
     calendar_todo_list = Todo.query.filter(Todo.date.endswith(date_user)).all()
-    
+    print(calendar_todo_list)
+
     # the todo list for all the days besides today
     # the todo list for each particular day, save it to the calendar day that has the same day as the selected one
 
