@@ -52,13 +52,12 @@
         <br>    
         {% for todo in calendar_todo_list %}
         <div class="ui white segment Change">
-        <table class="ui definition table">
+        <table class="ui celled table">
             <body>
-            <tr>  
-                <td class="one wide column">‏‏‎‎‎ㅤ{{todo.id}}</td>
-                <td><h4>ㅤ {{todo.name}} </a></h4></td>
-                <td class="two wide column"> <h4> ‎{{todo.start}} </h4></td>
-            </tr>
+                <tr>    
+                    <td class="eight wide column"><h4>ㅤ{{todo.name}} </a></h4></td>
+                    <td class="one wide column"> <h4>ㅤ‎‎{{todo.start}} </h4></td>
+                </tr>
             </body>
         </table>
 

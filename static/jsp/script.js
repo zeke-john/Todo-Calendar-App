@@ -57,12 +57,43 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     if (i - paddingDays === day && nav === 0) {
         daySquare.id = 'currentDay';
     }
+    const month_options = { 
+        month: 'long', 
+    };  
+    monthdisplay = new Date().toLocaleDateString('en-US', month_options);
+    const year_option = { 
+        year: 'numeric',
+    };  
+    yeardisplay = new Date().toLocaleDateString('en-US', year_option);
     
+    let toString = date_of_todo.toString()
+    //console.log(toString)
+
+    let split = toString.split(/[!,?,.]/);
+    //console.log(split)
     
-    if(daySquare.id !='currentDay'){
+    split.forEach((element) => {
+        if (" 39" + monthdisplay +  " " + daySquare.id + " " +yeardisplay + "39" == element) {
+                daySquare.id = 'HasTasks';
+        }
+        if ("39" + monthdisplay +  " " + daySquare.id + " " +yeardisplay + "39" == element) {
+            daySquare.id = 'HasTasks';
+    }
+    });
+    
+    if (i - paddingDays < day && nav === 0) {
+        daySquare.id = 'less';
+    }
+
+
+    if(daySquare.id !='currentDay' && daySquare.id != 'less'){
         function sendUserInfo(){
 
             var day_hover = daySquare.id
+            if (day_hover == 'HasTasks'){   
+                day_hover = i - paddingDays
+            }
+            //console.log(day_hover)
             var dateObj = new Date()
             var monthuser = dateObj.toLocaleString("default", { month: "long" })
             var yearuser = dateObj.toLocaleString("default", { year: "numeric" })
@@ -77,7 +108,6 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
                 const month_options = { 
                     month: 'long', 
                 };  
-                
                 monthdisplay = new Date().toLocaleDateString('en-US', month_options);
                 const year_option = { 
                     year: 'numeric',
@@ -97,13 +127,17 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     } 
 
     if (daySquare.id == 'currentDay'){
-        daySquare.addEventListener('click', () => location = "http://192.168.1.10:2000/home");
+        daySquare.addEventListener('click', () => location = "http://192.168.43.168:2000/home");
+    }
+    if (daySquare.id == 'less'){
+        daySquare.addEventListener('click', () => location = "#");
     }
     
 
     }
     else {
-    daySquare.classList.add('padding');
+        daySquare.classList.add('padding');
+        daySquare.id = 'less';
     }
 
     calendar.appendChild(daySquare);    

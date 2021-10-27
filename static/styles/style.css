@@ -2,16 +2,6 @@ body {
   justify-content: center;
   align-content: center;
 }
-button {
-  width: 75px;
-  cursor: pointer;
-  box-shadow: 0px 0px 2px gray;
-  border: none;
-  outline: none;
-  padding: 10px;
-  border-radius: 5px;
-  color: white;
-}
 
 #header {
   padding: 10px;
@@ -47,6 +37,7 @@ button {
   padding-left: 150px;
 }
 .day {
+  color: black;
   width: 112px;
   padding: 10px;
   height: 100px;
@@ -66,4 +57,31 @@ button {
 
 .day + #currentDay {
   background-color:#e8f4fa;
+}
+
+#HasTasks:hover {
+  background-color: #fff3f3;
+}
+
+.day + #HasTasks {
+  color: rgb(245, 0, 0);
+} 
+
+.day + #less {
+  color: rgb(0, 0, 0);
+  width: 112px;
+  padding: 10px;
+  height: 100px;
+  cursor: pointer;
+  box-sizing: border-box;
+  background-color: rgb(255, 255, 255);
+  margin: 0px;
+  box-shadow: 0px 0px 3px rgb(184, 184, 184);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+} 
+
+#less:hover {
+  background-color: rgb(247, 247, 247);
 }

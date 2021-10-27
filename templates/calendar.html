@@ -32,7 +32,7 @@
     <style>
     .myButton {
         display:block;
-        float:left;
+        float:left;     
     }
     </style>  
     <div style="margin-top: 15px;" class="center aligned ui container">
@@ -62,7 +62,10 @@
             </div>
             <div id="calendar"></div>
             </div>
-
+            <script>
+                date_of_todo = "{{date_of_todo}}"
+                date_of_todo = date_of_todo.replace(/[\&#;[\]']+/g,'');
+            </script>
         <script src="/static/jsp/script.js"></script>
     </div>
 </body>
