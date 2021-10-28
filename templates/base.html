@@ -265,6 +265,7 @@
 
         <hr>
         {% for todo in home_todo_list %}
+
         <div class="ui white segment Change">
             <table class="ui celled table">
               <body>
@@ -368,7 +369,7 @@
 
           notification.onclick = function(event) {
                 event.preventDefault(); // prevent the browser from focusing the Notification's tab
-                window.open('http://192.168.43.168:2000/home', '_blank');
+                window.open('http://192.168.1.16:2000/home', '_blank');
                 notification.close();
               }
             }
@@ -392,7 +393,7 @@
             }
 
         </script>
-        
+
       </div>
     <div>
         {% endfor %}

@@ -127,7 +127,7 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     } 
 
     if (daySquare.id == 'currentDay'){
-        daySquare.addEventListener('click', () => location = "http://192.168.43.168:2000/home");
+        daySquare.addEventListener('click', () => location = "http://192.168.1.16:2000/home");
     }
     if (daySquare.id == 'less'){
         daySquare.addEventListener('click', () => location = "#");
