@@ -70,27 +70,25 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     //console.log(toString)
 
     let split = toString.split(/[!,?,.]/);
-    //console.log(split)
-    
+
     split.forEach((element) => {
-        if (" 39" + monthdisplay +  " " + daySquare.id + " " +yeardisplay + "39" == element) {
-                daySquare.id = 'HasTasks';
-        }
-        if ("39" + monthdisplay +  " " + daySquare.id + " " +yeardisplay + "39" == element) {
+        if (" 39" + monthdisplay +  " " + daySquare.id + " " +yeardisplay + "39" == element || "39" + monthdisplay +  " " + daySquare.id + " " +yeardisplay + "39" == element) {
             daySquare.id = 'HasTasks';
-    }
+        }
     });
     
-    if (i - paddingDays < day && nav === 0) {
-        daySquare.id = 'less';
+    if (i - paddingDays == day + 1 && daySquare.id == 'HasTasks') {
+        daySquare.id = 'nextDay';
     }
-
 
     if(daySquare.id !='currentDay' && daySquare.id != 'less'){
         function sendUserInfo(){
 
             var day_hover = daySquare.id
             if (day_hover == 'HasTasks'){   
+                day_hover = i - paddingDays
+            }
+            if (day_hover == 'nextDay'){   
                 day_hover = i - paddingDays
             }
             //console.log(day_hover)
