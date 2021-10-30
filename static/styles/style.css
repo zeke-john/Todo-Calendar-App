@@ -67,6 +67,15 @@ body {
   color: rgb(245, 0, 0);
 } 
 
+#nextDay:hover {
+  background-color: #fff3f3;
+}
+
+.day + #nextDay {
+  color: rgb(245, 0, 0);
+} 
+
+
 .day + #less {
   color: rgb(0, 0, 0);
   width: 112px;
@@ -74,7 +83,7 @@ body {
   height: 100px;
   cursor: pointer;
   box-sizing: border-box;
-  background-color: rgb(255, 255, 255);
+  background-color: rgb(252, 252, 252);
   margin: 0px;
   box-shadow: 0px 0px 3px rgb(184, 184, 184);
   display: flex;

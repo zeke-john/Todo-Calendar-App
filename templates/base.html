@@ -250,8 +250,24 @@
                         <i class="calendar icon"></i>
                         <input type="text" name="day" autocomplete="off" placeholder="Select Date" required>
                         <script>
+                          const day_options = { 
+                              day: 'numeric', 
+                          };  
+                          daydisplay = new Date().toLocaleDateString('en-US', day_options);
+                          const month_options = { 
+                              month: 'long', 
+                          };  
+                          monthdisplay = new Date().toLocaleDateString('en-US', month_options);
+                          const year_option = { 
+                              year: 'numeric',
+                          };  
+                          yeardisplay = new Date().toLocaleDateString('en-US', year_option);
+                          less = monthdisplay + ", " + daydisplay + " " + yeardisplay
+                          var today = new Date();
                           $('#day').calendar({
-                            type: 'date'
+                            type: 'date',
+                            today: true,
+                            minDate: new Date(today.getFullYear(), today.getMonth(), today.getDate()) 
                           });
                         </script>
                       </div>
@@ -265,7 +281,7 @@
 
         <hr>
         {% for todo in home_todo_list %}
-
+        
         <div class="ui white segment Change">
             <table class="ui celled table">
               <body>
@@ -353,11 +369,6 @@
               var timeout = (then.getTime() - now.getTime());
               setTimeout(function() { window.location.reload(true); }, timeout);
           }
-          
-          refreshAt(12,05, 0);
-          if (time == '14:05'){
-              document.getElementsByClassName("ui yellow button")[0].click();
-          }
 
             var name = "{{todo.name}}"
             //console.log(name)
@@ -398,6 +409,7 @@
     <div>
         {% endfor %}
     </div>
+    <br>
 </body>
 
 </html>
