@@ -1,99 +1,102 @@
-<!DOCTYPE html>
-<html lang="en">
+    <!DOCTYPE html>
+    <html lang="en">
 
-<head>
+    <head>
 
-<link rel="apple-touch-icon" sizes="60x60" href="{{ url_for('static', filename='img/logo.png') }}">
-    <link rel="apple-touch-icon" sizes="57x57" href="{{ url_for('static', filename='img/logo.png') }}">
-    <link rel="apple-touch-icon" sizes="72x72" href="{{ url_for('static', filename='img/logo.png') }}">
-    <link rel="apple-touch-icon" sizes="76x76" href="{{ url_for('static', filename='img/logo.png') }}">
-    <link rel="apple-touch-icon" sizes="114x114" href="{{ url_for('static', filename='img/logo.png') }}">
-    <link rel="apple-touch-icon" sizes="120x120" href="{{ url_for('static', filename='img/logo.png') }}">
-    <link rel="apple-touch-icon" sizes="144x144" href="{{ url_for('static', filename='img/logo.png') }}">
-    <link rel="apple-touch-icon" sizes="152x152" href="{{ url_for('static', filename='img/logo.png') }}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/logo.png') }}">
-    <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='img/logo.png') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/logo.png') }}">
-    <link rel="icon" type="image/png" sizes="96x96" href="{{ url_for('static', filename='img/logo.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/logo.png') }}">
-    <link rel="shortcut icon" href="{{url_for('static', filename='img/logo.png') }}" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="60x60" href="{{ url_for('static', filename='img/logo.png') }}">
+        <link rel="apple-touch-icon" sizes="57x57" href="{{ url_for('static', filename='img/logo.png') }}">
+        <link rel="apple-touch-icon" sizes="72x72" href="{{ url_for('static', filename='img/logo.png') }}">
+        <link rel="apple-touch-icon" sizes="76x76" href="{{ url_for('static', filename='img/logo.png') }}">
+        <link rel="apple-touch-icon" sizes="114x114" href="{{ url_for('static', filename='img/logo.png') }}">
+        <link rel="apple-touch-icon" sizes="120x120" href="{{ url_for('static', filename='img/logo.png') }}">
+        <link rel="apple-touch-icon" sizes="144x144" href="{{ url_for('static', filename='img/logo.png') }}">
+        <link rel="apple-touch-icon" sizes="152x152" href="{{ url_for('static', filename='img/logo.png') }}">
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/logo.png') }}">
+        <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='img/logo.png') }}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/logo.png') }}">
+        <link rel="icon" type="image/png" sizes="96x96" href="{{ url_for('static', filename='img/logo.png') }}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/logo.png') }}">
+        <link rel="shortcut icon" href="{{url_for('static', filename='img/logo.png') }}" type="image/x-icon">
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo App - Calendar Day</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Todo App - Calendar</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css">
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
-    <link href="https://cdn.rawgit.com/mdehoog/Semantic-UI/6e6d051d47b598ebab05857545f242caf2b4b48c/dist/semantic.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
-    <script src="https://cdn.rawgit.com/mdehoog/Semantic-UI/6e6d051d47b598ebab05857545f242caf2b4b48c/dist/semantic.min.js"></script>
-</head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css">
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+        <link href="https://cdn.rawgit.com/mdehoog/Semantic-UI/6e6d051d47b598ebab05857545f242caf2b4b48c/dist/semantic.min.css" rel="stylesheet" type="text/css" />
+        <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+        <script src="https://cdn.rawgit.com/mdehoog/Semantic-UI/6e6d051d47b598ebab05857545f242caf2b4b48c/dist/semantic.min.js"></script>
+    </head>
 
-<body>  
-    <a class="ui huge circular icon button" href="/calendar"> <i class="calendar icon"></i></a>
-    <style>
-    .myButton {
-        display:block;
-        float:left;
-    }
-    </style> 
-
-<div style="margin-top: 10px;" class="ui container">
-        <h1 class="ui center aligned header" id="date">  </h1>
-        <form class="ui form" action="/add" method="post"></form>
-        <script>
-            var getDate = localStorage.getItem("date")
-            document.getElementById("date").innerHTML = getDate;
-        </script>
-        <h2 style="font-weight: 100;" class="ui center aligned header"> Task List </h2>
-        <hr>
-        <br>    
-        {% for todo in calendar_todo_list %}
-        <div class="ui white segment Change">
-        <table class="ui celled table">
-            <body>
-                <tr>    
-                    <td class="thirteen wide column"><h4> ㅤ{{todo.name}} </a></h4></td>
-                    <td class="one wide column"> <h4>ㅤ{{todo.start}} </h4></td>
-                </tr>
-            </body>
-        </table>
-
-        <div class="ui compact segment">
-            <p>{{todo.description}}</p>
-        </div>     
+    <body>  
+        <a class="ui huge circular icon button" href="/calendar"> <i class="calendar icon"></i></a>
         <style>
-            .ui.white.segment.Change:hover  { 
-            background-color: rgb(252, 252, 252)!important;
-            color: rgb(0, 0, 0)!important;
+        .myButton {
+            display:block;
+            float:left;
         }
-        </style>        
-            {% if todo.complete == False %}
-            <span class="ui gray label">Status: Not Complete</span> 
-            <script>
-                complete = false
-            </script>
+        </style> 
 
-            
-            {% else %}
-            <span  class="ui green label" >Status: Completed</span>
-            <script>
-                complete = true
-            </script>               
-            {% endif %}
-            
-            <br>
-            <br>
-            <a class="ui linkedin button" href='/calendar/{{day_hover}}/{{monthuser}}/{{yearuser}}/update/{{ todo.id }}' >Update Status</a>
-            <a class="ui google plus  button" href="/calendar/{{day_hover}}/{{monthuser}}/{{yearuser}}/delete/{{ todo.id }}"> Remove </a>
-            <a class="ui black icon button" href="{{url_for('edit_cal', todo_id=todo.id, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser)}}"> <i class="edit icon"></i></a>
+        <div style="margin-top: 10px;" class="ui container">
+                <h1 class="ui center aligned header" id="date">  </h1>
+                <form class="ui form" action="/add" method="post"></form>
+                <script>
+                    var getDate = localStorage.getItem("date")
+                    document.getElementById("date").innerHTML = getDate;
+                </script>
+                <h2 style="font-weight: 100;" class="ui center aligned header"> Task List </h2>
+                <hr>    
+
+                <!-- I have 0 idea why but if idont put this the segment look worse -->
+                <div class="field">
+                    <div class="ui calendar">
+                        <div>
+                </div>
+
+                {% for todo in calendar_todo_list %}
+                <div class="ui white segment Change">
+                    <table class="ui celled table">
+                    <body>
+                    <tr>    
+                        <td class="thirteen wide column"><h4> ㅤ{{todo.name}} </h4></td>
+                        <td class="one wide column"> <h4>ㅤ{{todo.start}} </h4></td>
+                    </tr>
+                </body>
+                </table>
+                <div class="ui compact segment">
+                <p>{{todo.description}}</p>
+                </div>     
+                <style>
+                .ui.white.segment.Change:hover  { 
+                    background-color: rgb(252, 252, 252)!important;
+                    color: rgb(0, 0, 0)!important;
+                }
+                </style>        
+                    {% if todo.complete == False %}
+                    <span class="ui gray label">Status: Not Complete</span> 
+
+                    {% else %}
+                    <span  class="ui green label" >Status: Completed</span>
+                    {% endif %}
+                    <br>
+                    <br>
+                    <a class="ui linkedin button" href='/calendar/{{day_hover}}/{{monthuser}}/{{yearuser}}/update/{{ todo.id }}' >Update Status</a>
+                    <a class="ui google plus  button" href="/calendar/{{day_hover}}/{{monthuser}}/{{yearuser}}/delete/{{ todo.id }}"> Remove </a>
+                    <a class="ui black icon button" href="{{url_for('edit_cal', todo_id=todo.id, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser)}}"> <i class="edit icon"></i></a>
+                </div>
+        <div>
+            {% endfor %}
         </div>
-    <div>
-        {% endfor %}
-    </div>
-    <script src="/static/jsp/script.js"></script>
-    </div>
-</body>
-</html>
+        <script>
+            todo_complete = "{{todo_complete}}"
+            todo_complete = todo_complete.replace(/[\&#;[\]']+/g,'');
+            console.log(todo_complete)
+            localStorage.setItem("firstname", todo_complete);
+        </script>
+        <script src="/static/jsp/script.js"></script>
+        <br>
+    </body>
+    </html>

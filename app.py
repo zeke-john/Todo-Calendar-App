@@ -79,12 +79,12 @@ def calendar():
     curr_date = f"{curr_month} {curr_day} {curr_year}"
     if Todo.date != curr_date:
         date_of_todo = []
-        calendar_todo_list = Todo.query.filter(Todo.date.endswith(date_user)).all()
+        calendar_todo_list = Todo.query.filter(Todo.date != curr_date).all()
         for todos in calendar_todo_list:
             date_of_todo.append(todos.date)
             date_of_todo = date_of_todo
-        # print(date_of_todo)
-    return render_template("calendar.html", date_of_todo=date_of_todo)                                  
+        # only use this for the days that the user hasnt clicked on or has no tasks and the begining 
+    return render_template("calendar.html", date_of_todo=date_of_todo)      
 
 @app.route('/calendar/<day_hover>/<monthuser>/<yearuser>', methods=['POST', 'GET'])
 def calendarDay(day_hover, monthuser, yearuser):
@@ -96,13 +96,16 @@ def calendarDay(day_hover, monthuser, yearuser):
 
     date_user = f"{monthuser} {day_hover} {yearuser}"   
     calendar_todo_list = Todo.query.filter(Todo.date.endswith(date_user)).all()
-    # the todo list for all the days besides today
-    # the todo list for each particular day, save it to the calendar day that has the same day as the selected one
+    todo_complete = []
+    for todos in calendar_todo_list:
+        todo_complete.append(todos.complete)
+        todo_complete = todo_complete
+    print(todo_complete)
 
     now = datetime.datetime.now()
     daysinmonth = cal.monthrange(now.year, now.month)[1]
 
-    return render_template('calendarDay.html', calendar_todo_list=calendar_todo_list, monthuser=monthuser , day_hover=day_hover, yearuser=yearuser)
+    return render_template('calendarDay.html', calendar_todo_list=calendar_todo_list, monthuser=monthuser , day_hover=day_hover, yearuser=yearuser, todo_complete=todo_complete)                            
 
 @app.route("/add", methods=["POST"] )
 def add():

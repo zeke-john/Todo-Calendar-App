@@ -67,31 +67,26 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     yeardisplay = new Date().toLocaleDateString('en-US', year_option);
     
     let toString = date_of_todo.toString()
-    //console.log(toString)
-
     let split = toString.split(/[!,?,.]/);
+    let toStringc = completed.toString()
+    let splitc = toStringc.split(/[!,?,.]/);
 
     split.forEach((element) => {
         if (" 39" + monthdisplay +  " " + daySquare.id + " " +yeardisplay + "39" == element || "39" + monthdisplay +  " " + daySquare.id + " " +yeardisplay + "39" == element) {
             daySquare.id = 'HasTasks';
         }
     });
-    
-    if (i - paddingDays == day + 1 && daySquare.id == 'HasTasks') {
-        daySquare.id = 'nextDay';
-    }
+
 
     if(daySquare.id !='currentDay' && daySquare.id != 'less'){
         function sendUserInfo(){
-
             var day_hover = daySquare.id
+            console.log(day_hover)
+    
             if (day_hover == 'HasTasks'){   
                 day_hover = i - paddingDays
             }
-            if (day_hover == 'nextDay'){   
-                day_hover = i - paddingDays
-            }
-            //console.log(day_hover)
+
             var dateObj = new Date()
             var monthuser = dateObj.toLocaleString("default", { month: "long" })
             var yearuser = dateObj.toLocaleString("default", { year: "numeric" })
@@ -121,8 +116,9 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
             daySquare.addEventListener('click', () => location = `/calendar/${JSON.stringify(day_hover)}/${JSON.stringify(monthuser)}/${JSON.stringify(yearuser)}`);
         }
         daySquare.addEventListener('mouseenter', () => sendUserInfo());
-
     } 
+    
+
 
     if (daySquare.id == 'currentDay'){
         daySquare.addEventListener('click', () => location = "http://192.168.1.16:2000/home");
