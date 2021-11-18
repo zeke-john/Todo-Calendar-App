@@ -1,2 +1,2 @@
-# New-Todo-App
- Todo App with Flask and the Semantic UI
+# Todo-App
+ a cool Todo App with Flask and the Semantic UI
