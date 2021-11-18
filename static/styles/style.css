@@ -60,11 +60,11 @@ body {
 }
 
 #HasTasks:hover {
-  background-color: #fff3f3;
-}
+  background-color: #fff9f3;
+} 
 
 .day + #HasTasks {
-  color: rgb(245, 0, 0);
+  color: rgb(140, 61, 0);
 } 
 
 

@@ -1,3 +1,4 @@
+from typing import NoReturn
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from django.shortcuts import render
@@ -93,22 +94,14 @@ def calendarDay(day_hover, monthuser, yearuser):
     day_hover = json.loads(day_hover)
     day_hover = day_hover
     yearuser = json.loads(yearuser)
-
     date_user = f"{monthuser} {day_hover} {yearuser}"   
     calendar_todo_list = Todo.query.filter(Todo.date.endswith(date_user)).all()
-    todo_complete = []
-    for todos in calendar_todo_list:
-        todo_complete.append(todos.complete)
-        todo_complete = todo_complete
-    print(todo_complete)
 
-    now = datetime.datetime.now()
-    daysinmonth = cal.monthrange(now.year, now.month)[1]
-
-    return render_template('calendarDay.html', calendar_todo_list=calendar_todo_list, monthuser=monthuser , day_hover=day_hover, yearuser=yearuser, todo_complete=todo_complete)                            
+    return render_template('calendarDay.html', calendar_todo_list=calendar_todo_list, monthuser=monthuser , day_hover=day_hover, 
+    yearuser=yearuser)
 
 @app.route("/add", methods=["POST"] )
-def add():
+def add():  
     name = request.form.get("name")
     description = request.form.get("description")
     start = request.form.get("start")
@@ -190,14 +183,6 @@ def clear():
     home_todo_list = Todo.query.filter_by(date=curr_date).all()  
     for o in home_todo_list:
         db.session.delete(o)
-    db.session.commit()
-    return redirect(url_for("home"))
-
-@app.route("/clearAll")
-def clearAll():
-    all_todo_list = Todo.query.all()
-    all_todo_list[:] = []
-    db.session.query(Todo).delete()
     db.session.commit()
     return redirect(url_for("home"))
 

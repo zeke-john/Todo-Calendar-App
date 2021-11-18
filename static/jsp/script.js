@@ -68,8 +68,6 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     
     let toString = date_of_todo.toString()
     let split = toString.split(/[!,?,.]/);
-    let toStringc = completed.toString()
-    let splitc = toStringc.split(/[!,?,.]/);
 
     split.forEach((element) => {
         if (" 39" + monthdisplay +  " " + daySquare.id + " " +yeardisplay + "39" == element || "39" + monthdisplay +  " " + daySquare.id + " " +yeardisplay + "39" == element) {
@@ -81,12 +79,10 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     if(daySquare.id !='currentDay' && daySquare.id != 'less'){
         function sendUserInfo(){
             var day_hover = daySquare.id
-            console.log(day_hover)
-    
-            if (day_hover == 'HasTasks'){   
+            if (day_hover == 'HasTasks' || day_hover == 'Tasks' || day_hover == 'compTasks'){   
                 day_hover = i - paddingDays
             }
-
+            console.log(day_hover)
             var dateObj = new Date()
             var monthuser = dateObj.toLocaleString("default", { month: "long" })
             var yearuser = dateObj.toLocaleString("default", { year: "numeric" })
@@ -117,6 +113,7 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
         }
         daySquare.addEventListener('mouseenter', () => sendUserInfo());
     } 
+    sendUserInfo()
     
 
 
