@@ -32,17 +32,20 @@
   </head>
 
 <body>  
-    <a class="ui huge circular icon button" class="myButton" href="/calendar"> <i class="calendar icon"></i></a>
-    <style>
-      .myButton {
-        padding: 10px;
-        display:block;
-        float:right;
-      }
-    </style>
-    <div style="margin-top: 10px;" class="ui container">
-        <h1 class="ui center aligned header" >Today</h1>
-        <h3 style="font-weight: 100;" class="ui center aligned header" id="date"> </h3>
+  <div class="ui stackable top fixed menu">
+    <img src="static/img/logo.png" style="width: 60px; height: 55px; padding-left: 10px; padding-top: 5px; padding-bottom: 5px; padding-right: 0px;" >
+    <div class="item">
+      <div class="ui header" style="font-size: 20px;">
+        Todo App
+      </div>
+    </div>
+    <a class="ui header active item" style="font-weight: 300; font-size: 16px;" href="/home">Home</a>
+    <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/calendar">Calendar</a>
+  </div>
+
+    <div style="margin-top: 100px;" class="ui container">
+        <h1 class="ui center aligned header" style="font-size: 45px;">Today</h1>
+        <h3 style="font-weight: 100; font-size: 25px;"  class="ui center aligned header" id="date" > </h3>
         <script>
           var dateObj = new Date()
           var weekday = dateObj.toLocaleString("default", { weekday: "long" })

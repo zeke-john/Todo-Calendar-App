@@ -28,19 +28,23 @@
     <link rel="stylesheet" href="static/styles/style.css">
 </head>
 <body> 
-    <a class="ui huge circular icon button" class="myButton" href="/home"> <i class="home icon"></i></a>
-    <style>
-    .myButton {
-        display:block;
-        float:left;     
-    }
-    </style>  
-    <div style="margin-top: 15px;" class="center aligned ui container">
-        <h1 class="ui center aligned header" >Calendar</h1>
+    <div class="ui stackable top fixed menu">
+        <img src="static/img/logo.png" style="width: 60px; height: 55px; padding-left: 10px; padding-top: 5px; padding-bottom: 5px; padding-right: 0px;" >
+        <div class="item">
+            <div class="ui header" style="font-size: 20px;">
+            Todo App
+            </div>
+        </div>
+        <a class="ui header item" style="font-weight: 300; font-size: 16px;" href="/home">Home</a>
+        <a class="ui header active item"  style="font-weight: 300; font-size: 16px;" href="/calendar">Calendar</a>
+        </div>
+
+    <div style="margin-top: 100px;" class="center aligned ui container">
+        <h1 class="ui center aligned header" style="font-size: 50px;">Calendar</h1>
         <div id="container">
 
             <div id="header">
-                <div id="monthDisplay"></div>
+                <div id="monthDisplay" ></div>
             </div>
 
             <div id="weekdays">
@@ -65,8 +69,6 @@
             <script>
                 date_of_todo = "{{date_of_todo}}"
                 date_of_todo = date_of_todo.replace(/[\&#;[\]']+/g,'');
-                console.log(date_of_todo)
-
             </script>
         <script src="/static/jsp/script.js"></script>
     </div>

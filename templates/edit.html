@@ -33,16 +33,19 @@
 </head>
 
 <body>   
-    <a class="ui huge circular icon button" class="myButton" href="/home"> <i class="arrow left icon"></i></a>
-    <style>
-    .myButton {
-        padding: 10px;
-        display:block;
-        float:right;
-    }
-    </style>
-    <div style="margin-top: 10px;" class="ui container">
-        <h1 class="ui center aligned header" >Edit Task</h1>
+    <div class="ui stackable top fixed menu">
+        <img src="/static/img/logo.png" style="width: 60px; height: 55px; padding-left: 10px; padding-top: 5px; padding-bottom: 5px; padding-right: 0px;" >
+        <div class="item">
+            <div class="ui header" style="font-size: 20px;">
+            Todo App
+            </div>
+        </div>
+        <a class="ui header item" style="font-weight: 300; font-size: 16px;" href="/home">Home</a>
+        <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/calendar">Calendar</a>
+        <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/home">Back</a>
+        </div>
+        <div style="margin-top: 100px;" class="ui container">
+        <h1 class="ui center aligned header" style="font-size: 45px;">Edit Task</h1>
         <br>
         <form class="ui form" action="/edit/{{name_to_update.id}}" method="post">
             <div class="field">
