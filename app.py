@@ -80,15 +80,20 @@ def calendar():
     curr_date = f"{curr_month} {curr_day} {curr_year}"
     if Todo.date != curr_date:
         date_of_todo = []
+        qlist = []
         calendar_todo_list = Todo.query.filter(Todo.date != curr_date).all()
         for todos in calendar_todo_list:
             if str(todos.complete) == 'False':
                 date_of_todo.append(todos.date)
                 date_of_todo = date_of_todo
-            elif str(todos.complete) == 'True':
+            if str(todos.complete) == 'True':
                 comp_date = todos.date + "s" #to diffrentioat between the cmpleted and not
-                print(comp_date)
                 date_of_todo.append(comp_date)
+                qlist.append(comp_date)
+                print('list', qlist)
+                print('len',len(qlist))
+                print('list2', date_of_todo)
+                print('len2',len(date_of_todo))
                 date_of_todo = date_of_todo
     return render_template("calendar.html", date_of_todo=date_of_todo)      
 

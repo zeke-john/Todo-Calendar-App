@@ -68,21 +68,24 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     
     let toString = date_of_todo.toString()
     let split = toString.split(/[!,?,.]/);
-    console.log(split)
+    // console.log(split)
     split.forEach((element) => {
-        console.log(element)
         if (" 39" + monthdisplay +  " " + daySquare.id + " " +yeardisplay + "39" == element || "39" + monthdisplay +  " " + daySquare.id + " " +yeardisplay + "39" == element) {
             daySquare.id = 'HasTasks';
         }
+    });
+
+    split.forEach((element) => {
         if (" 39" + monthdisplay +  " " + daySquare.id + " " +yeardisplay + "s" + "39" == element || "39" + monthdisplay +  " " + daySquare.id + " " +yeardisplay + "s" + "39" == element) {
             daySquare.id = 'compTasks';
+            console.log(element)
         }
     });
 
     if(daySquare.id !='currentDay' && daySquare.id != 'less'){
         function sendUserInfo(){
             var day_hover = daySquare.id
-            console.log(day_hover)
+            // console.log(day_hover)
             if (day_hover == 'HasTasks' || day_hover == 'compTasks'){   
                 day_hover = i - paddingDays
             }
