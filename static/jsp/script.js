@@ -68,21 +68,24 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     
     let toString = date_of_todo.toString()
     let split = toString.split(/[!,?,.]/);
-
+    console.log(split)
     split.forEach((element) => {
+        console.log(element)
         if (" 39" + monthdisplay +  " " + daySquare.id + " " +yeardisplay + "39" == element || "39" + monthdisplay +  " " + daySquare.id + " " +yeardisplay + "39" == element) {
             daySquare.id = 'HasTasks';
         }
+        if (" 39" + monthdisplay +  " " + daySquare.id + " " +yeardisplay + "s" + "39" == element || "39" + monthdisplay +  " " + daySquare.id + " " +yeardisplay + "s" + "39" == element) {
+            daySquare.id = 'compTasks';
+        }
     });
-
 
     if(daySquare.id !='currentDay' && daySquare.id != 'less'){
         function sendUserInfo(){
             var day_hover = daySquare.id
-            if (day_hover == 'HasTasks' || day_hover == 'Tasks' || day_hover == 'compTasks'){   
+            console.log(day_hover)
+            if (day_hover == 'HasTasks' || day_hover == 'compTasks'){   
                 day_hover = i - paddingDays
             }
-            console.log(day_hover)
             var dateObj = new Date()
             var monthuser = dateObj.toLocaleString("default", { month: "long" })
             var yearuser = dateObj.toLocaleString("default", { year: "numeric" })
@@ -111,9 +114,9 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
             request.send()
             daySquare.addEventListener('click', () => location = `/calendar/${JSON.stringify(day_hover)}/${JSON.stringify(monthuser)}/${JSON.stringify(yearuser)}`);
         }
+        sendUserInfo()
         daySquare.addEventListener('mouseenter', () => sendUserInfo());
     } 
-    sendUserInfo()
     
 
 

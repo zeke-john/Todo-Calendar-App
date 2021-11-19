@@ -82,9 +82,14 @@ def calendar():
         date_of_todo = []
         calendar_todo_list = Todo.query.filter(Todo.date != curr_date).all()
         for todos in calendar_todo_list:
-            date_of_todo.append(todos.date)
-            date_of_todo = date_of_todo
-        # only use this for the days that the user hasnt clicked on or has no tasks and the begining 
+            if str(todos.complete) == 'False':
+                date_of_todo.append(todos.date)
+                date_of_todo = date_of_todo
+            elif str(todos.complete) == 'True':
+                comp_date = todos.date + "s" #to diffrentioat between the cmpleted and not
+                print(comp_date)
+                date_of_todo.append(comp_date)
+                date_of_todo = date_of_todo
     return render_template("calendar.html", date_of_todo=date_of_todo)      
 
 @app.route('/calendar/<day_hover>/<monthuser>/<yearuser>', methods=['POST', 'GET'])
@@ -94,11 +99,10 @@ def calendarDay(day_hover, monthuser, yearuser):
     day_hover = json.loads(day_hover)
     day_hover = day_hover
     yearuser = json.loads(yearuser)
-    date_user = f"{monthuser} {day_hover} {yearuser}"   
+    date_user = f"{monthuser} {day_hover} {yearuser}"       
     calendar_todo_list = Todo.query.filter(Todo.date.endswith(date_user)).all()
 
-    return render_template('calendarDay.html', calendar_todo_list=calendar_todo_list, monthuser=monthuser , day_hover=day_hover, 
-    yearuser=yearuser)
+    return render_template('calendarDay.html', monthuser=monthuser , calendar_todo_list=calendar_todo_list, day_hover=day_hover, yearuser=yearuser)
 
 @app.route("/add", methods=["POST"] )
 def add():  
