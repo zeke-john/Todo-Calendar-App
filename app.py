@@ -1,4 +1,3 @@
-from typing import NoReturn
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from django.shortcuts import render
@@ -6,10 +5,12 @@ import os
 import datetime
 import json
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
+from wtforms import StringField, SubmitField, PasswordField
 from wtforms.validators import DataRequired
 from flask import jsonify
 import calendar as cal
+from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 '''
 python3 app.py to run
 
@@ -41,8 +42,19 @@ db = SQLAlchemy(app)
 SECRET_KEY = os.urandom(999)
 app.config['SECRET_KEY'] = SECRET_KEY
 
-class Todo(db.Model):
+class LoginForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+@app.route("/login", methods=['GET', 'POST']) 
+def login():
+    form = LoginForm()
+    return render_template("login.html", form=form)
+
+class Todo(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), nullable=False, unique=True)
     name = db.Column(db.String(50))
     complete = db.Column(db.Boolean)
     description = db.Column(db.String(150))
@@ -54,9 +66,12 @@ class Todo(db.Model):
 
 class UserForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
+    username = StringField("Username", validators=[DataRequired()])
     description = StringField("Description", validators=[DataRequired()])
     start = StringField("Start Time", validators=[DataRequired()])
     submit = SubmitField("Submit")
+
+
 
 @app.route("/home")
 def home():
