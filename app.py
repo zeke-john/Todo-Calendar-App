@@ -42,7 +42,13 @@ db = SQLAlchemy(app)
 SECRET_KEY = os.urandom(999)
 app.config['SECRET_KEY'] = SECRET_KEY
 
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
+@login_manager.user_loader
+def load_user(user_id):
+	return Users.query.get(int(user_id))
 
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -61,7 +67,7 @@ class EditForm(FlaskForm):
     start = StringField("Start Time", validators=[DataRequired()])
     submit = SubmitField("Save")
 
-class Users(db.Model):
+class Users(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(200), nullable=False, unique=True)
@@ -84,33 +90,65 @@ class Users(db.Model):
 class Sign_up_Form(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
     email = EmailField("Email", validators=[DataRequired(), Email()])
-    password_hash = PasswordField("Password", validators=[DataRequired(), EqualTo('password_hash2', message='passwords must match')])
+    password_hash = PasswordField("Password", validators=[DataRequired(), EqualTo('password_hash2', message='passwords must match'), Length(min=6)])
     password_hash2 = PasswordField("Confirm Password", validators=[DataRequired()])
     submit = SubmitField("Sign Up")
+
+class LoginForm(FlaskForm):
+    email = EmailField("Email", validators=[DataRequired(), Email()])
+    password_hash = PasswordField("Password", validators=[DataRequired(), Length(min=6)])
+    submit = SubmitField("Login")
 
 @app.route("/signUp", methods=["GET", "POST"])
 def signUp():
     form = Sign_up_Form()
     if form.password_hash.data != form.password_hash2.data:
         flash("Passwords Must Match!")
+    try:
+        if len(form.password_hash.data) < 6:
+            flash("Passwords Must be at least 6 charectar long!")
+    except TypeError:
+        pass
     if form.validate_on_submit():
         user = Users.query.filter_by(email=form.email.data).first()
         if user is None:
             hashed_pw = generate_password_hash(form.password_hash.data, "sha256")
-            user = Users(name=form.name.data, email=form.email.data, password_hash=form.password_hash.data)
+            user = Users(name=form.name.data, email=form.email.data, password_hash=hashed_pw)
             db.session.add(user)
             db.session.commit()
-            return redirect(url_for("home"))
-        if user is not None:
-            flash("That Email is already being used..")
-        name = form.name.data
-        email = form.email.data
+            flash("Great! Now Just Login and your Ready to Go!")
+        elif user is not None:
+            flash("That Email is already being used...")
         form.name.data = ''
         form.email.data = ''
         form.password_hash.data = ''
     return render_template("signUp.html", form=form)
 
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    form = LoginForm()
+    try:
+        if len(form.password_hash.data) < 6:
+            flash("Passwords Must be at least 6 charectar long!")
+    except TypeError:
+        pass
+    if form.validate_on_submit():
+        user = Users.query.filter_by(email=form.email.data).first()
+        if user:
+            # checking hash
+            if check_password_hash(user.password_hash, form.password_hash.data):
+                login_user(user)
+                return redirect(url_for("home"))
+            else:
+                flash('Incorrect Password... Try again')
+        else:
+            flash("That User Doesn't exist... Try again")
+    
+    return render_template("login.html", form=form)
+
 @app.route("/home")
+@login_required
 def home():
     curr_month = datetime.date.today().strftime("%B")
     curr_year = datetime.date.today().strftime("%Y")
@@ -123,6 +161,7 @@ def home():
 
 
 @app.route("/calendar", methods=["GET", "POST"])
+@login_required
 def calendar():
     # need to get all the tasks for each individul day when loaded, most likly by seeing the date they picked when adding task
     curr_month = datetime.date.today().strftime("%B")
@@ -144,6 +183,7 @@ def calendar():
     return render_template("calendar.html", date_of_todo=date_of_todo)      
 
 @app.route('/calendar/<day_hover>/<monthuser>/<yearuser>', methods=['POST', 'GET'])
+@login_required
 def calendarDay(day_hover, monthuser, yearuser):
     curr_month = datetime.date.today().strftime("%B")
     monthuser = curr_month
@@ -156,6 +196,7 @@ def calendarDay(day_hover, monthuser, yearuser):
     return render_template('calendarDay.html', monthuser=monthuser , calendar_todo_list=calendar_todo_list, day_hover=day_hover, yearuser=yearuser)
 
 @app.route("/add", methods=["POST"] )
+@login_required
 def add():  
     name = request.form.get("name")
     description = request.form.get("description")
@@ -195,6 +236,7 @@ def update(todo_id):
     return redirect(url_for("home"))
 
 @app.route('/calendar/<day_hover>/<monthuser>/<yearuser>/update/<int:todo_id>', methods=['POST', 'GET'])
+@login_required
 def update_cal(todo_id, day_hover, monthuser, yearuser):
     curr_month = datetime.date.today().strftime("%B")
     day_hover = json.loads(day_hover)
@@ -208,6 +250,7 @@ def update_cal(todo_id, day_hover, monthuser, yearuser):
 
 
 @app.route("/delete/<int:todo_id>")
+@login_required
 def delete(todo_id):
     todo = Todo.query.filter_by(id=todo_id).first()
     db.session.delete(todo)
@@ -216,6 +259,7 @@ def delete(todo_id):
 
 
 @app.route('/calendar/<day_hover>/<monthuser>/<yearuser>/delete/<int:todo_id>', methods=['POST', 'GET'])
+@login_required
 def delete_cal(todo_id, day_hover, monthuser, yearuser):
     curr_month = datetime.date.today().strftime("%B")
     day_hover = json.loads(day_hover)
@@ -228,6 +272,7 @@ def delete_cal(todo_id, day_hover, monthuser, yearuser):
     return redirect(url_for("calendarDay", yearuser=yearuser, monthuser=monthuser, day_hover=day_hover, todo_id=todo_id))
 
 @app.route("/clear")
+@login_required
 def clear():
     curr_month = datetime.date.today().strftime("%B")
     curr_year = datetime.date.today().strftime("%Y")
@@ -242,6 +287,7 @@ def clear():
     return redirect(url_for("home"))
 
 @app.route("/edit/<int:todo_id>", methods=["GET", "POST"])
+@login_required
 def edit(todo_id):
     form = EditForm()
     name_to_update = Todo.query.get_or_404(todo_id)
@@ -264,6 +310,7 @@ def edit(todo_id):
             name_to_update=name_to_update)
 
 @app.route("/calendar/<day_hover>/<monthuser>/<yearuser>/edit/<int:todo_id>", methods=["GET", "POST"])
+@login_required
 def edit_cal(todo_id, day_hover, monthuser, yearuser):
     curr_month = datetime.date.today().strftime("%B")
     day_hover = json.loads(day_hover)
@@ -290,10 +337,12 @@ def edit_cal(todo_id, day_hover, monthuser, yearuser):
             name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
 
 @app.errorhandler(404)
+@login_required
 def page_not_found(e):
     return render_template("404.html")
 
 @app.errorhandler(500)
+@login_required
 def page_not_found(e):
     return render_template("500.html")
 
