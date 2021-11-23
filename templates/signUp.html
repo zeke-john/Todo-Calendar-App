@@ -58,8 +58,27 @@
             </div>
         </div>
         </div>
-
     <div style="margin-top: 100px;" class="center aligned ui container">
+        {% for message in get_flashed_messages() %}
+            <div class="ui center aligned teal message">
+                <i class="close icon"></i>
+                <div>
+                    <h3 style="color: black;">
+                        {{message}}
+                    </h3>
+                </div>
+                <script>
+                    $('.message .close')
+                        .on('click', function() {
+                            $(this)
+                            .closest('.message')
+                            .transition('fade')
+                            ;
+                        })
+                        ;
+                </script>
+            </div>
+        {% endfor %}
         <h1 class="ui center aligned header" style="font-size: 45px;">Sign Up</h1>
 
             <hr>

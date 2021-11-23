@@ -27,6 +27,7 @@ sqlite> .headers on
 sqlite> .mode column
 SELECT * FROM todo;
 SELECT * FROM todo WHERE __ = '_';
+DELETE FROM users;
 '''
 app = Flask(__name__)
 
@@ -89,8 +90,9 @@ class Sign_up_Form(FlaskForm):
 
 @app.route("/signUp", methods=["GET", "POST"])
 def signUp():
-    name = None
     form = Sign_up_Form()
+    if form.password_hash.data != form.password_hash2.data:
+        flash("Passwords Must Match!")
     if form.validate_on_submit():
         user = Users.query.filter_by(email=form.email.data).first()
         if user is None:
@@ -98,12 +100,15 @@ def signUp():
             user = Users(name=form.name.data, email=form.email.data, password_hash=form.password_hash.data)
             db.session.add(user)
             db.session.commit()
+            return redirect(url_for("home"))
+        if user is not None:
+            flash("That Email is already being used..")
         name = form.name.data
         email = form.email.data
         form.name.data = ''
         form.email.data = ''
         form.password_hash.data = ''
-    return render_template("signUp.html", form=form, name=name)
+    return render_template("signUp.html", form=form)
 
 @app.route("/home")
 def home():
