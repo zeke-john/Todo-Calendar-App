@@ -85,7 +85,7 @@
                 <div class="field">
                     <label style="font-size: 15px; font-weight: 600; text-align-last: left;"> Password </label>
                     <div class="ui input left icon">
-
+                        {{ form.password_hash(class="ui input", autocomplete="off", placeholder="Password") }}
                         <i class="lock icon"></i>
                     </div>
                 </div>
@@ -93,7 +93,7 @@
                 <div class="field">
                     <label style="font-size: 15px; font-weight: 600; text-align-last: left;"> Confirm Password </label>
                     <div class="ui input left icon">
-
+                        {{ form.password_hash2(class="ui input", autocomplete="off", placeholder="Confirm Password") }}
                         <i class="lock icon"></i>
                     </div>
                 </div>

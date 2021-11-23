@@ -5,8 +5,8 @@ import os
 import datetime
 import json
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField
-from wtforms.validators import DataRequired, Email
+from wtforms import StringField, SubmitField, PasswordField, ValidationError
+from wtforms.validators import DataRequired, Email, EqualTo, Length
 from flask import jsonify
 import calendar as cal
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
@@ -63,30 +63,47 @@ class EditForm(FlaskForm):
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
-    email = db.Column(db.String(120), nullable=False, unique=True)
+    email = db.Column(db.String(200), nullable=False, unique=True)
     date_added = db.Column(db.DateTime, default=datetime.date.today)
+    password_hash = db.Column(db.String(128))
+    password_hash2 = db.Column(db.String(128))
+
+    @property
+    def password(self):
+        raise AttributeError('password is not a readable attribute!')
+
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
 
 class Sign_up_Form(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
     email = EmailField("Email", validators=[DataRequired(), Email()])
+    password_hash = PasswordField("Password", validators=[DataRequired(), EqualTo('password_hash2', message='passwords must match')])
+    password_hash2 = PasswordField("Confirm Password", validators=[DataRequired()])
     submit = SubmitField("Sign Up")
 
 @app.route("/signUp", methods=["GET", "POST"])
 def signUp():
     name = None
-    email = None
     form = Sign_up_Form()
     if form.validate_on_submit():
         user = Users.query.filter_by(email=form.email.data).first()
         if user is None:
-            user = Users(name=form.name.data, email=form.email.data)
+            hashed_pw = generate_password_hash(form.password_hash.data, "sha256")
+            user = Users(name=form.name.data, email=form.email.data, password_hash=form.password_hash.data)
             db.session.add(user)
             db.session.commit()
         name = form.name.data
         email = form.email.data
         form.name.data = ''
         form.email.data = ''
-    return render_template("signUp.html", form=form, name=name, email=email)
+        form.password_hash.data = ''
+    return render_template("signUp.html", form=form, name=name)
 
 @app.route("/home")
 def home():
