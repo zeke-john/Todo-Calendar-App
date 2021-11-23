@@ -19,13 +19,12 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo App - Login</title>
+    <title>Todo App - Sign Up</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css">
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
     <link rel="stylesheet" href="static/styles/style.css">
-    
 </head>
 <body> 
     <style>
@@ -59,16 +58,26 @@
             </div>
         </div>
         </div>
+
     <div style="margin-top: 100px;" class="center aligned ui container">
-        <h1 class="ui center aligned header" style="font-size: 45px;">Login</h1>
+        <h1 class="ui center aligned header" style="font-size: 45px;">Sign Up</h1>
+
             <hr>
             <form method="POST" class="ui form">
+                {{ form.hidden_tag() }}
+                <div class="field">
+                    <label style="font-size: 15px; font-weight: 600; text-align-last: left;"> Name </label>
+                    <div class="ui input left icon">
+                        {{ form.name(class="ui input", autocomplete="off", placeholder="Name") }}
+                        <i class="user icon"></i>
+                    </div>
+                </div>
 
                 <div class="field">
                     <br/>
                     <label style="font-size: 15px; font-weight: 600; text-align-last: left;"> Email </label>
                     <div class="ui input left icon">
-                        <!-- {{ form.email(class="ui input", autocomplete="off", placeholder="Email") }} -->
+                        {{ form.email(class="ui input", autocomplete="off", placeholder="Email") }}
                         <i class="mail icon"></i>
                     </div>
                 </div>
@@ -76,23 +85,32 @@
                 <div class="field">
                     <label style="font-size: 15px; font-weight: 600; text-align-last: left;"> Password </label>
                     <div class="ui input left icon">
-                        <!-- {{ form.password(class="ui input", autocomplete="off", placeholder="Password") }} -->
+
+                        <i class="lock icon"></i>
+                    </div>
+                </div>
+                <br>
+                <div class="field">
+                    <label style="font-size: 15px; font-weight: 600; text-align-last: left;"> Confirm Password </label>
+                    <div class="ui input left icon">
+
                         <i class="lock icon"></i>
                     </div>
                 </div>
                 
                 <div class="field">
-                    <!-- {{ form.submit(class="ui fluid large blue button") }} -->
+                    {{ form.submit(class="ui fluid large teal button") }}
                 </div>
                 
         </form>
         <br>
         <div class="separator">
             <span style="font-size: 15px; color: rgb(130, 130, 130);">or</span>
-    </div>
+        </div>
     <br>
-    <a class="ui fluid teal large button" href="/sign_up" >Sign Up</a>
+    <a class="ui fluid blue large button" href="/login" >Log In</a>
     </div>
+    
 
 </body>
 

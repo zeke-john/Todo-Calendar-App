@@ -6,17 +6,17 @@ import datetime
 import json
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Email
 from flask import jsonify
 import calendar as cal
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from wtforms.fields.html5 import EmailField 
 '''
-python3 app.py to run
 
+python3 app.py to run
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
-
 pyenv activate New-Todo-App
 
 sqlite3
@@ -27,7 +27,6 @@ sqlite> .headers on
 sqlite> .mode column
 SELECT * FROM todo;
 SELECT * FROM todo WHERE __ = '_';
-
 '''
 app = Flask(__name__)
 
@@ -42,19 +41,10 @@ db = SQLAlchemy(app)
 SECRET_KEY = os.urandom(999)
 app.config['SECRET_KEY'] = SECRET_KEY
 
-class LoginForm(FlaskForm):
-    username = StringField("Username", validators=[DataRequired()])
-    password = PasswordField("Password", validators=[DataRequired()])
-    submit = SubmitField("Submit")
 
-@app.route("/login", methods=['GET', 'POST']) 
-def login():
-    form = LoginForm()
-    return render_template("login.html", form=form)
 
-class Todo(db.Model, UserMixin):
+class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), nullable=False, unique=True)
     name = db.Column(db.String(50))
     complete = db.Column(db.Boolean)
     description = db.Column(db.String(150))
@@ -64,14 +54,39 @@ class Todo(db.Model, UserMixin):
     month = db.Column(db.String(150))
     year = db.Column(db.String(150))
 
-class UserForm(FlaskForm):
+class EditForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
-    username = StringField("Username", validators=[DataRequired()])
     description = StringField("Description", validators=[DataRequired()])
     start = StringField("Start Time", validators=[DataRequired()])
-    submit = SubmitField("Submit")
+    submit = SubmitField("Save")
 
+class Users(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    email = db.Column(db.String(120), nullable=False, unique=True)
+    date_added = db.Column(db.DateTime, default=datetime.date.today)
 
+class Sign_up_Form(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()])
+    email = EmailField("Email", validators=[DataRequired(), Email()])
+    submit = SubmitField("Sign Up")
+
+@app.route("/signUp", methods=["GET", "POST"])
+def signUp():
+    name = None
+    email = None
+    form = Sign_up_Form()
+    if form.validate_on_submit():
+        user = Users.query.filter_by(email=form.email.data).first()
+        if user is None:
+            user = Users(name=form.name.data, email=form.email.data)
+            db.session.add(user)
+            db.session.commit()
+        name = form.name.data
+        email = form.email.data
+        form.name.data = ''
+        form.email.data = ''
+    return render_template("signUp.html", form=form, name=name, email=email)
 
 @app.route("/home")
 def home():
@@ -206,7 +221,7 @@ def clear():
 
 @app.route("/edit/<int:todo_id>", methods=["GET", "POST"])
 def edit(todo_id):
-    form = UserForm()
+    form = EditForm()
     name_to_update = Todo.query.get_or_404(todo_id)
     if request.method == "POST":
         name_to_update.name = request.form['name']
@@ -232,7 +247,7 @@ def edit_cal(todo_id, day_hover, monthuser, yearuser):
     day_hover = json.loads(day_hover)
     monthuser = curr_month
     yearuser = json.loads(yearuser)
-    form = UserForm()
+    form = EditForm()
     name_to_update = Todo.query.get_or_404(todo_id)
     if request.method == "POST":
         name_to_update.name = request.form['name']
