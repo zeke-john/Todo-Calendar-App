@@ -125,6 +125,7 @@ def signUp():
     return render_template("signUp.html", form=form)
 
 
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
@@ -144,7 +145,6 @@ def login():
                 flash('Incorrect Password... Try again')
         else:
             flash("That User Doesn't exist... Try again")
-    
     return render_template("login.html", form=form)
 
 @app.route("/logout", methods=["GET", "POST"])
@@ -153,6 +153,10 @@ def logout():
     logout_user()
     flash("You Have Been Logged Out, Thanks For Stopping By!")
     return redirect(url_for('login'))
+
+@app.route("/userInfo", methods=["GET", "POST"])
+def userInfo():
+    return render_template("userInfo.html")
 
 @app.route("/home")
 @login_required
