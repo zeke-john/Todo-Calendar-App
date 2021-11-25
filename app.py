@@ -71,7 +71,7 @@ class Users(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(200), nullable=False, unique=True)
-    date_added = db.Column(db.DateTime, default=datetime.date.today)
+    date_added = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     password_hash = db.Column(db.String(128))
     password_hash2 = db.Column(db.String(128))
 
@@ -124,8 +124,6 @@ def signUp():
         form.password_hash.data = ''
     return render_template("signUp.html", form=form)
 
-
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
@@ -140,7 +138,7 @@ def login():
             # checking hash
             if check_password_hash(user.password_hash, form.password_hash.data):
                 login_user(user)
-                return redirect(url_for("home"))
+                return redirect(url_for("home", user_id=current_user.id))
             else:
                 flash('Incorrect Password... Try again')
         else:
@@ -155,6 +153,7 @@ def logout():
     return redirect(url_for('login'))
 
 @app.route("/userInfo", methods=["GET", "POST"])
+@login_required
 def userInfo():
     return render_template("userInfo.html")
 
@@ -196,6 +195,7 @@ def calendar():
 @app.route('/calendar/<day_hover>/<monthuser>/<yearuser>', methods=['POST', 'GET'])
 @login_required
 def calendarDay(day_hover, monthuser, yearuser):
+    
     curr_month = datetime.date.today().strftime("%B")
     monthuser = curr_month
     day_hover = json.loads(day_hover)
@@ -240,6 +240,7 @@ def add():
     return redirect(url_for("home"))
 
 @app.route("/update/<int:todo_id>")
+@login_required
 def update(todo_id):
     todo = Todo.query.filter_by(id=todo_id).first()
     todo.complete = not todo.complete
@@ -249,6 +250,7 @@ def update(todo_id):
 @app.route('/calendar/<day_hover>/<monthuser>/<yearuser>/update/<int:todo_id>', methods=['POST', 'GET'])
 @login_required
 def update_cal(todo_id, day_hover, monthuser, yearuser):
+    
     curr_month = datetime.date.today().strftime("%B")
     day_hover = json.loads(day_hover)
     monthuser = curr_month
@@ -257,10 +259,10 @@ def update_cal(todo_id, day_hover, monthuser, yearuser):
     todo = Todo.query.filter_by(id=todo_id).first()
     todo.complete = not todo.complete
     db.session.commit()
-    return redirect(url_for("calendarDay", yearuser=yearuser, monthuser=monthuser, day_hover=day_hover, todo_id=todo_id))
+    return redirect(url_for("calendarDay", yearuser=yearuser, monthuser=monthuser, day_hover=day_hover, todo_id=todo_id ))
 
 
-@app.route("/delete/<int:todo_id>")
+@app.route("/delete/<int:todo_id> ")
 @login_required
 def delete(todo_id):
     todo = Todo.query.filter_by(id=todo_id).first()
@@ -272,6 +274,7 @@ def delete(todo_id):
 @app.route('/calendar/<day_hover>/<monthuser>/<yearuser>/delete/<int:todo_id>', methods=['POST', 'GET'])
 @login_required
 def delete_cal(todo_id, day_hover, monthuser, yearuser):
+    
     curr_month = datetime.date.today().strftime("%B")
     day_hover = json.loads(day_hover)
     monthuser = curr_month
@@ -280,11 +283,12 @@ def delete_cal(todo_id, day_hover, monthuser, yearuser):
     todo = Todo.query.filter_by(id=todo_id).first()
     db.session.delete(todo)
     db.session.commit()
-    return redirect(url_for("calendarDay", yearuser=yearuser, monthuser=monthuser, day_hover=day_hover, todo_id=todo_id))
+    return redirect(url_for("calendarDay", yearuser=yearuser, monthuser=monthuser, day_hover=day_hover, todo_id=todo_id ))
 
 @app.route("/clear")
 @login_required
 def clear():
+    
     curr_month = datetime.date.today().strftime("%B")
     curr_year = datetime.date.today().strftime("%Y")
     now = datetime.datetime.now()
@@ -300,6 +304,7 @@ def clear():
 @app.route("/edit/<int:todo_id>", methods=["GET", "POST"])
 @login_required
 def edit(todo_id):
+    
     form = EditForm()
     name_to_update = Todo.query.get_or_404(todo_id)
     if request.method == "POST":
@@ -322,7 +327,8 @@ def edit(todo_id):
 
 @app.route("/calendar/<day_hover>/<monthuser>/<yearuser>/edit/<int:todo_id>", methods=["GET", "POST"])
 @login_required
-def edit_cal(todo_id, day_hover, monthuser, yearuser):
+def edit_cal(todo_id, day_hover, monthuser, yearuser ):
+    
     curr_month = datetime.date.today().strftime("%B")
     day_hover = json.loads(day_hover)
     monthuser = curr_month

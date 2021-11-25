@@ -39,14 +39,14 @@
                 Todo App
                 </div>
             </div>
-            <a class="ui header item" style="font-weight: 300; font-size: 16px;" href="/home">Home</a>
-            <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/calendar">Calendar</a>
+            <a class="ui header item" style="font-weight: 300; font-size: 16px;" href="/home ">Home</a>
+            <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/calendar ">Calendar</a>
             <div class="right menu"  style="padding-right: 10px;" >
                 <div class="ui secondary simple dropdown item">
                 <a style="font-weight: 300; font-size: 16px; color: black;"> ‎ ‎ ‎ ‎ ‎‎‎ {{current_user.name}}  ‎ ‎ ‎ ‎ ‎‎‎</a> 
                 <div class="ui simple menu">
-                    <a class="item"  href='/logout'>Logout</a>
-                    <a class="item"  href='/userInfo'>User Info</a>
+                    <a class="item"  href='/logout '>Logout</a>
+                    <a class="item"  href='/userInfo '>User Info</a>
                 </div>
                 </div>
             </div>  
@@ -54,7 +54,7 @@
 
         <div style="margin-top: 100px;" class="ui container">
                 <h1 class="ui center aligned header" style="font-size: 40px;" id="date">  </h1>
-                <form class="ui form" action="/add" method="post"></form>
+                <form class="ui form" action="/add " method="post"></form>
                 <script>
                     var getDate = localStorage.getItem("date")
                     document.getElementById("date").innerHTML = getDate;
@@ -95,9 +95,9 @@
                     {% endif %}
                     <br>
                     <br>
-                    <a class="ui linkedin button" href='/calendar/{{day_hover}}/{{monthuser}}/{{yearuser}}/update/{{ todo.id }}' >Update Status</a>
-                    <a class="ui google plus  button" href="/calendar/{{day_hover}}/{{monthuser}}/{{yearuser}}/delete/{{ todo.id }}"> Remove </a>
-                    <a class="ui black icon button" href="{{url_for('edit_cal', todo_id=todo.id, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser)}}"> <i class="edit icon"></i></a>
+                    <a class="ui linkedin button" href='/calendar/{{day_hover}}/{{monthuser}}/{{yearuser}}/update/{{ todo.id }} ' >Update Status</a>
+                    <a class="ui google plus  button" href="/calendar/{{day_hover}}/{{monthuser}}/{{yearuser}}/delete/{{ todo.id }} "> Remove </a>
+                    <a class="ui black icon button" href="{{url_for('edit_cal', todo_id=todo.id, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, )}}"> <i class="edit icon"></i></a>
                 </div>
         <div>
             {% endfor %}

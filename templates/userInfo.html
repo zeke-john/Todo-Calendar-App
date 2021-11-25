@@ -32,20 +32,20 @@
 </head>
 <body> 
     <div class="ui borderless stackable top fixed menu">
-        <img src="static/img/logo.png" style="width: 60px; height: 55px; padding-left: 10px; padding-top: 5px; padding-bottom: 5px; padding-right: 0px;" >
+        <img src="/static/img/logo.png" style="width: 60px; height: 55px; padding-left: 10px; padding-top: 5px; padding-bottom: 5px; padding-right: 0px;" >
         <div class="item">
             <div class="ui header" style="font-size: 20px;">
             Todo App
             </div>
         </div>
-        <a class="ui header active item" style="font-weight: 300; font-size: 16px;" href="/home">Home</a>
-        <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/calendar">Calendar</a>
+        <a class="ui header item" style="font-weight: 300; font-size: 16px;" href="/home ">Home</a>
+        <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/calendar ">Calendar</a>
         <div class="right menu"  style="padding-right: 10px;" >
             <div class="ui secondary simple dropdown item">
             <a style="font-weight: 300; font-size: 16px; color: black;"> ‎ ‎ ‎ ‎ ‎‎‎ {{current_user.name}}  ‎ ‎ ‎ ‎ ‎‎‎</a> 
             <div class="ui simple menu">
-                <a class="item"  href='/logout'>Logout</a>
-                <a class="item"  href='/userInfo'>User Info</a>
+                <a class="item"  href='/logout '>Logout</a>
+                <a class="item"  href='/userInfo '>User Info</a>
             </div>
             </div>
         </div>  
@@ -61,7 +61,8 @@
                     <div class="summary">
                     <span style="font-size: 16px;">Name:</span> <span style="font-size: 16px;  font-weight: 500;">{{current_user.name}}</span><br>
                     <span style="font-size: 16px;">Email:</span> <span style="font-size: 16px;  font-weight: 500;">{{current_user.email}}</span><br>
-                    <span style="font-size: 16px;">Date Joined:</span> <span style="font-size: 16px;  font-weight: 500;">{{current_user.date_added}}</span><br><br>
+                    <span style="font-size: 16px;">Date Joined:</span> <span style="font-size: 16px;  font-weight: 500;">{{current_user.date_added}}</span><br>
+                    <span style="font-size: 16px;">User Id:</span> <span style="font-size: 16px;  font-weight: 500;">{{current_user.id}}</span><br><br>
                     <a class="ui grey button" href="/logout"   >Logout</a><br>
                     </div>
                     </div>

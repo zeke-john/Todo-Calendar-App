@@ -35,8 +35,17 @@
             Todo App
           </div>
         </div>
-        <a class="ui header item" style="font-weight: 300; font-size: 16px;" href="/home">Home</a>
-        <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/calendar">Calendar</a>
+        <a class="ui header item" style="font-weight: 300; font-size: 16px;" href="/home ">Home</a>
+        <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/calendar ">Calendar</a>
+        <div class="right menu"  style="padding-right: 10px;" >
+          <div class="ui secondary simple dropdown item">
+          <a style="font-weight: 300; font-size: 16px; color: black;"> ‎ ‎ ‎ ‎ ‎‎‎ {{current_user.name}}  ‎ ‎ ‎ ‎ ‎‎‎</a> 
+          <div class="ui simple menu">
+              <a class="item"  href='/logout '>Logout</a>
+              <a class="item"  href='/userInfo '>User Info</a>
+          </div>
+          </div>
+      </div>  
       </div>
     <div style="margin-top: 110px;" class="center aligned ui container">
         <img src="/static/img/500.jpeg" alt="Error occurd" width="750" height="550">

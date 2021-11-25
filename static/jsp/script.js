@@ -68,7 +68,7 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     
     let toString = date_of_todo.toString()
     let split = toString.split(/[!,?,.]/);
-    // console.log(split)
+    user_id = user_id
     split.forEach((element) => {
         if (" 39" + monthdisplay +  " " + daySquare.id + " " +yeardisplay + "39" == element || "39" + monthdisplay +  " " + daySquare.id + " " +yeardisplay + "39" == element) {
             daySquare.id = 'HasTasks';
@@ -121,8 +121,6 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
         daySquare.addEventListener('mouseenter', () => sendUserInfo());
     } 
     
-
-
     if (daySquare.id == 'currentDay'){
         daySquare.addEventListener('click', () => location = "http://192.168.1.16:2000/home");
     }
