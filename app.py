@@ -94,6 +94,11 @@ class Sign_up_Form(FlaskForm):
     password_hash2 = PasswordField("Confirm Password", validators=[DataRequired()])
     submit = SubmitField("Sign Up")
 
+class UserEditForm(FlaskForm):
+	name = StringField("Name", validators=[DataRequired()])
+	email = EmailField("Email", validators=[DataRequired(), Email()])
+	submit = SubmitField("Save")
+
 class LoginForm(FlaskForm):
     email = EmailField("Email", validators=[DataRequired(), Email()])
     password_hash = PasswordField("Password", validators=[DataRequired(), Length(min=6)])
@@ -157,6 +162,33 @@ def logout():
 def userInfo():
     return render_template("userInfo.html")
 
+# Update Database Record
+@app.route('/updateUser/<int:id>', methods=['GET', 'POST'])
+@login_required
+def editUser(id):
+	form = UserEditForm()
+	name_to_update = Users.query.get_or_404(id)
+	if request.method == "POST":
+		name_to_update.name = request.form['name']
+		name_to_update.email = request.form['email']
+		try:
+			db.session.commit()
+			flash("User Updated Successfully!")
+			return render_template("editUser.html", 
+				form=form,
+				name_to_update = name_to_update, id=id)
+		except:
+			flash("Error!  Looks like there was a problem... Try again!")
+			return render_template("editUser.html", 
+				form=form,
+				name_to_update = name_to_update,
+				id=id)
+	else:
+		return render_template("editUser.html", 
+				form=form,
+				name_to_update = name_to_update,
+				id = id)
+
 @app.route("/home")
 @login_required
 def home():
@@ -207,7 +239,6 @@ def calendarDay(day_hover, monthuser, yearuser):
     return render_template('calendarDay.html', monthuser=monthuser , calendar_todo_list=calendar_todo_list, day_hover=day_hover, yearuser=yearuser)
 
 @app.route("/add", methods=["POST"] )
-@login_required
 def add():  
     name = request.form.get("name")
     description = request.form.get("description")
@@ -240,7 +271,6 @@ def add():
     return redirect(url_for("home"))
 
 @app.route("/update/<int:todo_id>")
-@login_required
 def update(todo_id):
     todo = Todo.query.filter_by(id=todo_id).first()
     todo.complete = not todo.complete
@@ -262,8 +292,7 @@ def update_cal(todo_id, day_hover, monthuser, yearuser):
     return redirect(url_for("calendarDay", yearuser=yearuser, monthuser=monthuser, day_hover=day_hover, todo_id=todo_id ))
 
 
-@app.route("/delete/<int:todo_id> ")
-@login_required
+@app.route("/delete/<int:todo_id>")
 def delete(todo_id):
     todo = Todo.query.filter_by(id=todo_id).first()
     db.session.delete(todo)
@@ -272,9 +301,7 @@ def delete(todo_id):
 
 
 @app.route('/calendar/<day_hover>/<monthuser>/<yearuser>/delete/<int:todo_id>', methods=['POST', 'GET'])
-@login_required
 def delete_cal(todo_id, day_hover, monthuser, yearuser):
-    
     curr_month = datetime.date.today().strftime("%B")
     day_hover = json.loads(day_hover)
     monthuser = curr_month
@@ -286,7 +313,6 @@ def delete_cal(todo_id, day_hover, monthuser, yearuser):
     return redirect(url_for("calendarDay", yearuser=yearuser, monthuser=monthuser, day_hover=day_hover, todo_id=todo_id ))
 
 @app.route("/clear")
-@login_required
 def clear():
     
     curr_month = datetime.date.today().strftime("%B")
@@ -302,7 +328,6 @@ def clear():
     return redirect(url_for("home"))
 
 @app.route("/edit/<int:todo_id>", methods=["GET", "POST"])
-@login_required
 def edit(todo_id):
     
     form = EditForm()
@@ -313,10 +338,12 @@ def edit(todo_id):
         name_to_update.start = request.form['start']
         try:
             db.session.commit()
+            flash("User Updated Successfully!")
             return render_template("edit.html", 
             form=form, 
             name_to_update=name_to_update)
         except:
+            flash("Error!  Looks like there was a problem... Try again!")
             return render_template("edit.html", 
             form=form, 
             name_to_update=name_to_update)
@@ -326,7 +353,6 @@ def edit(todo_id):
             name_to_update=name_to_update)
 
 @app.route("/calendar/<day_hover>/<monthuser>/<yearuser>/edit/<int:todo_id>", methods=["GET", "POST"])
-@login_required
 def edit_cal(todo_id, day_hover, monthuser, yearuser ):
     
     curr_month = datetime.date.today().strftime("%B")
@@ -341,10 +367,12 @@ def edit_cal(todo_id, day_hover, monthuser, yearuser ):
         name_to_update.start = request.form['start']
         try:
             db.session.commit()
+            flash("User Updated Successfully!")
             return render_template("editCal.html", 
             form=form, 
             name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
         except:
+            flash("Error!  Looks like there was a problem... Try again!")
             return render_template("editCal.html", 
             form=form, 
             name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)

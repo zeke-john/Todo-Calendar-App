@@ -42,7 +42,7 @@
         </div>
         <a class="ui header item" style="font-weight: 300; font-size: 16px;" href="/home ">Home</a>
         <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/calendar ">Calendar</a>
-        <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href='/calendar/{{day_hover}}/{{monthuser}}/{{yearuser}}/"{{current_user.id}}"'>Back</a>
+        <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href='/calendar/{{day_hover}}/{{monthuser}}/{{yearuser}}'>Back</a>
         <div class="right menu"  style="padding-right: 10px;" >
             <div class="ui secondary simple dropdown item">
             <a style="font-weight: 300; font-size: 16px; color: black;"> ‎ ‎ ‎ ‎ ‎‎‎ {{current_user.name}}  ‎ ‎ ‎ ‎ ‎‎‎</a> 
@@ -54,9 +54,29 @@
         </div>  
         </div>
     <div style="margin-top: 100px;" class="ui container">
+        {% for message in get_flashed_messages() %}
+        <div class="ui center aligned teal message">
+            <i class="close icon"></i>
+            <div>
+                <h3 style="color: black;">
+                    {{message}}
+                </h3>
+            </div>
+            <script>
+                $('.message .close')
+                    .on('click', function() {
+                        $(this)
+                        .closest('.message')
+                        .transition('fade')
+                        ;
+                    })
+                    ;
+            </script>
+        </div>
+    {% endfor %}
         <h1 class="ui center aligned header" style="font-size: 45px;">Edit Task</h1>
         <br>
-        <form class="ui form" action="/calendar/{{day_hover}}/{{monthuser}}/{{yearuser}}/edit/{{name_to_update.id}}/{{user_id}}" method="post">
+        <form class="ui form" action="/calendar/{{day_hover}}/{{monthuser}}/{{yearuser}}/edit/{{name_to_update.id}}" method="post">
             <div class="field">
 
             <label>Name</label>
