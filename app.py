@@ -189,6 +189,26 @@ def editUser(id):
 				name_to_update = name_to_update,
 				id = id)
 
+@app.route('/deleteUser/<int:id>')
+def deleteUser(id):
+	user_to_delete = Users.query.get_or_404(id)
+	name = None
+	form = Sign_up_Form()
+
+	try:
+		db.session.delete(user_to_delete)
+		db.session.commit()
+		flash("User Deleted Successfully")
+
+		return render_template("signUp.html", 
+		form=form,
+		name=name)
+
+	except:
+		flash("Whoops! There was a problem deleting user, try again...")
+		return render_template("signUp.html", 
+		form=form, name=name)
+
 @app.route("/home")
 @login_required
 def home():
