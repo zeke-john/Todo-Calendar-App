@@ -39,7 +39,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-SECRET_KEY = os.urandom(999)
+SECRET_KEY = os.urandom(24)
 app.config['SECRET_KEY'] = SECRET_KEY
 
 login_manager = LoginManager()
@@ -60,12 +60,9 @@ class Todo(db.Model):
     day = db.Column(db.String(150))
     month = db.Column(db.String(150))
     year = db.Column(db.String(150))
+    #create forenign key to link users to tasks
+    poster_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-class EditForm(FlaskForm):
-    name = StringField("Name", validators=[DataRequired()])
-    description = StringField("Description", validators=[DataRequired()])
-    start = StringField("Start Time", validators=[DataRequired()])
-    submit = SubmitField("Save")
 
 class Users(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -75,6 +72,7 @@ class Users(db.Model, UserMixin):
     password_hash = db.Column(db.String(128))
     password_hash2 = db.Column(db.String(128))
 
+    posts = db.relationship('Todo', backref="poster")
     @property
     def password(self):
         raise AttributeError('password is not a readable attribute!')
@@ -85,6 +83,12 @@ class Users(db.Model, UserMixin):
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+class EditForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()])
+    description = StringField("Description", validators=[DataRequired()])
+    start = StringField("Start Time", validators=[DataRequired()])
+    submit = SubmitField("Save")
 
 
 class Sign_up_Form(FlaskForm):
@@ -190,6 +194,7 @@ def editUser(id):
 				id = id)
 
 @app.route('/deleteUser/<int:id>')
+@login_required
 def deleteUser(id):
 	user_to_delete = Users.query.get_or_404(id)
 	name = None
@@ -235,13 +240,14 @@ def calendar():
         date_of_todo = []
         calendar_todo_list = Todo.query.filter(Todo.date != curr_date).all()
         for todos in calendar_todo_list:
-            if str(todos.complete) == 'False':
-                date_of_todo.append(todos.date)
-                date_of_todo = date_of_todo
-            if str(todos.complete) == 'True':
-                comp_date = todos.date + "s" #to diffrentioat between the cmpleted and not
-                date_of_todo.append(comp_date)
-                date_of_todo = date_of_todo
+            if todos.poster_id == current_user.id:
+                if str(todos.complete) == 'False':
+                    date_of_todo.append(todos.date)
+                    date_of_todo = date_of_todo
+                if str(todos.complete) == 'True':
+                    comp_date = todos.date + "s" #to diffrentioat between the cmpleted and not
+                    date_of_todo.append(comp_date)
+                    date_of_todo = date_of_todo
     return render_template("calendar.html", date_of_todo=date_of_todo)      
 
 @app.route('/calendar/<day_hover>/<monthuser>/<yearuser>', methods=['POST', 'GET'])
@@ -253,12 +259,14 @@ def calendarDay(day_hover, monthuser, yearuser):
     day_hover = json.loads(day_hover)
     day_hover = day_hover
     yearuser = json.loads(yearuser)
-    date_user = f"{monthuser} {day_hover} {yearuser}"       
+    date_user = f"{monthuser} {day_hover} {yearuser}"  
+
     calendar_todo_list = Todo.query.filter(Todo.date.endswith(date_user)).all()
 
     return render_template('calendarDay.html', monthuser=monthuser , calendar_todo_list=calendar_todo_list, day_hover=day_hover, yearuser=yearuser)
 
 @app.route("/add", methods=["POST"] )
+@login_required
 def add():  
     name = request.form.get("name")
     description = request.form.get("description")
@@ -276,8 +284,8 @@ def add():
     day = new_day[1]
     year = new_day[-1]
     date = f'{month} {day} {year}'
-
-    new_todo = Todo(name=name, complete=False, description=description, start=start, date=date, month=month, day=day, year=year)
+    todo_list = Todo.query.all()
+    new_todo = Todo(name=name, complete=False, description=description, start=start, date=date, month=month, day=day, year=year, poster_id=current_user.id)
 
     curr_month = datetime.date.today().strftime("%B")
     curr_year = datetime.date.today().strftime("%Y")
@@ -313,12 +321,12 @@ def update_cal(todo_id, day_hover, monthuser, yearuser):
 
 
 @app.route("/delete/<int:todo_id>")
+@login_required
 def delete(todo_id):
     todo = Todo.query.filter_by(id=todo_id).first()
     db.session.delete(todo)
     db.session.commit()
     return redirect(url_for("home"))
-
 
 @app.route('/calendar/<day_hover>/<monthuser>/<yearuser>/delete/<int:todo_id>', methods=['POST', 'GET'])
 def delete_cal(todo_id, day_hover, monthuser, yearuser):
@@ -348,6 +356,7 @@ def clear():
     return redirect(url_for("home"))
 
 @app.route("/edit/<int:todo_id>", methods=["GET", "POST"])
+@login_required
 def edit(todo_id):
     
     form = EditForm()
@@ -373,8 +382,8 @@ def edit(todo_id):
             name_to_update=name_to_update)
 
 @app.route("/calendar/<day_hover>/<monthuser>/<yearuser>/edit/<int:todo_id>", methods=["GET", "POST"])
+@login_required
 def edit_cal(todo_id, day_hover, monthuser, yearuser ):
-    
     curr_month = datetime.date.today().strftime("%B")
     day_hover = json.loads(day_hover)
     monthuser = curr_month

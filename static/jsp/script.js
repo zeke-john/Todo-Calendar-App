@@ -65,7 +65,7 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
         year: 'numeric',
     };  
     yeardisplay = new Date().toLocaleDateString('en-US', year_option);
-    
+
     let toString = date_of_todo.toString()
     let split = toString.split(/[!,?,.]/);
     user_id = user_id

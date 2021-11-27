@@ -69,7 +69,7 @@
           date = weekday + " " + new Date().toLocaleDateString('en-US', options);
           document.getElementById("date").innerHTML = date;
           </script>
-        <form class="ui form" action="/add " method="post" >
+        <form class="ui form" action="/add" method="post" >
             <div class="field">
               <style>
                 .left {
@@ -295,7 +295,7 @@
 
         <hr>
         {% for todo in home_todo_list %}
-        
+        {% if todo.poster_id == current_user.id %}
         <div class="ui white segment Change">
             <table class="ui celled table">
               <body>
@@ -333,7 +333,7 @@
             <br>
             <a class="ui linkedin button" href="/update/{{ todo.id }} "   >Update Status</a>
             <a class="ui google plus  button" href="/delete/{{ todo.id }} "> Remove</a>
-            <a class="ui black icon button" href="{{url_for('edit', todo_id=todo.id, )}}"> <i class="edit icon"></i></a>
+            <a class="ui black icon button" href="{{url_for('edit', todo_id=todo.id )}}"> <i class="edit icon"></i></a>
           <script>
 
                 // get current miltary time
@@ -421,6 +421,7 @@
 
       </div>
     <div>
+        {% endif %}
         {% endfor %}
     </div>
     <br>

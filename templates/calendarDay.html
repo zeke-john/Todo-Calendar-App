@@ -69,6 +69,7 @@
                 </div>
 
                 {% for todo in calendar_todo_list %}
+                {% if todo.poster_id == current_user.id %}
                 <div class="ui white segment Change">
                     <table class="ui celled table">
                     <body>
@@ -100,6 +101,7 @@
                     <a class="ui black icon button" href="{{url_for('edit_cal', todo_id=todo.id, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, )}}"> <i class="edit icon"></i></a>
                 </div>
         <div>
+            {% endif %}
             {% endfor %}
         </div>
         <script src="/static/jsp/script.js"></script>
