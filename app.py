@@ -157,7 +157,7 @@ def signUp():
         flash("Passwords Must Match!")
     try:
         if len(form.password_hash.data) < 8:
-            flash("Passwords Must be at least 8 charectar long!")
+            flash("Passwords Must be at least 8 charectars long!")
     except TypeError:
         pass
     if form.validate_on_submit():
@@ -178,11 +178,6 @@ def signUp():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
-    try:
-        if len(form.password_hash.data) < 8:
-            flash("Passwords Must be at least 8 charectar long!")
-    except TypeError:
-        pass
     if form.validate_on_submit():
         user = Users.query.filter_by(email=form.email.data).first()
         if user:
@@ -257,7 +252,7 @@ def editUser(id):
 		name_to_update.email = request.form['email']
 		try:
 			db.session.commit()
-			flash("User Updated Successfully!")
+			flash("Account Info Updated Successfully!")
 			return render_template("editUser.html", 
 				form=form,
 				name_to_update = name_to_update, id=id)
@@ -283,7 +278,7 @@ def deleteUser(id):
 	try:
 		db.session.delete(user_to_delete)
 		db.session.commit()
-		flash("User Deleted Successfully")
+		flash("Account Deleted Successfully")
 
 		return render_template("signUp.html", 
 		form=form,

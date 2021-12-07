@@ -43,7 +43,7 @@
             <a style="font-weight: 300; font-size: 16px; color: black;"> ‎ ‎ ‎ ‎ ‎‎‎ {{current_user.name}}  ‎ ‎ ‎ ‎ ‎‎‎</a> 
             <div class="ui simple menu">
                 <a class="item"  href='/logout '>Logout</a>
-                <a class="item"  href='/userInfo '>User Info</a>
+                <a class="item"  href='/userInfo '>Account Info</a>
             </div>
             </div>
         </div>  
@@ -69,7 +69,7 @@
                 </script>
             </div>
         {% endfor %}
-        <h1 class="ui center aligned header" style="font-size: 45px;">Edit User</h1>
+        <h1 class="ui center aligned header" style="font-size: 45px;">Edit Account Info</h1>
             <hr>
             <form method="POST" class="ui form">
                 {{ form.hidden_tag() }}
@@ -91,7 +91,7 @@
                 </div>
                 
                 <div class="field">
-                    {{ form.submit(class="ui fluid large green button") }}
+                    {{ form.submit(class="ui fluid large blue button") }}
                 </div>
         </form>
 </body>
