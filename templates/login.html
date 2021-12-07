@@ -58,8 +58,9 @@
             Todo App
             </div>
         </div>
+        
         </div>
-    <div style="margin-top: 100px;" class="center aligned ui container">
+    <div style="margin-top: 100px;" class=" aligned ui container">
         {% for message in get_flashed_messages() %}
             <div class="ui center aligned teal message">
                 <i class="close icon"></i>
@@ -100,18 +101,18 @@
                         <i class="lock icon"></i>
                     </div>
                 </div>
-                
                 <div class="field">
-                    {{ form.submit(class="ui fluid large blue button") }}
+                    {{ form.submit(class="ui large fluid blue button") }}                
+                    <br>
+                    <a class="ui href " href="/reset_password">Forgot your Password?</a>
                 </div>
-        </form>
-        <br>
+        </form> 
         <div class="separator">
             <span style="font-size: 15px; color: rgb(130, 130, 130);">or</span>
     </div>
     <br>
     <a class="ui fluid teal large button" href="/signUp" >Sign Up</a>
-    </div>
+    <br>
 </body>
 
 </html>

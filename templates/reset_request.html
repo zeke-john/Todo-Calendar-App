@@ -19,7 +19,7 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo App - Login</title>
+    <title>Todo App - Reset Password</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css">
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
@@ -28,27 +28,42 @@
     
 </head>
 <body> 
+    <style>
+        .separator {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        }
+
+        .separator::before,
+        .separator::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid darkgray;
+        }
+
+        .separator:not(:empty)::before {
+        margin-right: .25em;
+        }
+
+        .separator:not(:empty)::after {
+        margin-left: .25em;
+        }
+
+    </style>
     <div class="ui borderless stackable top fixed menu">
-        <img src="/static/img/logo.png" style="width: 60px; height: 55px; padding-left: 10px; padding-top: 5px; padding-bottom: 5px; padding-right: 0px;" >
-        <div class="item">
-            <div class="ui header" style="font-size: 20px;">
-            Todo App
-            </div>
+    <img src="/static/img/logo.png" style="width: 60px; height: 55px; padding-left: 10px; padding-top: 5px; padding-bottom: 5px; padding-right: 0px;" >
+    <div class="item">
+        <div class="ui header" style="font-size: 20px;">
+        Todo App
         </div>
-        <a class="ui header item" style="font-weight: 300; font-size: 16px;" href="/home ">Home</a>
-        <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/calendar ">Calendar</a>
-        <a class="item" style="font-weight: 300; font-size: 16px;" href='/userInfo'>Back</a>
-        <div class="right menu"  style="padding-right: 10px;" >
-            <div class="ui secondary simple dropdown item">
-            <a style="font-weight: 300; font-size: 16px; color: black;"> ‎ ‎ ‎ ‎ ‎‎‎ {{current_user.name}}  ‎ ‎ ‎ ‎ ‎‎‎</a> 
-            <div class="ui simple menu">
-                <a class="item"  href='/logout '>Logout</a>
-                <a class="item"  href='/userInfo '>User Info</a>
-            </div>
-            </div>
-        </div>  
     </div>
-    <div style="margin-top: 100px;" class="center aligned ui container">
+
+    <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/login">Back to Login</a>
+
+
+    </div>
+    <div style="margin-top: 100px;" class=" aligned ui container">
         {% for message in get_flashed_messages() %}
             <div class="ui center aligned teal message">
                 <i class="close icon"></i>
@@ -69,31 +84,24 @@
                 </script>
             </div>
         {% endfor %}
-        <h1 class="ui center aligned header" style="font-size: 45px;">Edit User</h1>
+        <h1 class="ui center aligned header" style="font-size: 45px;">Reset Password</h1>
             <hr>
             <form method="POST" class="ui form">
                 {{ form.hidden_tag() }}
                 <div class="field">
                     <br/>
-                    <label style="font-size: 15px; font-weight: 600; text-align-last: left;"> Name </label>
+                    <label style="font-size: 15px; font-weight: 600; text-align-last: left;"> Email </label>
                     <div class="ui input left icon">
-                        {{ form.name(class="ui input", autocomplete="off", placeholder="Name", value=name_to_update.name) }}
+                        {{ form.email(class="ui input", autocomplete="off", placeholder="Email") }}
                         <i class="mail icon"></i>
                     </div>
                 </div>
                 <br>
                 <div class="field">
-                    <label style="font-size: 15px; font-weight: 600; text-align-last: left;"> Email </label>
-                    <div class="ui input left icon">
-                        {{ form.email(class="ui input", autocomplete="off", placeholder="Email", value=name_to_update.email) }}
-                        <i class="mail icon"></i>
-                    </div>
+                    {{ form.submit(class="ui large fluid blue button") }}                
                 </div>
-                
-                <div class="field">
-                    {{ form.submit(class="ui fluid large green button") }}
-                </div>
-        </form>
+        </form> 
+
 </body>
 
 </html>

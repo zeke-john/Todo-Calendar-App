@@ -12,6 +12,8 @@ import calendar as cal
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms.fields.html5 import EmailField 
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from flask_mail import Mail, Message
 '''
 
 python3 app.py to run
@@ -44,6 +46,13 @@ app.config['SECRET_KEY'] = SECRET_KEY
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'zekejohn118@gmail.com'
+app.config['MAIL_PASSWORD'] = 'CAez0208'
+mail = Mail(app)
 login_manager.login_view = 'login'
 
 @login_manager.user_loader
@@ -71,8 +80,23 @@ class Users(db.Model, UserMixin):
     date_added = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     password_hash = db.Column(db.String(128))
     password_hash2 = db.Column(db.String(128))
-
     posts = db.relationship('Todo', backref="poster")
+
+    def get_reset_token(self, expires_sec=300):
+        s = Serializer(app.config['SECRET_KEY'], expires_sec)
+        return s.dumps({'user_id': self.id}).decode('utf-8')
+    
+    @staticmethod
+    def verify_reset_token(token):
+        s = Serializer(app.config['SECRET_KEY'])
+        try:
+            user_id = s.loads(token)['user_id']
+        except:
+            return None
+        return Users.query.get(user_id)
+
+
+
     @property
     def password(self):
         raise AttributeError('password is not a readable attribute!')
@@ -94,9 +118,11 @@ class EditForm(FlaskForm):
 class Sign_up_Form(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
     email = EmailField("Email", validators=[DataRequired(), Email()])
-    password_hash = PasswordField("Password", validators=[DataRequired(), EqualTo('password_hash2', message='passwords must match'), Length(min=6)])
+    password_hash = PasswordField("Password", validators=[DataRequired(), EqualTo('password_hash2', message='passwords must match'), Length(min=8)])
     password_hash2 = PasswordField("Confirm Password", validators=[DataRequired()])
     submit = SubmitField("Sign Up")
+
+
 
 class UserEditForm(FlaskForm):
 	name = StringField("Name", validators=[DataRequired()])
@@ -105,8 +131,24 @@ class UserEditForm(FlaskForm):
 
 class LoginForm(FlaskForm):
     email = EmailField("Email", validators=[DataRequired(), Email()])
-    password_hash = PasswordField("Password", validators=[DataRequired(), Length(min=6)])
+    password_hash = PasswordField("Password", validators=[DataRequired(), Length(min=8)])
     submit = SubmitField("Login")
+
+class RequestResetForm(FlaskForm):
+    email = EmailField("Email", validators=[DataRequired(), Email()])
+    submit = SubmitField("Next")
+
+    def validate_email(self, email):
+        user = Users.query.filter_by(email=email.data).first()
+        if user is None:
+            flash('If an account with this email address exists, a password reset message will be sent shortly.')
+            raise ValidationError('If an account with this email address exists, a password reset message will be sent shortly.')
+
+
+class ResetPasswordForm(FlaskForm):
+    password_hash = PasswordField("New Password", validators=[DataRequired(), EqualTo('password_hash2', message='passwords must match'), Length(min=8)])
+    password_hash2 = PasswordField("Confirm Password", validators=[DataRequired()])
+    submit = SubmitField("Change Password")
 
 @app.route("/signUp", methods=["GET", "POST"])
 def signUp():
@@ -114,8 +156,8 @@ def signUp():
     if form.password_hash.data != form.password_hash2.data:
         flash("Passwords Must Match!")
     try:
-        if len(form.password_hash.data) < 6:
-            flash("Passwords Must be at least 6 charectar long!")
+        if len(form.password_hash.data) < 8:
+            flash("Passwords Must be at least 8 charectar long!")
     except TypeError:
         pass
     if form.validate_on_submit():
@@ -137,8 +179,8 @@ def signUp():
 def login():
     form = LoginForm()
     try:
-        if len(form.password_hash.data) < 6:
-            flash("Passwords Must be at least 6 charectar long!")
+        if len(form.password_hash.data) < 8:
+            flash("Passwords Must be at least 8 charectar long!")
     except TypeError:
         pass
     if form.validate_on_submit():
@@ -149,9 +191,9 @@ def login():
                 login_user(user)
                 return redirect(url_for("home", user_id=current_user.id))
             else:
-                flash('Incorrect Password... Try again')
-        else:
-            flash("That User Doesn't exist... Try again")
+                flash("Incorrect Email or Password")
+        else:   
+            flash("Incorrect Email or Password")
     return render_template("login.html", form=form)
 
 @app.route("/logout", methods=["GET", "POST"])
@@ -166,7 +208,45 @@ def logout():
 def userInfo():
     return render_template("userInfo.html")
 
-# Update Database Record
+def send_reset_email(user):
+    token = user.get_reset_token()
+    msg = Message('Password Reset Request', sender="zekejohn118@gmail.com", recipients=[user.email])
+
+    msg.body = f'''To reset your Password for Todo App, visit the link below:
+    {url_for('reset_token', token=token, _external = True)}
+
+    If you didn't make this request then ignore this email
+    '''
+    mail.send(msg)
+
+@app.route("/reset_password", methods=["GET", "POST"])
+def reset_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('login'))
+    form = RequestResetForm()
+    if form.validate_on_submit():
+        user = Users.query.filter_by(email=form.email.data).first()
+        flash("If an account with this email exists, a password reset message will be sent shortly.")
+        send_reset_email(user)
+    return render_template('reset_request.html', form=form)
+
+@app.route("/reset_password/<token>", methods=["GET", "POST"])
+def reset_token(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('login'))
+    user = Users.verify_reset_token(token)
+    if user is None: 
+        flash("invalid or expired token")
+        return redirect(url_for('reset_request'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+            hashed_pw = generate_password_hash(form.password_hash.data, "sha256")
+            user.password_hash = hashed_pw
+            db.session.commit()
+            flash("Your password has been updated, now you can login")
+    return render_template("change_password.html", form=form)
+
+
 @app.route('/updateUser/<int:id>', methods=['GET', 'POST'])
 @login_required
 def editUser(id):
@@ -367,7 +447,7 @@ def edit(todo_id):
         name_to_update.start = request.form['start']
         try:
             db.session.commit()
-            flash("User Updated Successfully!")
+            flash("Task Updated Successfully!")
             return render_template("edit.html", 
             form=form, 
             name_to_update=name_to_update)
@@ -396,7 +476,7 @@ def edit_cal(todo_id, day_hover, monthuser, yearuser ):
         name_to_update.start = request.form['start']
         try:
             db.session.commit()
-            flash("User Updated Successfully!")
+            flash("Task Updated Successfully!")
             return render_template("editCal.html", 
             form=form, 
             name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
@@ -423,4 +503,4 @@ def page_not_found(e):
 if __name__ == "__main__":
     db.create_all()
     app.run(debug=True, host=os.getenv('IP', '0.0.0.0'),
-            port=int(os.getenv('PORT', 2000)))
+            port=int(os.getenv('PORT', 5000)))
