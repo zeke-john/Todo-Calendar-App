@@ -207,8 +207,9 @@ def send_reset_email(user):
     token = user.get_reset_token()
     msg = Message('Password Reset Request', sender="zekejohn118@gmail.com", recipients=[user.email])
 
-    msg.body = f'''To reset your Password for Todo App, visit the link below:
+    msg.body = f'''To reset your Password for Todo App, visit the link below. It will expire in 5 minutes:
     {url_for('reset_token', token=token, _external = True)}
+    
 
     If you didn't make this request then ignore this email
     '''
