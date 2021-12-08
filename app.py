@@ -95,8 +95,6 @@ class Users(db.Model, UserMixin):
             return None
         return Users.query.get(user_id)
 
-
-
     @property
     def password(self):
         raise AttributeError('password is not a readable attribute!')
@@ -114,15 +112,12 @@ class EditForm(FlaskForm):
     start = StringField("Start Time", validators=[DataRequired()])
     submit = SubmitField("Save")
 
-
 class Sign_up_Form(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
     email = EmailField("Email", validators=[DataRequired(), Email()])
     password_hash = PasswordField("Password", validators=[DataRequired(), EqualTo('password_hash2', message='passwords must match'), Length(min=8)])
     password_hash2 = PasswordField("Confirm Password", validators=[DataRequired()])
     submit = SubmitField("Sign Up")
-
-
 
 class UserEditForm(FlaskForm):
 	name = StringField("Name", validators=[DataRequired()])
@@ -143,7 +138,6 @@ class RequestResetForm(FlaskForm):
         if user is None:
             flash('If an account with this email address exists, a password reset message will be sent shortly.')
             raise ValidationError('If an account with this email address exists, a password reset message will be sent shortly.')
-
 
 class ResetPasswordForm(FlaskForm):
     password_hash = PasswordField("New Password", validators=[DataRequired(), EqualTo('password_hash2', message='passwords must match'), Length(min=8)])
@@ -207,8 +201,7 @@ def send_reset_email(user):
     token = user.get_reset_token()
     msg = Message('Password Reset Request', sender="zekejohn118@gmail.com", recipients=[user.email])
 
-    msg.body = f'''To reset your Password for Todo App, visit the link below. It will expire in 5 minutes:
-    {url_for('reset_token', token=token, _external = True)}
+    msg.body = f'''To reset your Password for Todo App, visit the link to do so. It will expire in 5 minutes: {url_for('reset_token', token=token, _external = True)}
     
 
     If you didn't make this request then ignore this email
@@ -235,13 +228,61 @@ def reset_token(token):
         flash("invalid or expired token")
         return redirect(url_for('reset_request'))
     form = ResetPasswordForm()
+    if form.password_hash.data != form.password_hash2.data:
+        flash("Passwords Must Match!")
+    try:
+        if len(form.password_hash.data) < 8:
+            flash("Passwords Must be at least 8 charectars long!")
+    except TypeError:
+        pass
     if form.validate_on_submit():
             hashed_pw = generate_password_hash(form.password_hash.data, "sha256")
             user.password_hash = hashed_pw
             db.session.commit()
             flash("Your password has been updated, now you can login")
-    return render_template("change_password.html", form=form)
+    return render_template("reset_password.html", form=form)
 
+def send_change_email(user):
+    token = user.get_reset_token()
+    msg = Message('Password Change Request', sender="zekejohn118@gmail.com", recipients=[user.email])
+
+    msg.body = f'''To Change your Password for Todo App, visit the link below. It will expire in 5 minutes:
+    {url_for('change_token', token=token, _external = True)}
+    
+
+    If you didn't make this request then ignore this email
+    '''
+    mail.send(msg)
+
+@app.route("/change_password", methods=["GET", "POST"])
+@login_required
+def change_request():
+    user = user = Users.query.filter_by(email=current_user.email).first()
+    send_change_email(user)
+    flash("An email has been sent to you to change your password.")
+    return redirect(url_for('editUser', id=current_user.id))
+
+@app.route("/change_password/<token>", methods=["GET", "POST"])
+@login_required
+def change_token(token):
+    user = Users.verify_reset_token(token)
+    if user is None: 
+        flash("invalid or expired token")
+        return redirect(url_for('reset_request'))
+    form = ResetPasswordForm()
+    if form.password_hash.data != form.password_hash2.data:
+        flash("Passwords Must Match!")
+    try:
+        if len(form.password_hash.data) < 8:
+            flash("Passwords Must be at least 8 charectars long!")
+    except TypeError:
+        pass
+    if form.validate_on_submit():
+            hashed_pw = generate_password_hash(form.password_hash.data, "sha256")
+            user.password_hash = hashed_pw
+            db.session.commit()
+            flash("Your password has been updated, now you can login")
+    return render_template("reset_password.html", form=form)
 
 @app.route('/updateUser/<int:id>', methods=['GET', 'POST'])
 @login_required

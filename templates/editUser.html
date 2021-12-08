@@ -49,6 +49,29 @@
         </div>  
     </div>
     <div style="margin-top: 100px;" class="center aligned ui container">
+        <style>
+            .separator {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            }
+    
+            .separator::before,
+            .separator::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid darkgray;
+            }
+    
+            .separator:not(:empty)::before {
+            margin-right: .25em;
+            }
+    
+            .separator:not(:empty)::after {
+            margin-left: .25em;
+            }
+    
+        </style>
         {% for message in get_flashed_messages() %}
             <div class="ui center aligned teal message">
                 <i class="close icon"></i>
@@ -88,11 +111,16 @@
                         {{ form.email(class="ui input", autocomplete="off", placeholder="Email", value=name_to_update.email) }}
                         <i class="mail icon"></i>
                     </div>
+                    
                 </div>
-                
                 <div class="field">
                     {{ form.submit(class="ui fluid large blue button") }}
                 </div>
+                <div class="separator">
+                    <span style="font-size: 15px; color: rgb(130, 130, 130);">or</span>
+            </div>
+                <br>
+                <a class="ui fluid large teal button" href="/change_password">Change Password</a><br>
         </form>
 </body>
 
