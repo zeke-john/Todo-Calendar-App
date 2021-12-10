@@ -36,8 +36,7 @@ app = Flask(__name__)
 dir_path = os.path.dirname(os.path.realpath(__file__))
 filename = os.path.join(dir_path, 'test_log.log')
 
-# /// = relative path, //// = absolute path
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:CAez0208@localhost/users'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -260,7 +259,7 @@ def change_request():
     user = user = Users.query.filter_by(email=current_user.email).first()
     send_change_email(user)
     flash("An email has been sent to you to change your password.")
-    return redirect(url_for('editUser', id=current_user.id))
+    return redirect(url_for('editUser', id=current_user.id))    
 
 @app.route("/change_password/<token>", methods=["GET", "POST"])
 @login_required
