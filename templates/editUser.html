@@ -31,11 +31,13 @@
     <div class="ui borderless stackable top fixed menu">
         <img src="/static/img/logo.png" style="width: 60px; height: 55px; padding-left: 10px; padding-top: 5px; padding-bottom: 5px; padding-right: 0px;" >
         <div class="item">
-            <div class="ui header" style="font-size: 20px;">
-            Todo App
-            </div>
+            <a href="/">
+                <div class="ui header" style="font-size: 20px;" >
+                Todo App
+                </div>
+            </a>
         </div>
-        <a class="ui header item" style="font-weight: 300; font-size: 16px;" href="/home ">Home</a>
+        <a class="ui header item" style="font-weight: 300; font-size: 16px;" href="/today ">Today</a>
         <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/calendar ">Calendar</a>
         <a class="item" style="font-weight: 300; font-size: 16px;" href='/userInfo'>Back</a>
         <div class="right menu"  style="padding-right: 10px;" >
@@ -116,10 +118,9 @@
                 <div class="field">
                     {{ form.submit(class="ui fluid large blue button") }}
                 </div>
-                <div class="separator">
-                    <span style="font-size: 15px; color: rgb(130, 130, 130);">or</span>
+                <div class="ui horizontal header divider">
+                    <a style='color:rgb(118, 118, 118)'>or</a>
             </div>
-                <br>
                 <a class="ui fluid large teal button" href="/change_password">Change Password</a><br>
         </form>
 </body>

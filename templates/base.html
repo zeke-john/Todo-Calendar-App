@@ -20,7 +20,7 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo App - Home</title>
+    <title>Todo App - Today</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css">
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
@@ -35,11 +35,13 @@
   <div class="ui borderless stackable top fixed menu">
     <img src="/static/img/logo.png" style="width: 60px; height: 55px; padding-left: 10px; padding-top: 5px; padding-bottom: 5px; padding-right: 0px;" >
     <div class="item">
-      <div class="ui header" style="font-size: 20px;">
+      <a href="/">
+        <div class="ui header" style="font-size: 20px;" >
         Todo App
-      </div>
+        </div>
+    </a>
     </div>
-    <a class="ui header active item" style="font-weight: 300; font-size: 16px;" href="/home ">Home</a>
+    <a class="ui header active item" style="font-weight: 300; font-size: 16px;" href="/today ">Today</a>
     <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/calendar ">Calendar</a>
     <div class="right menu"  style="padding-right: 10px;" >
       <div class="ui secondary simple dropdown item">
@@ -394,7 +396,7 @@
 
           notification.onclick = function(event) {
                 event.preventDefault(); // prevent the browser from focusing the Notification's tab
-                window.open('http://192.168.1.16:2000/login', '_blank');
+                window.open('http://192.168.1.16:5000/today', '_blank');
                 notification.close();
               }
             }

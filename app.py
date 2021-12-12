@@ -14,22 +14,22 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms.fields.html5 import EmailField 
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_mail import Mail, Message
+from flask_migrate import Migrate
 '''
-
-python3 app.py to run
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 pyenv activate New-Todo-App
-
-sqlite3
-sqlite> .open "db.sqlite"
-sqlite> .databases
-sqlite> .tables
-sqlite> .headers on
-sqlite> .mode column
-SELECT * FROM todo;
-SELECT * FROM todo WHERE __ = '_';
-DELETE FROM users;
+python3 app.py to run              
+______________________________________
+python3 -m flask db 
+python3 -m flask db migrate -m 'message'
+python3 -m flask db upgrade
+______________________________________
+export PATH=$PATH:/usr/local/mysql/bin/
+sudo mysql -u root -p
+USE users;
+SHOW TABLES;
+SELECT * FROM [table name];
 '''
 app = Flask(__name__)
 
@@ -39,6 +39,7 @@ filename = os.path.join(dir_path, 'test_log.log')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:CAez0208@localhost/users'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 SECRET_KEY = os.urandom(24)
 app.config['SECRET_KEY'] = SECRET_KEY
@@ -60,14 +61,14 @@ def load_user(user_id):
 
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50))
+    name = db.Column(db.String(50), nullable=False)
     complete = db.Column(db.Boolean)
-    description = db.Column(db.String(150))
-    start = db.Column(db.String(150))
-    date = db.Column(db.String(150))
-    day = db.Column(db.String(150))
-    month = db.Column(db.String(150))
-    year = db.Column(db.String(150))
+    description = db.Column(db.String(150), nullable=False)
+    start = db.Column(db.String(150), nullable=False)
+    date = db.Column(db.String(150), nullable=False)
+    day = db.Column(db.String(150), nullable=False)
+    month = db.Column(db.String(150), nullable=False)
+    year = db.Column(db.String(150), nullable=False)
     #create forenign key to link users to tasks
     poster_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
@@ -143,6 +144,10 @@ class ResetPasswordForm(FlaskForm):
     password_hash2 = PasswordField("Confirm Password", validators=[DataRequired()])
     submit = SubmitField("Change Password")
 
+@app.route("/")
+def homePage():
+    return render_template("homePage.html")
+
 @app.route("/signUp", methods=["GET", "POST"])
 def signUp():
     form = Sign_up_Form()
@@ -150,7 +155,7 @@ def signUp():
         flash("Passwords Must Match!")
     try:
         if len(form.password_hash.data) < 8:
-            flash("Passwords Must be at least 8 charectars long!")
+            flash("Passwords must be at least 8 charectars long!")
     except TypeError:
         pass
     if form.validate_on_submit():
@@ -160,7 +165,7 @@ def signUp():
             user = Users(name=form.name.data, email=form.email.data, password_hash=hashed_pw)
             db.session.add(user)
             db.session.commit()
-            flash("Great! Now Just Login and your Ready to Go!")
+            flash("Great! Now just Login and your Ready to Go!")
         elif user is not None:
             flash("That Email is already being used...")
         form.name.data = ''
@@ -188,7 +193,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash("You Have Been Logged Out, Thanks For Stopping By!")
+    flash("You have been Logged out, Thanks for stopping by!")
     return redirect(url_for('login'))
 
 @app.route("/userInfo", methods=["GET", "POST"])
@@ -330,7 +335,7 @@ def deleteUser(id):
 		return render_template("signUp.html", 
 		form=form, name=name)
 
-@app.route("/home")
+@app.route("/today")
 @login_required
 def home():
     curr_month = datetime.date.today().strftime("%B")
