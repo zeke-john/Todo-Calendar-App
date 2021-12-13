@@ -122,7 +122,7 @@ class Sign_up_Form(FlaskForm):
 class UserEditForm(FlaskForm):
 	name = StringField("Name", validators=[DataRequired()])
 	email = EmailField("Email", validators=[DataRequired(), Email()])
-	submit = SubmitField("Save")
+	submit = SubmitField("Save Changes")
 
 class LoginForm(FlaskForm):
     email = EmailField("Email", validators=[DataRequired(), Email()])
@@ -291,49 +291,55 @@ def change_token(token):
 @app.route('/updateUser/<int:id>', methods=['GET', 'POST'])
 @login_required
 def editUser(id):
-	form = UserEditForm()
-	name_to_update = Users.query.get_or_404(id)
-	if request.method == "POST":
-		name_to_update.name = request.form['name']
-		name_to_update.email = request.form['email']
-		try:
-			db.session.commit()
-			flash("Account Info Updated Successfully!")
-			return render_template("editUser.html", 
-				form=form,
-				name_to_update = name_to_update, id=id)
-		except:
-			flash("Error!  Looks like there was a problem... Try again!")
-			return render_template("editUser.html", 
-				form=form,
-				name_to_update = name_to_update,
-				id=id)
-	else:
-		return render_template("editUser.html", 
-				form=form,
-				name_to_update = name_to_update,
-				id = id)
+    if id != current_user.id:
+        return redirect(url_for('login'))
+    else:
+        form = UserEditForm()
+        name_to_update = Users.query.get_or_404(id)
+        if request.method == "POST":
+            name_to_update.name = request.form['name']
+            name_to_update.email = request.form['email']
+            try:
+                db.session.commit()
+                flash("Account Info Updated Successfully!")
+                return render_template("editUser.html", 
+                    form=form,
+                    name_to_update = name_to_update, id=id)
+            except:
+                flash("Error!  Looks like there was a problem... Try again!")
+                return render_template("editUser.html", 
+                    form=form,
+                    name_to_update = name_to_update,
+                    id=id)
+        else:
+            return render_template("editUser.html", 
+                    form=form,
+                    name_to_update = name_to_update,
+                    id = id)
 
 @app.route('/deleteUser/<int:id>')
 @login_required
 def deleteUser(id):
-	user_to_delete = Users.query.get_or_404(id)
-	name = None
-	form = Sign_up_Form()
+    if id != current_user.id:
+        return redirect(url_for('login'))
+    else:
+        user_to_delete = Users.query.get_or_404(id)
+        name = None
+        form = Sign_up_Form()
 
-	try:
-		db.session.delete(user_to_delete)
-		db.session.commit()
-		flash("Account Deleted Successfully")
+        try:
+            db.session.delete(user_to_delete)
+            db.session.commit()
+            flash("Account Deleted Successfully")
 
-		return render_template("signUp.html", 
-		form=form,
-		name=name)
+            return render_template("signUp.html", 
+            form=form,
+            name=name)
 
-	except:
-		flash("Whoops! There was a problem deleting user, try again...")
-		return render_template("signUp.html", 
-		form=form, name=name)
+        except:
+            flash("Whoops! There was a problem deleting user, try again...")
+            return render_template("signUp.html", 
+            form=form, name=name)
 
 @app.route("/today")
 @login_required
@@ -419,13 +425,6 @@ def add():
     db.session.commit()
     return redirect(url_for("home"))
 
-@app.route("/update/<int:todo_id>")
-def update(todo_id):
-    todo = Todo.query.filter_by(id=todo_id).first()
-    todo.complete = not todo.complete
-    db.session.commit()
-    return redirect(url_for("home"))
-
 @app.route('/calendar/<day_hover>/<monthuser>/<yearuser>/update/<int:todo_id>', methods=['POST', 'GET'])
 @login_required
 def update_cal(todo_id, day_hover, monthuser, yearuser):
@@ -440,16 +439,8 @@ def update_cal(todo_id, day_hover, monthuser, yearuser):
     db.session.commit()
     return redirect(url_for("calendarDay", yearuser=yearuser, monthuser=monthuser, day_hover=day_hover, todo_id=todo_id ))
 
-
-@app.route("/delete/<int:todo_id>")
-@login_required
-def delete(todo_id):
-    todo = Todo.query.filter_by(id=todo_id).first()
-    db.session.delete(todo)
-    db.session.commit()
-    return redirect(url_for("home"))
-
 @app.route('/calendar/<day_hover>/<monthuser>/<yearuser>/delete/<int:todo_id>', methods=['POST', 'GET'])
+@login_required
 def delete_cal(todo_id, day_hover, monthuser, yearuser):
     curr_month = datetime.date.today().strftime("%B")
     day_hover = json.loads(day_hover)
@@ -460,47 +451,6 @@ def delete_cal(todo_id, day_hover, monthuser, yearuser):
     db.session.delete(todo)
     db.session.commit()
     return redirect(url_for("calendarDay", yearuser=yearuser, monthuser=monthuser, day_hover=day_hover, todo_id=todo_id ))
-
-@app.route("/clear")
-def clear():
-    
-    curr_month = datetime.date.today().strftime("%B")
-    curr_year = datetime.date.today().strftime("%Y")
-    now = datetime.datetime.now()
-    curr_day = now.day
-
-    curr_date = f"{curr_month} {curr_day} {curr_year}"
-    home_todo_list = Todo.query.filter_by(date=curr_date).all()  
-    for o in home_todo_list:
-        db.session.delete(o)
-    db.session.commit()
-    return redirect(url_for("home"))
-
-@app.route("/edit/<int:todo_id>", methods=["GET", "POST"])
-@login_required
-def edit(todo_id):
-    
-    form = EditForm()
-    name_to_update = Todo.query.get_or_404(todo_id)
-    if request.method == "POST":
-        name_to_update.name = request.form['name']
-        name_to_update.description = request.form['description']
-        name_to_update.start = request.form['start']
-        try:
-            db.session.commit()
-            flash("Task Updated Successfully!")
-            return render_template("edit.html", 
-            form=form, 
-            name_to_update=name_to_update)
-        except:
-            flash("Error!  Looks like there was a problem... Try again!")
-            return render_template("edit.html", 
-            form=form, 
-            name_to_update=name_to_update)
-    else:
-        return render_template("edit.html", 
-            form=form, 
-            name_to_update=name_to_update)
 
 @app.route("/calendar/<day_hover>/<monthuser>/<yearuser>/edit/<int:todo_id>", methods=["GET", "POST"])
 @login_required
@@ -530,6 +480,47 @@ def edit_cal(todo_id, day_hover, monthuser, yearuser ):
         return render_template("editCal.html", 
             form=form, 
             name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
+
+@app.route("/update/<int:todo_id>")
+@login_required
+def update(todo_id):
+    todo = Todo.query.filter_by(id=todo_id).first()
+    todo.complete = not todo.complete
+    db.session.commit()
+    return redirect(url_for("home"))
+
+@app.route("/delete/<int:todo_id>")
+@login_required
+def delete(todo_id):
+    todo = Todo.query.filter_by(id=todo_id).first()
+    db.session.delete(todo)
+    db.session.commit()
+    return redirect(url_for("home"))
+
+@app.route("/edit/<int:todo_id>", methods=["GET", "POST"])
+@login_required
+def edit(todo_id):
+    form = EditForm()
+    name_to_update = Todo.query.get_or_404(todo_id)
+    if request.method == "POST":
+        name_to_update.name = request.form['name']
+        name_to_update.description = request.form['description']
+        name_to_update.start = request.form['start']
+        try:
+            db.session.commit()
+            flash("Task Updated Successfully!")
+            return render_template("edit.html", 
+            form=form, 
+            name_to_update=name_to_update)
+        except:
+            flash("Error!  Looks like there was a problem... Try again!")
+            return render_template("edit.html", 
+            form=form, 
+            name_to_update=name_to_update)
+    else:
+        return render_template("edit.html", 
+            form=form, 
+            name_to_update=name_to_update)
 
 @app.errorhandler(404)
 @login_required
