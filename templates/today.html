@@ -32,7 +32,7 @@
   </head>
 
 <body>  
-  {{ ckeditor.load() }}
+
   <div class="ui borderless stackable top fixed menu">
     <img src="/static/img/logo.png" style="width: 60px; height: 55px; padding-left: 10px; padding-top: 5px; padding-bottom: 5px; padding-right: 0px;" >
     <div class="item">
@@ -259,8 +259,9 @@
                 <!-- <input  type="text" name="description" autocomplete="off" placeholder="Enter Description" id="description" spellcheck="true" maxlength="600" required> -->
                 {{ form.description( autocomplete="off", placeholder="Enter description", id="description", spellcheck="true") }}
                 <span class="input-group-btn">
-                  <a class="ui white icon button" id="button2"> <i class="microphone icon"></i></a>
+                  <a class="ui icon button" id="button2"> <i class="microphone icon"></i></a>
                 </span>
+                <br>
               </div>
                 <br>
                 <br>
@@ -318,7 +319,6 @@
                 <!-- <button class="ui brown button" type="submit" >Add task</button>  -->
                 {{ form.submit(class="ui brown button") }}        
         </form>
-
         <hr>
         {% for todo in home_todo_list %}
         {% if todo.poster_id == current_user.id %}
@@ -333,7 +333,7 @@
         </table>
 
         <div class="ui compact segment">
-          <p>{{todo.description}}</p>
+          <p>{{todo.description|safe}}</p>
         </div>     
         <style>
           .ui.white.segment.Change:hover  { 

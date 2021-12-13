@@ -215,31 +215,35 @@ def today():
 def add():  
     form = addtaskForm() 
     if request.method == "POST":
-        punctuation='!?,.:;"\')(_-'
-        new_day ='' # Creating empty string
-        for i in form.date.data:
-            if(i not in punctuation):
-                        new_day += i
-        new_day = new_day.split()
+        try:
+            punctuation='!?,.:;"\')(_-'
+            new_day ='' # Creating empty string
+            for i in form.date.data:
+                if(i not in punctuation):
+                            new_day += i
+            new_day = new_day.split()
 
-        month = new_day[0]
-        day = new_day[1]
-        year = new_day[-1]
-        date = f'{month} {day} {year}'
-        todo_list = Todo.query.all()
-        new_todo = Todo(name=form.name.data, complete=False, description=form.description.data, start=form.time.data, date=date, month=month, day=day, year=year, poster_id=current_user.id)
+            month = new_day[0]
+            day = new_day[1]
+            year = new_day[-1]
+            date = f'{month} {day} {year}'
+            todo_list = Todo.query.all()
+            new_todo = Todo(name=form.name.data, complete=False, description=form.description.data, start=form.time.data, date=date, month=month, day=day, year=year, poster_id=current_user.id)
 
-        curr_month = datetime.date.today().strftime("%B")
-        curr_year = datetime.date.today().strftime("%Y")
-        now = datetime.datetime.now()
-        curr_day = now.day
+            curr_month = datetime.date.today().strftime("%B")
+            curr_year = datetime.date.today().strftime("%Y")
+            now = datetime.datetime.now()
+            curr_day = now.day
 
-        curr_date = f"{curr_month} {curr_day} {curr_year}"
-        if date != curr_date:
-            flash(f'Task Added!')
-        db.session.add(new_todo)
-        db.session.commit()
-        return redirect(url_for("today", form=form))
+            curr_date = f"{curr_month} {curr_day} {curr_year}"
+            if date != curr_date:
+                flash(f'Task Added!')
+            db.session.add(new_todo)
+            db.session.commit()
+            return redirect(url_for("today", form=form))
+        except:
+            flash('There was an error when adding your task, Try again')
+            return redirect(url_for("today", form=form))
     else:
         flash('There was an error when adding your task, Try again')
         return redirect(url_for("today", form=form))

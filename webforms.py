@@ -16,7 +16,6 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_mail import Mail, Message
 from flask_migrate import Migrate
 from app import Users
-from flask_ckeditor import CKEditorField
 from wtforms.widgets import  TextArea
 '''
 eval "$(pyenv init -)"
