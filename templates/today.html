@@ -244,7 +244,8 @@
       </script>
           <label>Name</label>
               <div class="input-group">
-                <input  type="text" name="name" autocomplete="off" placeholder="Enter Name" id="name" spellcheck="true" maxlength="120" required>
+                <!-- <input  type="text" name="name" autocomplete="off" placeholder="Enter Name" id="name" spellcheck="true" maxlength="120" required> -->
+                {{ form.name( autocomplete="off", placeholder="Enter Name", id="name", spellcheck="true") }}
                 <span class="input-group-btn">
                   <a class="ui icon button" id="button1"> <i class="microphone icon"></i></a>
                 </span>
@@ -256,6 +257,7 @@
               <label >Description</label>
               <div class="input-group">
                 <!-- <input  type="text" name="description" autocomplete="off" placeholder="Enter Description" id="description" spellcheck="true" maxlength="600" required> -->
+                {{ form.description( autocomplete="off", placeholder="Enter description", id="description", spellcheck="true") }}
                 <span class="input-group-btn">
                   <a class="ui white icon button" id="button2"> <i class="microphone icon"></i></a>
                 </span>
@@ -268,7 +270,8 @@
                   <div class="ui calendar" id="start">
                     <div class="ui input left icon">
                       <i class="time icon"></i>
-                      <input  type="text" name="start" autocomplete="off"  placeholder="Select Time" maxlength="5" required>
+                      <!-- <input  type="text" name="start" autocomplete="off"  placeholder="Select Time" maxlength="5" required> -->
+                      {{ form.time( autocomplete="off", placeholder="Select Start Time") }}
                       <script>
                         $('#start').calendar({
                             ampm: false,
@@ -286,7 +289,8 @@
                     <div class="ui calendar" id="day">
                       <div class="ui input left icon">
                         <i class="calendar icon"></i>
-                        <input type="text" name="day" autocomplete="off" placeholder="Select Date" required>
+                        <!-- <input type="text" name="day" autocomplete="off" placeholder="Select Date" required> -->
+                        {{ form.date( autocomplete="off", placeholder="Select Date") }}
                         <script>
                           const day_options = { 
                               day: 'numeric', 
@@ -311,7 +315,8 @@
                     <br>
             </form>
                 <br>
-                <button class="ui brown button" type="submit" >Add task</button> 
+                <!-- <button class="ui brown button" type="submit" >Add task</button>  -->
+                {{ form.submit(class="ui brown button") }}        
         </form>
 
         <hr>

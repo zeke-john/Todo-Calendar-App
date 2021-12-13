@@ -74,5 +74,9 @@ class RequestResetForm(FlaskForm):
             flash('If an account with this email address exists, a password reset message will be sent shortly.')
             raise ValidationError('If an account with this email address exists, a password reset message will be sent shortly.')
 
-class descriptionForm(FlaskForm):
-    descriptionfield = CKEditorField('description')
+class addtaskForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()])
+    description = StringField("Description", validators=[DataRequired()])
+    time = StringField("Start Time", validators=[DataRequired()])
+    date = StringField("Date", validators=[DataRequired()])
+    submit = SubmitField("Add Task")

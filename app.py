@@ -199,6 +199,7 @@ def reset_token(token):
 @app.route("/today")
 @login_required
 def today():
+    form = addtaskForm() 
     curr_month = datetime.date.today().strftime("%B")
     curr_year = datetime.date.today().strftime("%Y")
     now = datetime.datetime.now()
@@ -206,8 +207,42 @@ def today():
     
     curr_date = f"{curr_month} {curr_day} {curr_year}"
     home_todo_list = Todo.query.filter_by(date=curr_date).all() #where date = to the present
-    return render_template("today.html", home_todo_list=home_todo_list)
+    return render_template("today.html", home_todo_list=home_todo_list, form=form)
 
+
+@app.route("/add", methods=["POST"] )
+@login_required
+def add():  
+    form = addtaskForm() 
+    if request.method == "POST":
+        punctuation='!?,.:;"\')(_-'
+        new_day ='' # Creating empty string
+        for i in form.date.data:
+            if(i not in punctuation):
+                        new_day += i
+        new_day = new_day.split()
+
+        month = new_day[0]
+        day = new_day[1]
+        year = new_day[-1]
+        date = f'{month} {day} {year}'
+        todo_list = Todo.query.all()
+        new_todo = Todo(name=form.name.data, complete=False, description=form.description.data, start=form.time.data, date=date, month=month, day=day, year=year, poster_id=current_user.id)
+
+        curr_month = datetime.date.today().strftime("%B")
+        curr_year = datetime.date.today().strftime("%Y")
+        now = datetime.datetime.now()
+        curr_day = now.day
+
+        curr_date = f"{curr_month} {curr_day} {curr_year}"
+        if date != curr_date:
+            flash(f'Task Added!')
+        db.session.add(new_todo)
+        db.session.commit()
+        return redirect(url_for("today", form=form))
+    else:
+        flash('There was an error when adding your task, Try again')
+        return redirect(url_for("today", form=form))
 
 @app.route("/calendar", methods=["GET", "POST"])
 @login_required
@@ -343,41 +378,6 @@ def change_token(token):
             flash("Your password has been updated, now you can login")
     return render_template("reset_password.html", form=form)
 
-
-@app.route("/add", methods=["POST"] )
-@login_required
-def add():  
-    form = descriptionForm()
-    name = request.form.get("name")
-    description = request.form.get("description")
-    start = request.form.get("start")
-    date = request.form.get("day")
-    
-    punctuation='!?,.:;"\')(_-'
-    new_day ='' # Creating empty string
-    for i in date:
-        if(i not in punctuation):
-                    new_day += i
-    new_day = new_day.split()
-
-    month = new_day[0]
-    day = new_day[1]
-    year = new_day[-1]
-    date = f'{month} {day} {year}'
-    todo_list = Todo.query.all()
-    new_todo = Todo(name=name, complete=False, description=description, start=start, date=date, month=month, day=day, year=year, poster_id=current_user.id)
-
-    curr_month = datetime.date.today().strftime("%B")
-    curr_year = datetime.date.today().strftime("%Y")
-    now = datetime.datetime.now()
-    curr_day = now.day
-
-    curr_date = f"{curr_month} {curr_day} {curr_year}"
-    if date != curr_date:
-        flash(f'Task Added!')
-    db.session.add(new_todo)
-    db.session.commit()
-    return redirect(url_for("today"))
 
 @app.route('/calendar/<day_hover>/<monthuser>/<yearuser>/update/<int:todo_id>', methods=['POST', 'GET'])
 @login_required
