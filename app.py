@@ -15,24 +15,11 @@ from wtforms.fields.html5 import EmailField
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_mail import Mail, Message
 from flask_migrate import Migrate
-'''
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-pyenv activate New-Todo-App
-python3 app.py to run              
-______________________________________
-python3 -m flask db 
-python3 -m flask db migrate -m 'message'
-python3 -m flask db upgrade
-______________________________________
-export PATH=$PATH:/usr/local/mysql/bin/
-sudo mysql -u root -p
-USE users;
-SHOW TABLES;
-SELECT * FROM [table name];
-'''
-app = Flask(__name__)
+from webforms import *
+from flask_ckeditor import CKEditor
 
+app = Flask(__name__)
+ckeditor = CKEditor(app)
 dir_path = os.path.dirname(os.path.realpath(__file__))
 filename = os.path.join(dir_path, 'test_log.log')
 
@@ -104,55 +91,17 @@ class Users(db.Model, UserMixin):
         self.password_hash = generate_password_hash(password)
 
     def verify_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
-class EditForm(FlaskForm):
-    name = StringField("Name", validators=[DataRequired()])
-    description = StringField("Description", validators=[DataRequired()])
-    start = StringField("Start Time", validators=[DataRequired()])
-    submit = SubmitField("Save")
-
-class Sign_up_Form(FlaskForm):
-    name = StringField("Name", validators=[DataRequired()])
-    email = EmailField("Email", validators=[DataRequired(), Email()])
-    password_hash = PasswordField("Password", validators=[DataRequired(), EqualTo('password_hash2', message='passwords must match'), Length(min=8)])
-    password_hash2 = PasswordField("Confirm Password", validators=[DataRequired()])
-    submit = SubmitField("Sign Up")
-
-class UserEditForm(FlaskForm):
-	name = StringField("Name", validators=[DataRequired()])
-	email = EmailField("Email", validators=[DataRequired(), Email()])
-	submit = SubmitField("Save Changes")
-
-class LoginForm(FlaskForm):
-    email = EmailField("Email", validators=[DataRequired(), Email()])
-    password_hash = PasswordField("Password", validators=[DataRequired(), Length(min=8)])
-    submit = SubmitField("Login")
-
-class RequestResetForm(FlaskForm):
-    email = EmailField("Email", validators=[DataRequired(), Email()])
-    submit = SubmitField("Next")
-
-    def validate_email(self, email):
-        user = Users.query.filter_by(email=email.data).first()
-        if user is None:
-            flash('If an account with this email address exists, a password reset message will be sent shortly.')
-            raise ValidationError('If an account with this email address exists, a password reset message will be sent shortly.')
-
-class ResetPasswordForm(FlaskForm):
-    password_hash = PasswordField("New Password", validators=[DataRequired(), EqualTo('password_hash2', message='passwords must match'), Length(min=8)])
-    password_hash2 = PasswordField("Confirm Password", validators=[DataRequired()])
-    submit = SubmitField("Change Password")
+        return check_password_hash(self.password_hash, password) 
 
 @app.route("/")
-def homePage():
-    return render_template("homePage.html")
+def home():
+    return render_template("home.html")
 
 @app.route("/signUp", methods=["GET", "POST"])
 def signUp():
     form = Sign_up_Form()
     if form.password_hash.data != form.password_hash2.data:
-        flash("Passwords Must Match!")
+        flash("Passwords Must Match!") 
     try:
         if len(form.password_hash.data) < 8:
             flash("Passwords must be at least 8 charectars long!")
@@ -182,7 +131,7 @@ def login():
             # checking hash
             if check_password_hash(user.password_hash, form.password_hash.data):
                 login_user(user)
-                return redirect(url_for("home", user_id=current_user.id))
+                return redirect(url_for("today", user_id=current_user.id))
             else:
                 flash("Incorrect Email or Password")
         else:   
@@ -246,47 +195,58 @@ def reset_token(token):
             flash("Your password has been updated, now you can login")
     return render_template("reset_password.html", form=form)
 
-def send_change_email(user):
-    token = user.get_reset_token()
-    msg = Message('Password Change Request', sender="zekejohn118@gmail.com", recipients=[user.email])
 
-    msg.body = f'''To Change your Password for Todo App, visit the link below. It will expire in 5 minutes:
-    {url_for('change_token', token=token, _external = True)}
+@app.route("/today")
+@login_required
+def today():
+    curr_month = datetime.date.today().strftime("%B")
+    curr_year = datetime.date.today().strftime("%Y")
+    now = datetime.datetime.now()
+    curr_day = now.day
     
+    curr_date = f"{curr_month} {curr_day} {curr_year}"
+    home_todo_list = Todo.query.filter_by(date=curr_date).all() #where date = to the present
+    return render_template("today.html", home_todo_list=home_todo_list)
 
-    If you didn't make this request then ignore this email
-    '''
-    mail.send(msg)
 
-@app.route("/change_password", methods=["GET", "POST"])
+@app.route("/calendar", methods=["GET", "POST"])
 @login_required
-def change_request():
-    user = user = Users.query.filter_by(email=current_user.email).first()
-    send_change_email(user)
-    flash("An email has been sent to you to change your password.")
-    return redirect(url_for('editUser', id=current_user.id))    
+def calendar():
+    # need to get all the tasks for each individul day when loaded, most likly by seeing the date they picked when adding task
+    curr_month = datetime.date.today().strftime("%B")
+    curr_year = datetime.date.today().strftime("%Y")
+    now = datetime.datetime.now()
+    curr_day = now.day
+    curr_date = f"{curr_month} {curr_day} {curr_year}"
+    if Todo.date != curr_date:
+        date_of_todo = []
+        calendar_todo_list = Todo.query.filter(Todo.date != curr_date).all()
+        for todos in calendar_todo_list:
+            if todos.poster_id == current_user.id:
+                if str(todos.complete) == 'False':
+                    date_of_todo.append(todos.date)
+                    date_of_todo = date_of_todo
+                if str(todos.complete) == 'True':
+                    comp_date = todos.date + "s" #to diffrentioat between the cmpleted and not
+                    date_of_todo.append(comp_date)
+                    date_of_todo = date_of_todo
+    return render_template("calendar.html", date_of_todo=date_of_todo)      
 
-@app.route("/change_password/<token>", methods=["GET", "POST"])
+@app.route('/calendar/<day_hover>/<monthuser>/<yearuser>', methods=['POST', 'GET'])
 @login_required
-def change_token(token):
-    user = Users.verify_reset_token(token)
-    if user is None: 
-        flash("invalid or expired token")
-        return redirect(url_for('reset_request'))
-    form = ResetPasswordForm()
-    if form.password_hash.data != form.password_hash2.data:
-        flash("Passwords Must Match!")
-    try:
-        if len(form.password_hash.data) < 8:
-            flash("Passwords Must be at least 8 charectars long!")
-    except TypeError:
-        pass
-    if form.validate_on_submit():
-            hashed_pw = generate_password_hash(form.password_hash.data, "sha256")
-            user.password_hash = hashed_pw
-            db.session.commit()
-            flash("Your password has been updated, now you can login")
-    return render_template("reset_password.html", form=form)
+def calendarDay(day_hover, monthuser, yearuser):
+    
+    curr_month = datetime.date.today().strftime("%B")
+    monthuser = curr_month
+    day_hover = json.loads(day_hover)
+    day_hover = day_hover
+    yearuser = json.loads(yearuser)
+    date_user = f"{monthuser} {day_hover} {yearuser}"  
+
+    calendar_todo_list = Todo.query.filter(Todo.date.endswith(date_user)).all()
+
+    return render_template('calendarDay.html', monthuser=monthuser , calendar_todo_list=calendar_todo_list, day_hover=day_hover, yearuser=yearuser)
+
 
 @app.route('/updateUser/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -341,60 +301,53 @@ def deleteUser(id):
             return render_template("signUp.html", 
             form=form, name=name)
 
-@app.route("/today")
-@login_required
-def home():
-    curr_month = datetime.date.today().strftime("%B")
-    curr_year = datetime.date.today().strftime("%Y")
-    now = datetime.datetime.now()
-    curr_day = now.day
+def send_change_email(user):
+    token = user.get_reset_token()
+    msg = Message('Password Change Request', sender="zekejohn118@gmail.com", recipients=[user.email])
+
+    msg.body = f'''To Change your Password for Todo App, visit the link below. It will expire in 5 minutes:
+    {url_for('change_token', token=token, _external = True)}
     
-    curr_date = f"{curr_month} {curr_day} {curr_year}"
-    home_todo_list = Todo.query.filter_by(date=curr_date).all() #where date = to the present
-    return render_template("base.html", home_todo_list=home_todo_list)
 
+    If you didn't make this request then ignore this email
+    '''
+    mail.send(msg)
 
-@app.route("/calendar", methods=["GET", "POST"])
+@app.route("/change_password", methods=["GET", "POST"])
 @login_required
-def calendar():
-    # need to get all the tasks for each individul day when loaded, most likly by seeing the date they picked when adding task
-    curr_month = datetime.date.today().strftime("%B")
-    curr_year = datetime.date.today().strftime("%Y")
-    now = datetime.datetime.now()
-    curr_day = now.day
-    curr_date = f"{curr_month} {curr_day} {curr_year}"
-    if Todo.date != curr_date:
-        date_of_todo = []
-        calendar_todo_list = Todo.query.filter(Todo.date != curr_date).all()
-        for todos in calendar_todo_list:
-            if todos.poster_id == current_user.id:
-                if str(todos.complete) == 'False':
-                    date_of_todo.append(todos.date)
-                    date_of_todo = date_of_todo
-                if str(todos.complete) == 'True':
-                    comp_date = todos.date + "s" #to diffrentioat between the cmpleted and not
-                    date_of_todo.append(comp_date)
-                    date_of_todo = date_of_todo
-    return render_template("calendar.html", date_of_todo=date_of_todo)      
+def change_request():
+    user = user = Users.query.filter_by(email=current_user.email).first()
+    send_change_email(user)
+    flash("An email has been sent to you to change your password.")
+    return redirect(url_for('editUser', id=current_user.id))    
 
-@app.route('/calendar/<day_hover>/<monthuser>/<yearuser>', methods=['POST', 'GET'])
+@app.route("/change_password/<token>", methods=["GET", "POST"])
 @login_required
-def calendarDay(day_hover, monthuser, yearuser):
-    
-    curr_month = datetime.date.today().strftime("%B")
-    monthuser = curr_month
-    day_hover = json.loads(day_hover)
-    day_hover = day_hover
-    yearuser = json.loads(yearuser)
-    date_user = f"{monthuser} {day_hover} {yearuser}"  
+def change_token(token):
+    user = Users.verify_reset_token(token)
+    if user is None: 
+        flash("invalid or expired token")
+        return redirect(url_for('reset_request'))
+    form = ResetPasswordForm()
+    if form.password_hash.data != form.password_hash2.data:
+        flash("Passwords Must Match!")
+    try:
+        if len(form.password_hash.data) < 8:
+            flash("Passwords Must be at least 8 charectars long!")
+    except TypeError:
+        pass
+    if form.validate_on_submit():
+            hashed_pw = generate_password_hash(form.password_hash.data, "sha256")
+            user.password_hash = hashed_pw
+            db.session.commit()
+            flash("Your password has been updated, now you can login")
+    return render_template("reset_password.html", form=form)
 
-    calendar_todo_list = Todo.query.filter(Todo.date.endswith(date_user)).all()
-
-    return render_template('calendarDay.html', monthuser=monthuser , calendar_todo_list=calendar_todo_list, day_hover=day_hover, yearuser=yearuser)
 
 @app.route("/add", methods=["POST"] )
 @login_required
 def add():  
+    form = descriptionForm()
     name = request.form.get("name")
     description = request.form.get("description")
     start = request.form.get("start")
@@ -420,107 +373,137 @@ def add():
     curr_day = now.day
 
     curr_date = f"{curr_month} {curr_day} {curr_year}"
-
+    if date != curr_date:
+        flash(f'Task Added!')
     db.session.add(new_todo)
     db.session.commit()
-    return redirect(url_for("home"))
+    return redirect(url_for("today"))
 
 @app.route('/calendar/<day_hover>/<monthuser>/<yearuser>/update/<int:todo_id>', methods=['POST', 'GET'])
 @login_required
 def update_cal(todo_id, day_hover, monthuser, yearuser):
-    
-    curr_month = datetime.date.today().strftime("%B")
-    day_hover = json.loads(day_hover)
-    monthuser = curr_month
-    yearuser = json.loads(yearuser)
+    post_to_delete = Todo.query.get_or_404(todo_id)
+    id = current_user.id
+    if id == post_to_delete.poster.id:
+        curr_month = datetime.date.today().strftime("%B")
+        day_hover = json.loads(day_hover)
+        monthuser = curr_month
+        yearuser = json.loads(yearuser)
 
-    todo = Todo.query.filter_by(id=todo_id).first()
-    todo.complete = not todo.complete
-    db.session.commit()
-    return redirect(url_for("calendarDay", yearuser=yearuser, monthuser=monthuser, day_hover=day_hover, todo_id=todo_id ))
+        todo = Todo.query.filter_by(id=todo_id).first()
+        todo.complete = not todo.complete
+        db.session.commit()
+        return redirect(url_for("calendarDay", yearuser=yearuser, monthuser=monthuser, day_hover=day_hover, todo_id=todo_id ))
+    else:
+        return redirect(url_for("today"))
 
 @app.route('/calendar/<day_hover>/<monthuser>/<yearuser>/delete/<int:todo_id>', methods=['POST', 'GET'])
 @login_required
 def delete_cal(todo_id, day_hover, monthuser, yearuser):
-    curr_month = datetime.date.today().strftime("%B")
-    day_hover = json.loads(day_hover)
-    monthuser = curr_month
-    yearuser = json.loads(yearuser)
+    post_to_delete = Todo.query.get_or_404(todo_id)
+    id = current_user.id
+    if id == post_to_delete.poster.id:
+        curr_month = datetime.date.today().strftime("%B")
+        day_hover = json.loads(day_hover)
+        monthuser = curr_month
+        yearuser = json.loads(yearuser)
 
-    todo = Todo.query.filter_by(id=todo_id).first()
-    db.session.delete(todo)
-    db.session.commit()
-    return redirect(url_for("calendarDay", yearuser=yearuser, monthuser=monthuser, day_hover=day_hover, todo_id=todo_id ))
+        todo = Todo.query.filter_by(id=todo_id).first()
+        db.session.delete(todo)
+        db.session.commit()
+        return redirect(url_for("calendarDay", yearuser=yearuser, monthuser=monthuser, day_hover=day_hover, todo_id=todo_id ))
+    else:
+        return redirect(url_for("today"))
 
 @app.route("/calendar/<day_hover>/<monthuser>/<yearuser>/edit/<int:todo_id>", methods=["GET", "POST"])
 @login_required
 def edit_cal(todo_id, day_hover, monthuser, yearuser ):
-    curr_month = datetime.date.today().strftime("%B")
-    day_hover = json.loads(day_hover)
-    monthuser = curr_month
-    yearuser = json.loads(yearuser)
-    form = EditForm()
-    name_to_update = Todo.query.get_or_404(todo_id)
-    if request.method == "POST":
-        name_to_update.name = request.form['name']
-        name_to_update.description = request.form['description']
-        name_to_update.start = request.form['start']
-        try:
-            db.session.commit()
-            flash("Task Updated Successfully!")
+    post_to_delete = Todo.query.get_or_404(todo_id)
+    id = current_user.id
+    if id == post_to_delete.poster.id:
+        curr_month = datetime.date.today().strftime("%B")
+        day_hover = json.loads(day_hover)
+        monthuser = curr_month
+        yearuser = json.loads(yearuser)
+        form = EditForm()
+        name_to_update = Todo.query.get_or_404(todo_id)
+        if request.method == "POST":
+            name_to_update.name = request.form['name']
+            name_to_update.description = request.form['description']
+            name_to_update.start = request.form['start']
+            try:
+                db.session.commit()
+                flash("Task Updated Successfully!")
+                return render_template("editCal.html", 
+                form=form, 
+                name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
+            except:
+                flash("Error!  Looks like there was a problem... Try again!")
+                return render_template("editCal.html", 
+                form=form, 
+                name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
+        else:
             return render_template("editCal.html", 
-            form=form, 
-            name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
-        except:
-            flash("Error!  Looks like there was a problem... Try again!")
-            return render_template("editCal.html", 
-            form=form, 
-            name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
+                form=form, 
+                name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
     else:
-        return render_template("editCal.html", 
-            form=form, 
-            name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
+        return redirect(url_for("today"))
 
 @app.route("/update/<int:todo_id>")
 @login_required
-def update(todo_id):
-    todo = Todo.query.filter_by(id=todo_id).first()
-    todo.complete = not todo.complete
-    db.session.commit()
-    return redirect(url_for("home"))
+def update_task(todo_id):
+    post_to_delete = Todo.query.get_or_404(todo_id)
+    id = current_user.id
+    if id == post_to_delete.poster.id:
+        todo = Todo.query.filter_by(id=todo_id).first()
+        todo.complete = not todo.complete
+        db.session.commit()
+        return redirect(url_for("today"))
+    else:
+        return redirect(url_for("today"))
 
 @app.route("/delete/<int:todo_id>")
 @login_required
-def delete(todo_id):
-    todo = Todo.query.filter_by(id=todo_id).first()
-    db.session.delete(todo)
-    db.session.commit()
-    return redirect(url_for("home"))
+def delete_task(todo_id):
+    post_to_delete = Todo.query.get_or_404(todo_id)
+    id = current_user.id
+    if id == post_to_delete.poster.id:
+        todo = Todo.query.filter_by(id=todo_id).first()
+        db.session.delete(todo)
+        db.session.commit()
+        return redirect(url_for("today"))
+    else:
+        return redirect(url_for('today'))
 
 @app.route("/edit/<int:todo_id>", methods=["GET", "POST"])
 @login_required
-def edit(todo_id):
-    form = EditForm()
-    name_to_update = Todo.query.get_or_404(todo_id)
-    if request.method == "POST":
-        name_to_update.name = request.form['name']
-        name_to_update.description = request.form['description']
-        name_to_update.start = request.form['start']
-        try:
-            db.session.commit()
-            flash("Task Updated Successfully!")
-            return render_template("edit.html", 
-            form=form, 
-            name_to_update=name_to_update)
-        except:
-            flash("Error!  Looks like there was a problem... Try again!")
-            return render_template("edit.html", 
-            form=form, 
-            name_to_update=name_to_update)
+def edit_task(todo_id):
+    post_to_delete = Todo.query.get_or_404(todo_id)
+    id = current_user.id
+    if id == post_to_delete.poster.id:
+        form = EditForm()
+        name_to_update = Todo.query.get_or_404(todo_id)
+        if request.method == "POST":
+            name_to_update.name = request.form['name']
+            name_to_update.description = request.form['description']
+            name_to_update.start = request.form['start']
+            try:
+                db.session.commit()
+                flash("Task Updated Successfully!")
+                return render_template("editTask.html", 
+                form=form, 
+                name_to_update=name_to_update)
+            except:
+                flash("Error!  Looks like there was a problem... Try again!")
+                return render_template("editTask.html", 
+                form=form, 
+                name_to_update=name_to_update)
+        else:
+            return render_template("editTask.html", 
+                form=form, 
+                name_to_update=name_to_update)
     else:
-        return render_template("edit.html", 
-            form=form, 
-            name_to_update=name_to_update)
+        return redirect(url_for("today"))
 
 @app.errorhandler(404)
 @login_required
