@@ -42,7 +42,7 @@
         </div>
     </a>
     </div>
-    <a class="ui header active item" style="font-weight: 300; font-size: 16px;" href="/today ">Today</a>
+    <a class="ui header active item" style="font-weight: 300; font-size: 16px;" href="/today">Today</a>
     <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/calendar ">Calendar</a>
     <div class="right menu"  style="padding-right: 10px;" >
       <div class="ui secondary simple dropdown item">
@@ -316,8 +316,8 @@
                     <br>
             </form>
                 <br>
-                <!-- <button class="ui brown button" type="submit" >Add task</button>  -->
                 {{ form.submit(class="ui brown button") }}        
+                <a class="ui yellow button" href="/notes/{{current_user.id}}">Take a quick note</a> 
         </form>
         <hr>
         {% for todo in home_todo_list %}
@@ -375,7 +375,6 @@
             }
                 var time = "{{todo.start}}"
                 userTime = convertTime12To24(time)
-                console.log(userTime)
                 // get current miltary time
                 var now = new Date();
                 var minutes = now.getMinutes();
@@ -405,23 +404,6 @@
               //console.log(userHour)
               userMin = $.trim(arr[1]);
               //console.log(userMin)
-  
-            function refreshAt(hours, minutes, seconds) {
-              var now = new Date();
-              var then = new Date();
-
-              if(now.getHours() > hours ||
-                  (now.getHours() == hours && now.getMinutes() > minutes) ||
-                  now.getHours() == hours && now.getMinutes() == minutes && now.getSeconds() >= seconds) {
-                  then.setDate(now.getDate() + 1);
-              }
-              then.setHours(hours);
-              then.setMinutes(minutes);
-              then.setSeconds(seconds);
-
-              var timeout = (then.getTime() - now.getTime());
-              setTimeout(function() { window.location.reload(true); }, timeout);
-          }
 
             var name = "{{todo.name}}"
             //console.log(name)
@@ -437,7 +419,7 @@
                 notification.close();
               }
             }
-    
+            
             if (Notification.permission === "granted"){
               //showNotification()
             }
@@ -450,10 +432,10 @@
           }
 
             refreshAt(userHour,userMin, 0);
-
+          
             if (complete == false && userTime == time){
-              //console.log(complete)
               showNotification()
+              
             }
 
         </script>

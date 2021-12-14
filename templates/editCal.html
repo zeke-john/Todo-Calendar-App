@@ -103,7 +103,7 @@
                     <input  type="text" name="start" autocomplete="off" placeholder="Edit Start Time" id="start" maxlength="150" value="{{name_to_update.start}}"required>
                     <script>
                         $('#start').calendar({
-                            ampm: false,
+                            ampm: true,
                             type: 'time',
                             onChange: function (time, text) {
                                 var newValue = text;
@@ -117,9 +117,8 @@
         
         <br>
             </form>
-                <button class="ui brown button" type="submit" >Save</button>
+                <button class="ui fluid brown button" type="submit" >Save</button>
         </form>
-        <hr>
 
     </div>
 </body>

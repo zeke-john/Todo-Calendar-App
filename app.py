@@ -254,7 +254,7 @@ def calendar():
     curr_month = datetime.date.today().strftime("%B")
     curr_year = datetime.date.today().strftime("%Y")
     now = datetime.datetime.now()
-    curr_day = now.days
+    curr_day = now.day
     curr_date = f"{curr_month} {curr_day} {curr_year}"
     if Todo.date != curr_date:
         date_of_todo = []
@@ -507,6 +507,14 @@ def edit_task(todo_id):
                 name_to_update=name_to_update)
     else:
         return redirect(url_for("today"))
+
+@app.route("/notes/<int:id>")
+@login_required
+def notes(id):
+    if id != current_user.id:
+        return redirect(url_for('login'))
+    if id == current_user.id:
+        return render_template("notes.html")
 
 @app.errorhandler(404)
 @login_required
