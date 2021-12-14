@@ -275,7 +275,7 @@
                       {{ form.time( autocomplete="off", placeholder="Select Start Time") }}
                       <script>
                         $('#start').calendar({
-                            ampm: false,
+                            ampm: true  ,
                             type: 'time',
                             onChange: function (time, text) {
                               var newValue = text;
@@ -361,14 +361,27 @@
             <a class="ui google plus  button" href="/delete/{{ todo.id }}"> Remove</a>
             <a class="ui black icon button" href="{{url_for('edit_task', todo_id=todo.id )}}"> <i class="edit icon"></i></a>
           <script>
-
+            function convertTime12To24(time) {
+                var hours   = Number(time.match(/^(\d+)/)[1]);
+                var minutes = Number(time.match(/:(\d+)/)[1]);
+                var AMPM    = time.match(/\s(.*)$/)[1];
+                if (AMPM === "PM" && hours < 12) hours = hours + 12;
+                if (AMPM === "AM" && hours === 12) hours = hours - 12;
+                var sHours   = hours.toString();
+                var sMinutes = minutes.toString();
+                if (hours < 10) sHours = "0" + sHours;
+                if (minutes < 10) sMinutes = "0" + sMinutes;
+                return (sHours + ":" + sMinutes);
+            }
+                var time = "{{todo.start}}"
+                userTime = convertTime12To24(time)
+                console.log(userTime)
                 // get current miltary time
                 var now = new Date();
                 var minutes = now.getMinutes();
                 var done_minutes = minutes < 10 ? '0' + minutes : minutes;
                 var time = [
                   now.getHours(), ':', done_minutes,].join('');
-                var userTime = "{{todo.start}}"
 
                 function refreshAt(hours, minutes, seconds) {
                   var now = new Date();

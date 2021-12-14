@@ -5,7 +5,7 @@ import os
 import datetime
 import json
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, ValidationError
+from wtforms import StringField, SubmitField, PasswordField, ValidationError, TimeField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 from flask import jsonify
 import calendar as cal
