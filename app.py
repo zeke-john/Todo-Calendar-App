@@ -103,8 +103,8 @@ def signUp():
     if form.password_hash.data != form.password_hash2.data:
         flash("Passwords Must Match!") 
     try:
-        if len(form.password_hash.data) < 8:
-            flash("Passwords must be at least 8 charectars long!")
+        if len(form.password_hash.data) < 10:
+            flash("Passwords must be at least 10 charectars long!")
     except TypeError:
         pass
     if form.validate_on_submit():
@@ -227,7 +227,6 @@ def add():
             day = new_day[1]
             year = new_day[-1]
             date = f'{month} {day} {year}'
-            todo_list = Todo.query.all()
             new_todo = Todo(name=form.name.data, complete=False, description=form.description.data, start=form.time.data, date=date, month=month, day=day, year=year, poster_id=current_user.id)
 
             curr_month = datetime.date.today().strftime("%B")
@@ -255,7 +254,7 @@ def calendar():
     curr_month = datetime.date.today().strftime("%B")
     curr_year = datetime.date.today().strftime("%Y")
     now = datetime.datetime.now()
-    curr_day = now.day
+    curr_day = now.days
     curr_date = f"{curr_month} {curr_day} {curr_year}"
     if Todo.date != curr_date:
         date_of_todo = []
@@ -371,8 +370,8 @@ def change_token(token):
     if form.password_hash.data != form.password_hash2.data:
         flash("Passwords Must Match!")
     try:
-        if len(form.password_hash.data) < 8:
-            flash("Passwords Must be at least 8 charectars long!")
+        if len(form.password_hash.data) < 10:
+            flash("Passwords Must be at least 10 charectars long!")
     except TypeError:
         pass
     if form.validate_on_submit():
