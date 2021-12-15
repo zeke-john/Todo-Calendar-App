@@ -23,7 +23,7 @@ ckeditor = CKEditor(app)
 dir_path = os.path.dirname(os.path.realpath(__file__))
 filename = os.path.join(dir_path, 'test_log.log')
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:CAez0208@localhost/users'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:CAez0208@localhost/users?charset=utf8mb4'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -51,7 +51,7 @@ class Todo(db.Model):
     name = db.Column(db.String(50), nullable=False)
     complete = db.Column(db.Boolean)
     description = db.Column(db.String(150), nullable=False)
-    start = db.Column(db.String(150), nullable=False)
+    start = db.Column(db.String(150))
     date = db.Column(db.String(150), nullable=False)
     day = db.Column(db.String(150), nullable=False)
     month = db.Column(db.String(150), nullable=False)
@@ -59,6 +59,10 @@ class Todo(db.Model):
     #create forenign key to link users to tasks
     poster_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
+class Notes(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    description = db.Column(db.Text(16382))
 
 class Users(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -236,7 +240,7 @@ def add():
 
             curr_date = f"{curr_month} {curr_day} {curr_year}"
             if date != curr_date:
-                flash(f'Task Added!')
+                flash(f'Task Added')
             db.session.add(new_todo)
             db.session.commit()
             return redirect(url_for("today", form=form))
@@ -246,6 +250,96 @@ def add():
     else:
         flash('There was an error when adding your task, Try again')
         return redirect(url_for("today", form=form))
+
+@app.route("/notes/<int:id>" , methods=["POST", "GET"])
+@login_required
+def notes(id):
+    form = addNotes()
+    name_to_update = Notes.query.get_or_404(id)
+
+    if id != current_user.id:
+        return redirect(url_for('login'))
+    try:
+        return render_template("notes.html", form=form, name='joe')
+    except:
+        flash("test name")
+
+@app.route("/notes/add" , methods=["POST", "GET"])
+@login_required
+def notesAdd():
+    form = addNotes()
+    if request.method == "POST":
+        try:
+            new_note = Notes(name=form.name.data, description=form.description.data)
+            db.session.add(new_note)
+            db.session.commit()
+            flash("Note Saved")
+            return redirect(url_for("notes", form=form, id=current_user.id, name='name_to_update'))
+        except:
+            flash("There was an error when saving your note, Try again")
+            return redirect(url_for("notes", form=form, id=current_user.id, name='name_to_update'))
+    else:
+        flash("There was an error when saving your note, Try again")
+        return redirect(url_for("notes", form=form, id=current_user.id, name='name_to_update'))
+
+@app.route("/edit/<int:todo_id>", methods=["GET", "POST"])
+@login_required
+def edit_task(todo_id):
+    post_to_delete = Todo.query.get_or_404(todo_id)
+    id = current_user.id
+    if id == post_to_delete.poster.id:
+        form = EditForm()
+        name_to_update = Todo.query.get_or_404(todo_id)
+        if request.method == "POST":
+            name_to_update.name = request.form['name']
+            name_to_update.description = request.form['description']
+            name_to_update.start = request.form['start']
+            try:
+                db.session.commit()
+                flash("Task Updated Successfully")
+                return render_template("editTask.html", 
+                form=form, 
+                name_to_update=name_to_update)
+            except:
+                flash("Error!  Looks like there was a problem... Try again!")
+                return render_template("editTask.html", 
+                form=form, 
+                name_to_update=name_to_update)
+        else:
+            return render_template("editTask.html", 
+                form=form, 
+                name_to_update=name_to_update)
+    else:
+        return redirect(url_for("today"))
+
+@app.route('/updateUser/<int:id>', methods=['GET', 'POST'])
+@login_required
+def editUser(id):
+    if id != current_user.id:
+        return redirect(url_for('login'))
+    else:
+        form = UserEditForm()
+        name_to_update = Users.query.get_or_404(id)
+        if request.method == "POST":
+            name_to_update.name = request.form['name']
+            name_to_update.email = request.form['email']
+            try:
+                db.session.commit()
+                flash("Account Info Updated Successfully")
+                return render_template("editUser.html", 
+                    form=form,
+                    name_to_update = name_to_update, id=id)
+            except:
+                flash("Error!  Looks like there was a problem... Try again!")
+                return render_template("editUser.html", 
+                    form=form,
+                    name_to_update = name_to_update,
+                    id=id)
+        else:
+            return render_template("editUser.html", 
+                    form=form,
+                    name_to_update = name_to_update,
+                    id = id)
 
 @app.route("/calendar", methods=["GET", "POST"])
 @login_required
@@ -285,35 +379,6 @@ def calendarDay(day_hover, monthuser, yearuser):
 
     return render_template('calendarDay.html', monthuser=monthuser , calendar_todo_list=calendar_todo_list, day_hover=day_hover, yearuser=yearuser)
 
-
-@app.route('/updateUser/<int:id>', methods=['GET', 'POST'])
-@login_required
-def editUser(id):
-    if id != current_user.id:
-        return redirect(url_for('login'))
-    else:
-        form = UserEditForm()
-        name_to_update = Users.query.get_or_404(id)
-        if request.method == "POST":
-            name_to_update.name = request.form['name']
-            name_to_update.email = request.form['email']
-            try:
-                db.session.commit()
-                flash("Account Info Updated Successfully!")
-                return render_template("editUser.html", 
-                    form=form,
-                    name_to_update = name_to_update, id=id)
-            except:
-                flash("Error!  Looks like there was a problem... Try again!")
-                return render_template("editUser.html", 
-                    form=form,
-                    name_to_update = name_to_update,
-                    id=id)
-        else:
-            return render_template("editUser.html", 
-                    form=form,
-                    name_to_update = name_to_update,
-                    id = id)
 
 @app.route('/deleteUser/<int:id>')
 @login_required
@@ -436,7 +501,7 @@ def edit_cal(todo_id, day_hover, monthuser, yearuser ):
             name_to_update.start = request.form['start']
             try:
                 db.session.commit()
-                flash("Task Updated Successfully!")
+                flash("Task Updated Successfully")
                 return render_template("editCal.html", 
                 form=form, 
                 name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
@@ -478,53 +543,45 @@ def delete_task(todo_id):
     else:
         return redirect(url_for('today'))
 
-@app.route("/edit/<int:todo_id>", methods=["GET", "POST"])
-@login_required
-def edit_task(todo_id):
-    post_to_delete = Todo.query.get_or_404(todo_id)
-    id = current_user.id
-    if id == post_to_delete.poster.id:
-        form = EditForm()
-        name_to_update = Todo.query.get_or_404(todo_id)
-        if request.method == "POST":
-            name_to_update.name = request.form['name']
-            name_to_update.description = request.form['description']
-            name_to_update.start = request.form['start']
-            try:
-                db.session.commit()
-                flash("Task Updated Successfully!")
-                return render_template("editTask.html", 
-                form=form, 
-                name_to_update=name_to_update)
-            except:
-                flash("Error!  Looks like there was a problem... Try again!")
-                return render_template("editTask.html", 
-                form=form, 
-                name_to_update=name_to_update)
-        else:
-            return render_template("editTask.html", 
-                form=form, 
-                name_to_update=name_to_update)
-    else:
-        return redirect(url_for("today"))
-
-@app.route("/notes/<int:id>")
-@login_required
-def notes(id):
-    if id != current_user.id:
-        return redirect(url_for('login'))
-    if id == current_user.id:
-        return render_template("notes.html")
-
 @app.errorhandler(404)
-@login_required
 def page_not_found(e):
     return render_template("404.html")
 
 @app.errorhandler(500)
-@login_required
 def page_not_found(e):
     return render_template("500.html")
+
+@app.errorhandler(401)
+def page_not_found(e):
+    return render_template("401.html")
+
+@app.errorhandler(400)
+def page_not_found(e):
+    return render_template("400.html")
+
+@app.errorhandler(403)
+def page_not_found(e):
+    return render_template("403.html")
+
+@app.errorhandler(403)
+def page_not_found(e):
+    return render_template("403.html")
+
+@app.errorhandler(408)
+def page_not_found(e):
+    return render_template("408.html")
+
+@app.errorhandler(501)
+def page_not_found(e):
+    return render_template("501.html")
+
+@app.errorhandler(502)
+def page_not_found(e):
+    return render_template("502.html")
+
+@app.errorhandler(503)
+def page_not_found(e):
+    return render_template("503.html")
 
 if __name__ == "__main__":
     db.create_all()

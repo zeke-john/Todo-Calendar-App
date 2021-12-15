@@ -16,7 +16,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_mail import Mail, Message
 from flask_migrate import Migrate
 from app import Users
-from wtforms.widgets import  TextArea
+from wtforms.widgets import TextArea   
 '''
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
@@ -32,12 +32,13 @@ sudo mysql -u root -p
 USE users;
 SHOW TABLES;
 SELECT * FROM [table name];
+SHOW COLUMNS FROM table_name IN database_name;
 '''
 
 class EditForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
     description = StringField("Description", validators=[DataRequired()])
-    start = StringField("Start Time", validators=[DataRequired()])
+    start = StringField("Start Time")
     submit = SubmitField("Save")
 
 class Sign_up_Form(FlaskForm):
@@ -66,7 +67,7 @@ class ResetPasswordForm(FlaskForm):
 class RequestResetForm(FlaskForm):
     email = EmailField("Email", validators=[DataRequired(), Email()])
     submit = SubmitField("Next")
-
+    
     def validate_email(self, email):
         user = Users.query.filter_by(email=email.data).first()
         if user is None:
@@ -76,6 +77,11 @@ class RequestResetForm(FlaskForm):
 class addtaskForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
     description = StringField("Description", validators=[DataRequired()])
-    time = StringField("Start Time", validators=[DataRequired()])
+    time = StringField("Start Time")
     date = StringField("Date", validators=[DataRequired()])
     submit = SubmitField("Add Task")
+
+class addNotes(FlaskForm):
+    name = StringField("Name")
+    description = StringField("Description", widget=TextArea())
+    submit = SubmitField("Save")

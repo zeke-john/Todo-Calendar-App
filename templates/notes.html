@@ -31,6 +31,7 @@
         <link rel="stylesheet" href="/static/styles/notes.css">
 </head>
 <body>
+<form class="form" action="/notes/add" method="post" >
 <div class="ui borderless stackable top fixed menu">
     <img src="/static/img/logo.png" style="width: 60px; height: 55px; padding-left: 10px; padding-top: 5px; padding-bottom: 5px; padding-right: 0px;" >
     <div class="item">
@@ -43,6 +44,7 @@
     <a class="ui header item" style="font-weight: 300; font-size: 16px;" href="/today">Today</a>
     <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/calendar ">Calendar</a>
     <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/today">Back</a>
+    {{ form.submit(class="ui active header item",  style="font-weight: 300; font-size: 16px;") }} 
     <div class="right menu"  style="padding-right: 10px;" >
         <div class="ui secondary simple dropdown item">
         <a style="font-weight: 300; font-size: 16px; color: black;"> ‎ ‎ ‎ ‎ ‎‎‎ {{current_user.name}}  ‎ ‎ ‎ ‎ ‎‎‎</a> 
@@ -55,15 +57,39 @@
     
     </div>
     <div style="margin-top: 95px;" class="ui container">
+        {% for message in get_flashed_messages() %}
+        <div class="ui center aligned teal message">
+            <i class="close icon"></i>
+            <div>
+                <h3 style="color: black;">
+                    {{message}}
+                </h3>
+            </div>
+            <script>
+                $('.message .close')
+                    .on('click', function() {
+                        $(this)
+                        .closest('.message')
+                        .transition('fade')
+                        ;
+                    })
+                    ;
+            </script>
+        </div>
+    {% endfor %}
+    
+
     <div class="notes" id="app">
         <div class="notes__preview">
-            <input class="notes__title" type="text" placeholder="Notes">
-            <textarea class="notes__body" rows="200" cols="200"></textarea>
-            <div hidden="hidden" class="notes__list"></div>
-            <button hidden="hidden" class="notes__add" type="button">Add Note</button>
+            <br>
+            <br>
+            
+            {{ form.name( autocomplete="off", class="notes__title", type="text", placeholder='Notes', value=name) }}
+            
+            {{ form.description( id="txtid", rows="200", cols="200", class="notes__body", placeholder="graphic design is my passion") }}
         </div>
     </div>
+    </form>
 </div>
-    <script src="/static/jsp/mainNotes.js" type="module"></script>
 </body>
 </html>

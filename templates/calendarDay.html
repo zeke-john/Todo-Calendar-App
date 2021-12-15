@@ -73,14 +73,22 @@
                 {% for todo in calendar_todo_list %}
                 {% if todo.poster_id == current_user.id %}
                 <div class="ui white segment Change">
-                    <table class="ui celled table">
+                <table class="ui celled table">
                     <body>
-                    <tr>    
-                        <td class="thirteen wide column"><h4> ㅤ{{todo.name}} </h4></td>
-                        <td class="one wide column"> <h4>ㅤ{{todo.start}} </h4></td>
-                    </tr>
-                </body>
-                </table>
+                    <tr> 
+                        {% if todo.start == '' %}
+                            <td class="thirteen wide column"><h4> ㅤ{{todo.name}} </a></h4></td>
+                        </tr>
+                        </body>
+                    </table>
+                        {% endif %}
+                        {% if todo.start != '' %}
+                        <td class="thirteen wide column"><h4> ㅤ{{todo.name}} </a></h4></td>
+                        <td class="one wide column"> <h5>ㅤ {{todo.start}} </h5></td>
+                        </tr>
+                    </body>
+                    </table>
+                        {% endif %}
                 <div class="ui compact segment">
                 <p>{{todo.description}}</p>
                 </div>     
