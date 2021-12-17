@@ -28,8 +28,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-SECRET_KEY = os.urandom(24)
-app.config['SECRET_KEY'] = SECRET_KEY
+app.config['SECRET_KEY'] = '\xa1\x84\xce\xd8\xe8\xf2Z\xdfz\xa3p\x95S\x1e@9J\xa0R\xa4"\xca={'
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -62,7 +61,7 @@ class Todo(db.Model):
 class Notes(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
-    description = db.Column(db.Text(16382))
+    description = db.Column(db.String(1900))
 
 class Users(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -132,7 +131,6 @@ def login():
     if form.validate_on_submit():
         user = Users.query.filter_by(email=form.email.data).first()
         if user:
-            # checking hash
             if check_password_hash(user.password_hash, form.password_hash.data):
                 login_user(user)
                 return redirect(url_for("today", user_id=current_user.id))
@@ -250,37 +248,6 @@ def add():
     else:
         flash('There was an error when adding your task, Try again')
         return redirect(url_for("today", form=form))
-
-@app.route("/notes/<int:id>" , methods=["POST", "GET"])
-@login_required
-def notes(id):
-    form = addNotes()
-    name_to_update = Notes.query.get_or_404(id)
-
-    if id != current_user.id:
-        return redirect(url_for('login'))
-    try:
-        return render_template("notes.html", form=form, name='joe')
-    except:
-        flash("test name")
-
-@app.route("/notes/add" , methods=["POST", "GET"])
-@login_required
-def notesAdd():
-    form = addNotes()
-    if request.method == "POST":
-        try:
-            new_note = Notes(name=form.name.data, description=form.description.data)
-            db.session.add(new_note)
-            db.session.commit()
-            flash("Note Saved")
-            return redirect(url_for("notes", form=form, id=current_user.id, name='name_to_update'))
-        except:
-            flash("There was an error when saving your note, Try again")
-            return redirect(url_for("notes", form=form, id=current_user.id, name='name_to_update'))
-    else:
-        flash("There was an error when saving your note, Try again")
-        return redirect(url_for("notes", form=form, id=current_user.id, name='name_to_update'))
 
 @app.route("/edit/<int:todo_id>", methods=["GET", "POST"])
 @login_required

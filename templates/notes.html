@@ -31,7 +31,7 @@
         <link rel="stylesheet" href="/static/styles/notes.css">
 </head>
 <body>
-<form class="form" action="/notes/add" method="post" >
+<form class="form" action='/notes/add' method="POST" >
 <div class="ui borderless stackable top fixed menu">
     <img src="/static/img/logo.png" style="width: 60px; height: 55px; padding-left: 10px; padding-top: 5px; padding-bottom: 5px; padding-right: 0px;" >
     <div class="item">
@@ -47,7 +47,7 @@
     {{ form.submit(class="ui active header item",  style="font-weight: 300; font-size: 16px;") }} 
     <div class="right menu"  style="padding-right: 10px;" >
         <div class="ui secondary simple dropdown item">
-        <a style="font-weight: 300; font-size: 16px; color: black;"> ‎ ‎ ‎ ‎ ‎‎‎ {{current_user.name}}  ‎ ‎ ‎ ‎ ‎‎‎</a> 
+            <a style="font-weight: 300; font-size: 16px; color: black;">‎‎‎ ‎ ‎ ‎ ‎‎‎ ‎‎‎ ‎‎‎ ‎‎‎ ‎ ‎‎{{current_user.name}}‎‎‎ ‎‎‎  ‎‎‎ ‎‎‎ ‎ ‎ ‎ ‎ ‎‎‎</a> 
         <div class="ui simple menu">
             <a class="item"  href='/logout '>Logout</a>
             <a class="item"  href='/userInfo '>Account Info</a>
@@ -84,9 +84,9 @@
             <br>
             <br>
             
-            {{ form.name( autocomplete="off", class="notes__title", type="text", placeholder='Notes', value=name) }}
+            {{ form.name( autocomplete="off", class="notes__title", type="text", placeholder='Notes') }}
             
-            {{ form.description( id="txtid", rows="200", cols="200", class="notes__body", placeholder="graphic design is my passion") }}
+            {{ form.description( id="txtid", rows="200", cols="200", class="notes__body", placeholder="enter anything you want") }}
         </div>
     </div>
     </form>

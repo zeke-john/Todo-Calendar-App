@@ -41,8 +41,8 @@
         <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/calendar ">Calendar</a>
         <a class="item" style="font-weight: 300; font-size: 16px;" href='/userInfo'>Back</a>
         <div class="right menu"  style="padding-right: 10px;" >
-            <div class="ui secondary simple dropdown item">
-            <a style="font-weight: 300; font-size: 16px; color: black;"> ‎ ‎ ‎ ‎ ‎‎‎ {{current_user.name}}  ‎ ‎ ‎ ‎ ‎‎‎</a> 
+            <div class="ui simple dropdown link item">
+            <a style="font-weight: 300; font-size: 16px; color: black;">‎‎‎ ‎ ‎ ‎ ‎‎‎ ‎‎‎ ‎‎‎ ‎‎‎ ‎ ‎‎{{current_user.name}}‎‎‎ ‎‎‎  ‎‎‎ ‎‎‎ ‎ ‎ ‎ ‎ ‎‎‎</a> 
             <div class="ui simple menu">
                 <a class="item"  href='/logout '>Logout</a>
                 <a class="item"  href='/userInfo '>Account Info</a>
@@ -113,13 +113,12 @@
                         {{ form.email(class="ui input", autocomplete="off", placeholder="Email", value=name_to_update.email) }}
                         <i class="mail icon"></i>
                     </div>
-                    <br>
-                    <br>
-                    <a class="ui fluid large teal button" href="/change_password">Change Password</a><br>
                 </div>
                 <div class="field">
                     {{ form.submit(class="ui fluid large blue button") }}
                 </div>
+                <br>
+                <a class="ui fluid large teal button" href="/change_password">Change Password</a><br>
 
         </form>
 </body>
