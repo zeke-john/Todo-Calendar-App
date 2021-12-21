@@ -318,7 +318,8 @@ def notesAdd():
                 notes = Notes.query.first()
                 notes.name = form.name.data
                 notes.description = form.description.data
-                new_note = Notes(name=notes.name, description=notes.description)    
+                new_note = Notes(name=notes.name, description=notes.description)   
+                db.session.add(new_note)
                 class addNotes(FlaskForm):
                     notes_list = Notes.query.all()
                     for notes in notes_list:
