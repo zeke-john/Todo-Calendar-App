@@ -33,17 +33,6 @@ USE users;
 SHOW TABLES;
 SELECT * FROM [table name];
 SHOW COLUMNS FROM table_name IN database_name;
-______________________________________
-MEMES FOR DA BOIS
-Why can't python functions hear? Because they're def
-What's the 2nd movie about a database engineer called? The SQL
-What’s the object-oriented way to become wealthy? Inheritance 
-Why did the programmer quit his job? Because he didn't get arrays.
-I would've liked to tell you an infinite loop joke but I'm afraid you'll never hear the end of it
-Why did MongoDB eat alone? Because it didn’t know how to join tables
-Why was the Linux user’s house so hot in the summer? Cause he didn't have Windows.
-Why do programmers prefer dark mode? Because light attracts bugs.
-What did True say to False? Stop boolean me
 '''
 
 class EditForm(FlaskForm):
@@ -91,8 +80,3 @@ class addtaskForm(FlaskForm):
     time = StringField("Start Time")
     date = StringField("Date", validators=[DataRequired()])
     submit = SubmitField("Add Task")
-
-class addNotes(FlaskForm):
-    name = StringField("Name")
-    description = StringField("Description", widget=TextArea())
-    submit = SubmitField("Save")

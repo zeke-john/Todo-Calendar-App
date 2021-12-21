@@ -17,6 +17,7 @@ from flask_mail import Mail, Message
 from flask_migrate import Migrate
 from webforms import *
 from flask_ckeditor import CKEditor
+from wtforms.widgets import TextArea   
 
 app = Flask(__name__)
 ckeditor = CKEditor(app)
@@ -248,6 +249,96 @@ def add():
     else:
         flash('There was an error when adding your task, Try again')
         return redirect(url_for("today", form=form))
+
+@app.route("/notes/<int:id>" , methods=["POST", "GET"])
+@login_required
+def notes(id):
+    class addNotes(FlaskForm):
+        notes_list = Notes.query.all()
+        if notes_list != []:
+            for notes in notes_list:
+                description = notes.description
+                name = notes.name
+                name = StringField("Name",  default=notes.name)
+                description = StringField("Description", widget=TextArea(),  default=notes.description)
+                submit = SubmitField("Save")
+        else:
+            description = 'do something!'
+            name = 'Notes'
+            name = StringField("Name",  default=name)
+            description = StringField("Description", widget=TextArea(),  default=description)
+            submit = SubmitField("Save")
+
+    if id != current_user.id:
+        return redirect(url_for('login'))
+    form = addNotes()
+    return render_template("notes.html", form=form)
+
+@app.route("/notes/add" , methods=["POST", "GET"])
+@login_required
+def notesAdd():
+    class addNotes(FlaskForm):
+        notes_list = Notes.query.all()
+        if notes_list != []:
+            for notes in notes_list:
+                description = notes.description
+                name = notes.name
+                name = StringField("Name",  default=notes.name)
+                description = StringField("Description", widget=TextArea(),  default=notes.description)
+                submit = SubmitField("Save")
+        else:
+            description = 'do something!'
+            name = 'Notes'
+            name = StringField("Name",  default=name)
+            description = StringField("Description", widget=TextArea(),  default=description)
+            submit = SubmitField("Save")
+    form = addNotes()
+    if request.method == "POST":
+        try:
+            notes_list = Notes.query.all()
+            print(notes_list)
+            if notes_list == []:
+                new_note = Notes(name=form.name.data, description=form.description.data)
+                notes = Notes.query.first()
+                db.session.add(new_note)
+                class addNotes(FlaskForm):
+                    notes_list = Notes.query.all()
+                    for notes in notes_list:
+                        description = notes.description
+                        name = notes.name
+                        print(name)
+                        print(description)
+                        name = StringField("Name",  default=notes.name)
+                        description = StringField("Description", widget=TextArea(),  default=notes.description)
+                        submit = SubmitField("Save")
+                db.session.commit()
+                flash("Note Saved")
+                return redirect(url_for("notes", form=form, id=current_user.id, name=form.name.data, description=form.description.data))
+            else:
+                notes = Notes.query.first()
+                notes.name = form.name.data
+                notes.description = form.description.data
+                new_note = Notes(name=notes.name, description=notes.description)    
+                class addNotes(FlaskForm):
+                    notes_list = Notes.query.all()
+                    for notes in notes_list:
+                        description = notes.description
+                        name = notes.name
+                        print(name)
+                        print(description)
+                        name = StringField("Name",  default=notes.name)
+                        description = StringField("Description", widget=TextArea(),  default=notes.description)
+                        submit = SubmitField("Save")
+                db.session.commit()
+                flash("Note Saved")
+                return redirect(url_for("notes", form=form, id=current_user.id, name=notes.name, description=notes.description))
+        except:
+            flash("There was an error when saving your note, Try again")
+            return redirect(url_for("notes", form=form, id=current_user.id))
+    else:
+        flash("There was an error when saving your note, Try again")
+        return redirect(url_for("notes", form=form, id=current_user.id))
+
 
 @app.route("/edit/<int:todo_id>", methods=["GET", "POST"])
 @login_required

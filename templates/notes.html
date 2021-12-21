@@ -73,20 +73,17 @@
                         .transition('fade')
                         ;
                     })
-                    ;
+                    ;   
             </script>
         </div>
     {% endfor %}
     
-
     <div class="notes" id="app">
         <div class="notes__preview">
             <br>
             <br>
-            
             {{ form.name( autocomplete="off", class="notes__title", type="text", placeholder='Notes') }}
-            
-            {{ form.description( id="txtid", rows="200", cols="200", class="notes__body", placeholder="enter anything you want") }}
+            {{ form.description( autocomplete="off", rows="200", cols="200", class="notes__body", placeholder="do something!") }}
         </div>
     </div>
     </form>
