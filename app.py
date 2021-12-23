@@ -315,9 +315,14 @@ def notesAdd():
                 new_note = Notes(name=form.name.data, description=form.description.data, poster_notes_id=poster_notes)
                 notes = Notes.query.first()
                 db.session.add(new_note)
-                db.session.commit()
-                flash("Note Saved")
-                return redirect(url_for("notes", form=form, id=current_user.id, name=form.name.data, description=form.description.data))
+                try:
+                    db.session.commit()
+                    flash("Note Saved")
+                    return redirect(url_for("notes", form=form, id=current_user.id, name=form.name.data, description=form.description.data))
+                except:
+                    db.session.rollback()
+                    flash("There was an error when saving your note, Try again")
+                    return redirect(url_for("notes", form=form, id=current_user.id))
             else:
                 notes = Notes.query.first()
                 notes.name = form.name.data
@@ -325,9 +330,14 @@ def notesAdd():
                 poster_notes = current_user.id
                 new_note = Notes(name=notes.name, description=notes.description, poster_notes_id=poster_notes)   
                 db.session.add(new_note)
-                db.session.commit()
-                flash("Note Saved")
-                return redirect(url_for("notes", form=form, id=current_user.id, name=notes.name, description=notes.description))
+                try:
+                    db.session.commit()
+                    flash("Note Saved")
+                    return redirect(url_for("notes", form=form, id=current_user.id, name=form.name.data, description=form.description.data))
+                except:
+                    db.session.rollback()
+                    flash("There was an error when saving your note, Try again")
+                    return redirect(url_for("notes", form=form, id=current_user.id))
         except:
             flash("There was an error when saving your note, Try again")
             return redirect(url_for("notes", form=form, id=current_user.id))
