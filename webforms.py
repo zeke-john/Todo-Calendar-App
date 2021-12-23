@@ -15,7 +15,6 @@ from wtforms.fields.html5 import EmailField
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_mail import Mail, Message
 from flask_migrate import Migrate
-from app import Users
 from wtforms.widgets import TextArea   
 '''
 eval "$(pyenv init -)"
@@ -62,17 +61,6 @@ class ResetPasswordForm(FlaskForm):
     password_hash = PasswordField("New Password", validators=[DataRequired(), EqualTo('password_hash2', message='passwords must match'), Length(min=8)])
     password_hash2 = PasswordField("Confirm Password", validators=[DataRequired()])
     submit = SubmitField("Change Password")
-
-
-class RequestResetForm(FlaskForm):
-    email = EmailField("Email", validators=[DataRequired(), Email()])
-    submit = SubmitField("Next")
-
-    def validate_email(self, email):
-        user = Users.query.filter_by(email=email.data).first()
-        if user is None:
-            flash('If an account with this email address exists, a password reset message will be sent shortly.')
-            raise ValidationError('If an account with this email address exists, a password reset message will be sent shortly.')
 
 class addtaskForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])

@@ -63,6 +63,9 @@ class Notes(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
     description = db.Column(db.String(1900))
+    #create forenign key to link users to tasks
+    poster_notes_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    
 
 class Users(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -72,6 +75,7 @@ class Users(db.Model, UserMixin):
     password_hash = db.Column(db.String(128))
     password_hash2 = db.Column(db.String(128))
     posts = db.relationship('Todo', backref="poster")
+    post_notes = db.relationship('Notes', backref="poster_notes")
 
     def get_reset_token(self, expires_sec=300):
         s = Serializer(app.config['SECRET_KEY'], expires_sec)
@@ -107,8 +111,8 @@ def signUp():
     if form.password_hash.data != form.password_hash2.data:
         flash("Passwords Must Match!") 
     try:
-        if len(form.password_hash.data) < 10:
-            flash("Passwords must be at least 10 charectars long!")
+        if len(form.password_hash.data) < 8:
+            flash("Passwords must be at least 8 charectars long!")
     except TypeError:
         pass
     if form.validate_on_submit():
@@ -163,6 +167,16 @@ def send_reset_email(user):
     If you didn't make this request then ignore this email
     '''
     mail.send(msg)
+
+class RequestResetForm(FlaskForm):
+    email = EmailField("Email", validators=[DataRequired(), Email()])
+    submit = SubmitField("Next")
+
+    def validate_email(self, email):
+        user = Users.query.filter_by(email=email.data).first()
+        if user is None:
+            flash('If an account with this email address exists, a password reset message will be sent shortly.')
+            raise ValidationError('If an account with this email address exists, a password reset message will be sent shortly.')
 
 @app.route("/reset_password", methods=["GET", "POST"])
 def reset_request():
@@ -253,12 +267,13 @@ def add():
 @app.route("/notes/<int:id>" , methods=["POST", "GET"])
 @login_required
 def notes(id):
+    if id != current_user.id:
+        return redirect(url_for('login'))
     class addNotes(FlaskForm):
-        notes_list = Notes.query.all()
+        notes_list = Notes.query.filter_by(poster_notes_id=current_user.id).all()
         if notes_list != []:
             for notes in notes_list:
-                description = notes.description
-                name = notes.name
+                print(notes_list)
                 name = StringField("Name",  default=notes.name)
                 description = StringField("Description", widget=TextArea(),  default=notes.description)
                 submit = SubmitField("Save")
@@ -268,49 +283,38 @@ def notes(id):
             name = StringField("Name",  default=name)
             description = StringField("Description", widget=TextArea(),  default=description)
             submit = SubmitField("Save")
-
-    if id != current_user.id:
-        return redirect(url_for('login'))
+    
     form = addNotes()
     return render_template("notes.html", form=form)
+
+class addNotes(FlaskForm):
+    notes_list = Notes.query.all()
+    if notes_list != []:
+        for notes in notes_list:
+            description = notes.description
+            name = notes.name
+            name = StringField("Name",  default=notes.name)
+            description = StringField("Description", widget=TextArea(),  default=notes.description)
+            submit = SubmitField("Save")
+    else:
+        description = 'do something!'
+        name = 'Notes'
+        name = StringField("Name",  default=name)
+        description = StringField("Description", widget=TextArea(),  default=description)
+        submit = SubmitField("Save")
 
 @app.route("/notes/add" , methods=["POST", "GET"])
 @login_required
 def notesAdd():
-    class addNotes(FlaskForm):
-        notes_list = Notes.query.all()
-        if notes_list != []:
-            for notes in notes_list:
-                description = notes.description
-                name = notes.name
-                name = StringField("Name",  default=notes.name)
-                description = StringField("Description", widget=TextArea(),  default=notes.description)
-                submit = SubmitField("Save")
-        else:
-            description = 'do something!'
-            name = 'Notes'
-            name = StringField("Name",  default=name)
-            description = StringField("Description", widget=TextArea(),  default=description)
-            submit = SubmitField("Save")
-    form = addNotes()
+    form = addNotes()   
     if request.method == "POST":
         try:
             notes_list = Notes.query.all()
-            print(notes_list)
             if notes_list == []:
-                new_note = Notes(name=form.name.data, description=form.description.data)
+                poster_notes = current_user.id
+                new_note = Notes(name=form.name.data, description=form.description.data, poster_notes_id=poster_notes)
                 notes = Notes.query.first()
                 db.session.add(new_note)
-                class addNotes(FlaskForm):
-                    notes_list = Notes.query.all()
-                    for notes in notes_list:
-                        description = notes.description
-                        name = notes.name
-                        print(name)
-                        print(description)
-                        name = StringField("Name",  default=notes.name)
-                        description = StringField("Description", widget=TextArea(),  default=notes.description)
-                        submit = SubmitField("Save")
                 db.session.commit()
                 flash("Note Saved")
                 return redirect(url_for("notes", form=form, id=current_user.id, name=form.name.data, description=form.description.data))
@@ -318,18 +322,9 @@ def notesAdd():
                 notes = Notes.query.first()
                 notes.name = form.name.data
                 notes.description = form.description.data
-                new_note = Notes(name=notes.name, description=notes.description)   
+                poster_notes = current_user.id
+                new_note = Notes(name=notes.name, description=notes.description, poster_notes_id=poster_notes)   
                 db.session.add(new_note)
-                class addNotes(FlaskForm):
-                    notes_list = Notes.query.all()
-                    for notes in notes_list:
-                        description = notes.description
-                        name = notes.name
-                        print(name)
-                        print(description)
-                        name = StringField("Name",  default=notes.name)
-                        description = StringField("Description", widget=TextArea(),  default=notes.description)
-                        submit = SubmitField("Save")
                 db.session.commit()
                 flash("Note Saved")
                 return redirect(url_for("notes", form=form, id=current_user.id, name=notes.name, description=notes.description))
@@ -494,8 +489,8 @@ def change_token(token):
     if form.password_hash.data != form.password_hash2.data:
         flash("Passwords Must Match!")
     try:
-        if len(form.password_hash.data) < 10:
-            flash("Passwords Must be at least 10 charectars long!")
+        if len(form.password_hash.data) < 8:
+            flash("Passwords Must be at least 8 charectars long!")
     except TypeError:
         pass
     if form.validate_on_submit():
