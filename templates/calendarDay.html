@@ -44,9 +44,10 @@
             <a class="ui header item" style="font-weight: 300; font-size: 16px;" href="/today">Today</a>
             <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/calendar ">Calendar</a>
             <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/notes/{{current_user.id}} ">Notes</a>
+            <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/labels/{{current_user.id}}">Labels</a>
             <div class="right menu"  style="padding-right: 10px;" >
-                <div class="ui secondary simple dropdown item">
-                    <a style="font-weight: 300; font-size: 16px; color: black;">‎‎‎ ‎ ‎ ‎ ‎‎‎ ‎‎‎ ‎‎‎ ‎‎‎ ‎ ‎‎{{current_user.name}}‎‎‎ ‎‎‎  ‎‎‎ ‎‎‎ ‎ ‎ ‎ ‎ ‎‎‎</a> 
+                <div class="ui pointing dropdown link item">
+                    <a style="font-weight: 300; font-size: 16px; color: black;"> ‎‎‎ ‎ ‎‎‎‎‎ ‎‎‎ ‎‎‎ ‎ ‎‎{{current_user.name}}‎‎‎ ‎‎‎ ‎‎‎ ‎ ‎‎‎‎‎ ‎ ‎‎</a> 
                 <div class="ui simple menu">
                     <a class="item"  href='/logout '>Logout</a>
                     <a class="item"  href='/userInfo '>Account Info</a>
@@ -54,8 +55,12 @@
                 </div>
             </div>  
             </div>
-
-        <div style="margin-top: 100px;" class="ui container">
+            <script> 
+                $(document).ready(function(){
+                  $('.ui.dropdown') .dropdown();
+              });
+              </script>
+        <div style="margin-top: 120px;" class="ui container">
                 <h1 class="ui center aligned header" style="font-size: 40px;" id="date">  </h1>
                 <form class="ui form" action="/add " method="post"></form>
                 <script>
@@ -84,15 +89,17 @@
                     </table>
                         {% endif %}
                         {% if todo.start != '' %}
-                        <td class="thirteen wide column"><h4> ㅤ{{todo.name}} </a></h4></td>
+                        <td class="thirteen wide column"><h4> ㅤ{{todo.name}} ㅤ </a></h4></td>
                         <td class="one wide column"> <h5>ㅤ {{todo.start}} </h5></td>
                         </tr>
                     </body>
                     </table>
                         {% endif %}
-                <div class="ui compact segment">
-                <p>{{todo.description}}</p>
-                </div>     
+                        {% if todo.description != '' %}
+                        <div class="ui compact segment">
+                          <p>{{todo.description|safe}}</p>
+                        </div>      
+                        {% endif %}   
                 <style>
                 .ui.white.segment.Change:hover  { 
                     background-color: rgb(252, 252, 252)!important;

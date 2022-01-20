@@ -64,7 +64,7 @@
   </div>
 
 
-    <div style="margin-top: 95px;" class="ui container">
+    <div style="margin-top: 102px;" class="ui container">
       {% for message in get_flashed_messages() %}
       <div class="ui center aligned teal message">
           <i class="close icon"></i>
@@ -165,96 +165,11 @@
                 }
               }
             </style>
-            <script>
-
-                window.onload = () => {
-                const button = document.getElementById('button1');
-                button.addEventListener('click', () => {
-                    if (button.style['animation-name'] === 'flash') {
-                    recognition.stop();
-                    button.style['animation-name'] = 'none';
-                    } 
-                    
-                    else {
-                    button.style['animation-name'] = 'flash';
-                    recognition.start();
-                    }
-                
-
-                  });
-                let p = document.createElement("p");
-          
-                const recognition = new webkitSpeechRecognition();
-                recognition.continuous = true;
-                recognition.interimResults = true;
-                recognition.onresult = function (event) {
-                    let result = '';
-                    for (let i = event.resultIndex; i < event.results.length; i++) {
-                    result += event.results[i][0].transcript;
-                }
-
-                    recognition.addEventListener("result", (e) => {
-                    const text = Array.from(e.results)
-                        .map((result) => result[0])
-                        .map((result) => result.transcript)
-                        .join("");
-
-                    if (e.results[0].isFinal) {
-                        p = document.createElement("p");
-                        //console.log(text)
-                        $("#name").val(text); // set the input val to the speech transcript
-
-                    }
-                });
-                };
-
-                const button2 = document.getElementById('button2');
-                button2.addEventListener('click', () => {
-                    if (button2.style['animation-name'] === 'flash') {
-                    recognition2.stop();
-                    button2.style['animation-name'] = 'none';
-                    } 
-                    
-                    else {
-                    button2.style['animation-name'] = 'flash';
-                    recognition2.start();
-                    }
-                
-                  });
-                let p2 = document.createElement("p");
-
-                const recognition2 = new webkitSpeechRecognition();
-                recognition2.continuous = true;
-                recognition2.interimResults = true;
-                recognition2.onresult = function (event) {
-                    let result = '';
-                    for (let i = event.resultIndex; i < event.results.length; i++) {
-                    result += event.results[i][0].transcript;
-                }
-
-                
-                    recognition2.addEventListener("result", (e) => {
-                    const text = Array.from(e.results)
-                        .map((result) => result[0])
-                        .map((result) => result.transcript)
-                        .join("");
-
-                    if (e.results[0].isFinal) {
-                        p = document.createElement("p");
-                        $("#description").val(text); // set the input val to the speech transcript
-                        //console.log(text)
-                    }
-                });
-                };
-            };
       </script>
           <label>Name</label>
               <div class="input-group">
                 <!-- <input  type="text" name="name" autocomplete="off" placeholder="Enter Name" id="name" spellcheck="true" maxlength="120" required> -->
                 {{ form.name( autocomplete="off", placeholder="Enter Name", id="name", spellcheck="true") }}
-                <span class="input-group-btn">
-                  <a class="ui icon button" id="button1"> <i class="microphone icon"></i></a>
-                </span>
               </div>
                 <br>
                 <br>
@@ -263,9 +178,6 @@
               <label >Description</label>
               <div class="input-group">
                 {{ form.description( autocomplete="off", placeholder="Enter description", id="description", spellcheck="true") }}
-                <span class="input-group-btn">
-                  <a class="ui icon button" id="button2"> <i class="microphone icon"></i></a>
-                </span>
                 <br>
               </div>
                 <br>
@@ -321,12 +233,18 @@
                     <br>
                     <br>
                     <div class="field">
-                      <label >Assign Label</label>
+                      <label >Assign Labels</label>
+                      <select class="ui fluid search dropdown" multiple="multiple" name="labels" id="multi">
+                        <option value="">Select Label</option>
+                        {% for labels in labels_list %}
+                          <option value={{labels.id}}>{{labels.name}}</option>
+                        {% endfor %}
+                      </select>
                       
                     </div>
+                    
             </form>
-            <br>
-              {{ form.submit(class="ui brown button") }}    
+              {{ form.submit(class="ui brown button") }}   
         </form>
         <hr>
         {% for todo in home_todo_list %}
@@ -342,16 +260,17 @@
               </table>
                   {% endif %}
                   {% if todo.start != '' %}
-                  <td class="thirteen wide column"><h4> ㅤ{{todo.name}} </a></h4></td>
+                  <td class="thirteen wide column"><h4> ㅤ{{todo.name}} ㅤ </a></h4></td>
                   <td class="one wide column"> <h5>ㅤ {{todo.start}} </h5></td>
                 </tr>
               </body>
             </table>
                   {% endif %}
-
+        {% if todo.description != '' %}
         <div class="ui compact segment">
           <p>{{todo.description|safe}}</p>
-        </div>     
+        </div>      
+        {% endif %}
         <style>
           .ui.white.segment.Change:hover  { 
             background-color: rgb(252, 252, 252)!important;

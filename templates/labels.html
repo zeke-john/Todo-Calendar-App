@@ -19,7 +19,7 @@
 
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Todo App - Notes</title>
+        <title>Todo App - Labels</title>
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css">
         <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
@@ -28,10 +28,8 @@
         <link href="https://cdn.rawgit.com/mdehoog/Semantic-UI/6e6d051d47b598ebab05857545f242caf2b4b48c/dist/semantic.min.css" rel="stylesheet" type="text/css" />
         <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
         <script src="https://cdn.rawgit.com/mdehoog/Semantic-UI/6e6d051d47b598ebab05857545f242caf2b4b48c/dist/semantic.min.js"></script>
-        <link rel="stylesheet" href="/static/styles/notes.css">
 </head>
 <body>
-<form class="form" action='/notes/add' method="POST" >
 <div class="ui borderless stackable top fixed menu">
     <img src="/static/img/logo.png" style="width: 60px; height: 55px; padding-left: 10px; padding-top: 5px; padding-bottom: 5px; padding-right: 0px;" >
     <div class="item">
@@ -43,24 +41,26 @@
     </div>
     <a class="ui header item" style="font-weight: 300; font-size: 16px;" href="/today">Today</a>
     <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/calendar ">Calendar</a>
-    {{ form.submit(class="ui header item",  style="font-weight: 300; font-size: 16px;") }} 
+    <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/notes/{{current_user.id}}">Notes</a>
     <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/labels/{{current_user.id}}">Labels</a>
+    
     <div class="right menu"  style="padding-right: 10px;" >
         <div class="ui pointing dropdown link item">
             <a style="font-weight: 300; font-size: 16px; color: black;"> ‎‎‎ ‎ ‎‎‎‎‎ ‎‎‎ ‎‎‎ ‎ ‎‎{{current_user.name}}‎‎‎ ‎‎‎ ‎‎‎ ‎ ‎‎‎‎‎ ‎ ‎‎</a> 
-        <div class="ui simple menu">
+        <div class="ui  menu">
             <a class="item"  href='/logout '>Logout</a>
             <a class="item"  href='/userInfo '>Account Info</a>
         </div>
         </div>
     </div>  
+</div>
     <script> 
         $(document).ready(function(){
         $('.ui.dropdown') .dropdown();
     });
     </script>
     </div>
-    <div style="margin-top: 95px;" class="ui container">
+    <div style="margin-top: 120px;" class="ui container">
         {% for message in get_flashed_messages() %}
         <div class="ui center aligned teal message">
             <i class="close icon"></i>
@@ -81,15 +81,52 @@
             </script>
         </div>
     {% endfor %}
-    <div class="notes" id="app">
-        <div class="notes__preview">
-            <br>
-            <br>
-            {{ form.name( autocomplete="off", class="notes__title", type="text", placeholder='Notes') }}
-            {{ form.description( autocomplete="off", rows="200", cols="200", class="notes__body", placeholder="do something!") }}
-        </div>
+    <h1 class="ui center aligned header" style="font-size: 45px; ">Labels </h1>
+
+
+    <form class="form" action="/labels/add" method="POST">
+    <div class="field">
+        <h4>Add a new label</h4>
+        <div class="ui fluid input">
+                {{ form.name(autocomplete="off", placeholder="Enter a name") }}
+            </div>
+        </form>
+        <br>
+        <button class="ui blue labeled icon button" type="submit">
+            <i class="plus icon"></i>
+            Add label
+        </button>
     </div>
     </form>
-</div>
+    <br>
+    <br>
+    <div class="ui vertical segment">
+        <h1 class="ui aligned header" style="font-size: 35px; ">Created Labels</h1>
+    </div>
+    <style>
+    .text:hover {
+        text-decoration: underline rgb(11, 4, 0);
+    }
+    .others { 
+  float: right;
+}
+    </style>
+    <div class="ui segments">
+    {% for labels in labels_list %}
+    <div class="ui segment listitem block">
+        <a class="text" style="font-size: 23px; color: black; font-weight:500;" href="/labels/view/{{labels.id}}"> {{labels.name}} </a>
+        <span class='others'>
+            <button class="ui tiny red icon button" type="submit">
+                <i class="remove icon"></i>
+            </button>
+            <button class="ui tiny black icon button" type="submit">
+                <i class="edit icon"></i>
+            </button>
+        </span>
+    </div>
+    {% endfor %}
+    </div>
+    <br>
+
 </body>
 </html>

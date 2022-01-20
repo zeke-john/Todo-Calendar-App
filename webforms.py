@@ -28,7 +28,7 @@ python3 -m flask db upgrade
 ______________________________________
 export PATH=$PATH:/usr/local/mysql/bin/
 sudo mysql -u root -p
-USE users;
+USE todoapp;
 SHOW TABLES;
 SELECT * FROM [table name];
 SHOW COLUMNS FROM table_name IN database_name;
@@ -36,7 +36,7 @@ SHOW COLUMNS FROM table_name IN database_name;
 
 class EditForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
-    description = StringField("Description", validators=[DataRequired()])
+    description = StringField("Description")
     start = StringField("Start Time")
     submit = SubmitField("Save")
 
@@ -62,9 +62,6 @@ class ResetPasswordForm(FlaskForm):
     password_hash2 = PasswordField("Confirm Password", validators=[DataRequired()])
     submit = SubmitField("Change Password")
 
-class addtaskForm(FlaskForm):
-    name = StringField("Name", validators=[DataRequired()])
-    description = StringField("Description", validators=[DataRequired()])
-    time = StringField("Start Time")
-    date = StringField("Date", validators=[DataRequired()])
-    submit = SubmitField("Add Task")
+class AddLabelForm(FlaskForm):
+    name = StringField("Label Name", validators=[DataRequired()])
+    submit = SubmitField("Add Label")

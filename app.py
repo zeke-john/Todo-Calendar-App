@@ -18,13 +18,17 @@ from flask_migrate import Migrate
 from webforms import *
 from flask_ckeditor import CKEditor
 from wtforms.widgets import TextArea   
+from wtforms import StringField, SubmitField, PasswordField, ValidationError, TimeField, SelectMultipleField
+import re
+from lxml import html
+
 
 app = Flask(__name__)
 ckeditor = CKEditor(app)
 dir_path = os.path.dirname(os.path.realpath(__file__))
 filename = os.path.join(dir_path, 'test_log.log')
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:CAez0208@localhost/users?charset=utf8mb4'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:CAez0208@localhost/todoapp?charset=utf8mb4'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -46,6 +50,10 @@ login_manager.login_view = 'login'
 def load_user(user_id):
 	return Users.query.get(int(user_id))
 
+class Labels(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text(4294967295), nullable=False)
+
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
@@ -56,16 +64,25 @@ class Todo(db.Model):
     day = db.Column(db.String(150), nullable=False)
     month = db.Column(db.String(150), nullable=False)
     year = db.Column(db.String(150), nullable=False)
+    labels = db.Column(db.String(200))
     #create forenign key to link users to tasks
     poster_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-class Notes(db.Model):
+
+class addtaskForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()])
+    description = StringField("Description")
+    time = StringField("Start Time")
+    date = StringField("Date", validators=[DataRequired()])
+    labels = StringField()
+    submit = SubmitField("Add Task")
+
+class Notes(db.Model):  
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50))
-    description = db.Column(db.String(1900))
+    name = db.Column(db.Text(65535635655))
+    description = db.Column(db.Text(6553563565))
     #create forenign key to link users to tasks
     poster_notes_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    
 
 class Users(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -212,6 +229,92 @@ def reset_token(token):
             flash("Your password has been updated, now you can login")
     return render_template("reset_password.html", form=form)
 
+@app.route("/labels/<int:id>" , methods=["POST", "GET"])
+@login_required
+def labels(id):
+    form = AddLabelForm()
+    if id != current_user.id:
+        return redirect(url_for('login'))
+    labels_list = Labels.query.all()
+    return render_template("labels.html", form=form, labels_list=labels_list)
+
+
+@app.route("/labels/add" , methods=["POST"])
+@login_required
+def labels_add():
+    form = AddLabelForm()
+    if request.method == "POST":
+        try:
+            if form.name.data.isspace():
+                flash("Please enter a valid name")
+                return redirect(url_for('labels', form=form, id=current_user.id))
+            if '[' in form.name.data:
+                flash("Please enter a valid name")
+                return redirect(url_for('labels', form=form, id=current_user.id))
+            if ']' in form.name.data:
+                flash("Please enter a valid name")
+                return redirect(url_for('labels', form=form, id=current_user.id))
+            if ',' in form.name.data:
+                flash("Please enter a valid name")
+                return redirect(url_for('labels', form=form, id=current_user.id))
+            else:
+                form.name.data =  form.name.data.replace(" ", "_")
+                new_label = Labels(name=form.name.data)
+                db.session.add(new_label)
+                db.session.commit()
+                return redirect(url_for('labels', form=form, id=current_user.id))
+        except:
+            flash("There was an error when making your label, Try again")
+            return redirect(url_for("labels", form=form, id=current_user.id))
+    else:
+        flash("There was an error when making your label, Try again")
+        return redirect(url_for("labels", form=form, id=current_user.id))
+
+@app.route("/edit/<int:todo_id>", methods=["GET", "POST"])
+@login_required
+def edit_task(todo_id):
+    post_to_delete = Todo.query.get_or_404(todo_id)
+    id = current_user.id
+    if id == post_to_delete.poster.id:
+        form = EditForm()
+        name_to_update = Todo.query.get_or_404(todo_id)
+        if request.method == "POST":
+            name_to_update.name = request.form['name']
+            name_to_update.description = request.form['description']
+            name_to_update.start = request.form['start']
+            try:
+                db.session.commit()
+                flash("Task Updated")
+                return render_template("editTask.html", 
+                form=form, 
+                name_to_update=name_to_update)
+            except:
+                flash("Error!  Looks like there was a problem... Try again!")
+                return render_template("editTask.html", 
+                form=form, 
+                name_to_update=name_to_update)
+        else:
+            return render_template("editTask.html", 
+                form=form, 
+                name_to_update=name_to_update)
+    else:
+        return redirect(url_for("today"))
+
+@app.route("/labels/view/<int:labels_id>" , methods=["POST", "GET"])
+@login_required
+def labels_view(labels_id):
+    label_to_see = Labels.query.get_or_404(labels_id)
+    form = AddLabelForm()
+    todoist = Todo.query.all()
+    todo_list = Todo.query.filter_by(labels=label_to_see.id).all()
+    for todos in todoist:
+        todos.labels = todos.labels.split('|')
+        todos.labels=todos.labels
+        for todos.labels in todos.labels:
+            if str(todos.labels) == str(label_to_see.id):
+                todo_list = Todo.query.filter_by(labels=label_to_see.id).all()
+                return render_template("labelsView.html", form=form, labelname=label_to_see, todo_list=todo_list)
+    return render_template("labelsView.html", form=form, labelname=label_to_see, todo_list=todo_list)
 
 @app.route("/today")
 @login_required
@@ -224,28 +327,40 @@ def today():
     
     curr_date = f"{curr_month} {curr_day} {curr_year}"
     home_todo_list = Todo.query.filter_by(date=curr_date).all() #where date = to the present
-    return render_template("today.html", home_todo_list=home_todo_list, form=form)
+    labels_list = Labels.query.all()
+    return render_template("today.html", home_todo_list=home_todo_list, form=form,labels_list=labels_list)
 
 
 @app.route("/add", methods=["POST"] )
 @login_required
 def add():  
+    lsist = ''
     form = addtaskForm() 
     if request.method == "POST":
-        try:
-            punctuation='!?,.:;"\')(_-'
-            new_day ='' # Creating empty string
-            for i in form.date.data:
-                if(i not in punctuation):
-                            new_day += i
-            new_day = new_day.split()
+    # try:
+        punctuation='!?,.:;"\')(_-'
+        new_day ='' # Creating empty string
+        for i in form.date.data:
+            if(i not in punctuation):
+                        new_day += i
+        new_day = new_day.split()
 
-            month = new_day[0]
-            day = new_day[1]
-            year = new_day[-1]
-            date = f'{month} {day} {year}'
-            new_todo = Todo(name=form.name.data, complete=False, description=form.description.data, start=form.time.data, date=date, month=month, day=day, year=year, poster_id=current_user.id)
-
+        month = new_day[0]
+        day = new_day[1]
+        year = new_day[-1]
+        date = f'{month} {day} {year}'
+        if form.name.data.isspace():
+            flash("Please enter a valid name")
+            return redirect(url_for("today", form=form))
+        else:
+            labels = request.form.getlist('labels')
+            if labels == []:
+                labels = ''
+                labels=labels
+            for label in labels:
+                lsist = lsist + label + "|"
+            new_todo = Todo(name=form.name.data, complete=False, description=form.description.data, start=form.time.data, date=date, month=month, day=day, year=year, poster_id=current_user.id, labels=lsist)
+            
             curr_month = datetime.date.today().strftime("%B")
             curr_year = datetime.date.today().strftime("%Y")
             now = datetime.datetime.now()
@@ -257,9 +372,9 @@ def add():
             db.session.add(new_todo)
             db.session.commit()
             return redirect(url_for("today", form=form))
-        except:
-            flash('There was an error when adding your task, Try again')
-            return redirect(url_for("today", form=form))
+    # except:
+    #     flash('There was an error when adding your task, Try agains')
+    #     return redirect(url_for("today", form=form))
     else:
         flash('There was an error when adding your task, Try again')
         return redirect(url_for("today", form=form))
@@ -273,7 +388,6 @@ def notes(id):
         notes_list = Notes.query.filter_by(poster_notes_id=current_user.id).all()
         if notes_list != []:
             for notes in notes_list:
-                print(notes_list)
                 name = StringField("Name",  default=notes.name)
                 description = StringField("Description", widget=TextArea(),  default=notes.description)
                 submit = SubmitField("Save")
@@ -283,7 +397,6 @@ def notes(id):
             name = StringField("Name",  default=name)
             description = StringField("Description", widget=TextArea(),  default=description)
             submit = SubmitField("Save")
-    
     form = addNotes()
     return render_template("notes.html", form=form)
 
@@ -345,37 +458,6 @@ def notesAdd():
         flash("There was an error when saving your note, Try again")
         return redirect(url_for("notes", form=form, id=current_user.id))
 
-
-@app.route("/edit/<int:todo_id>", methods=["GET", "POST"])
-@login_required
-def edit_task(todo_id):
-    post_to_delete = Todo.query.get_or_404(todo_id)
-    id = current_user.id
-    if id == post_to_delete.poster.id:
-        form = EditForm()
-        name_to_update = Todo.query.get_or_404(todo_id)
-        if request.method == "POST":
-            name_to_update.name = request.form['name']
-            name_to_update.description = request.form['description']
-            name_to_update.start = request.form['start']
-            try:
-                db.session.commit()
-                flash("Task Updated Successfully")
-                return render_template("editTask.html", 
-                form=form, 
-                name_to_update=name_to_update)
-            except:
-                flash("Error!  Looks like there was a problem... Try again!")
-                return render_template("editTask.html", 
-                form=form, 
-                name_to_update=name_to_update)
-        else:
-            return render_template("editTask.html", 
-                form=form, 
-                name_to_update=name_to_update)
-    else:
-        return redirect(url_for("today"))
-
 @app.route('/updateUser/<int:id>', methods=['GET', 'POST'])
 @login_required
 def editUser(id):
@@ -389,7 +471,7 @@ def editUser(id):
             name_to_update.email = request.form['email']
             try:
                 db.session.commit()
-                flash("Account Info Updated Successfully")
+                flash("Account Info Updated")
                 return render_template("editUser.html", 
                     form=form,
                     name_to_update = name_to_update, id=id)
@@ -457,7 +539,7 @@ def deleteUser(id):
         try:
             db.session.delete(user_to_delete)
             db.session.commit()
-            flash("Account Deleted Successfully")
+            flash("Account Deleted")
 
             return render_template("signUp.html", 
             form=form,
@@ -565,7 +647,7 @@ def edit_cal(todo_id, day_hover, monthuser, yearuser ):
             name_to_update.start = request.form['start']
             try:
                 db.session.commit()
-                flash("Task Updated Successfully")
+                flash("Task Updated")
                 return render_template("editCal.html", 
                 form=form, 
                 name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
