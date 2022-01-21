@@ -90,9 +90,9 @@
         <div class="ui fluid input">
                 {{ form.name(autocomplete="off", placeholder="Enter a name") }}
             </div>
-        </form> 
+        </form>
         <br>
-        <button class="ui blue labeled icon button" type="submit">
+        <button class="ui brown labeled icon button" type="submit">
             <i class="plus icon"></i>
             Add label
         </button>
@@ -108,25 +108,22 @@
         text-decoration: underline rgb(11, 4, 0);
     }
     .others { 
-  float: right;
-}
+        float: right;
+    }
     </style>
-    <div class="ui segments">
     {% for labels in labels_list %}
     <div class="ui segment listitem block">
         <a class="text" style="font-size: 23px; color: black; font-weight:500;" href="/labels/view/{{labels.id}}"> {{labels.name}} </a>
         <span class='others'>
-            <button class="ui tiny red icon button" type="submit">
-                <i class="remove icon"></i>
-            </button>
-            <button class="ui tiny black icon button" type="submit">
-                <i class="edit icon"></i>
-            </button>
-        </span>
+            <a href="/delete/label/{{labels.id}}" class="circular ui tiny basic icon button">
+            <i class="icon remove"></i>
+            </a>
+            <a href="" class="circular ui tiny basic icon button">
+            <i class="icon edit"></i>
+            </a>
+            </span>
     </div>
     {% endfor %}
     </div>
-    <br>
-
 </body>
 </html>

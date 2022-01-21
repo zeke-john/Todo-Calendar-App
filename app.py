@@ -239,6 +239,15 @@ def labels(id):
     return render_template("labels.html", form=form, labels_list=labels_list)
 
 
+@app.route("/delete/label/<int:label_id>")
+@login_required
+def delete_label(label_id):
+    post_to_delete = Labels.query.get_or_404(label_id)
+    label = Labels.query.filter_by(id=label_id).first()
+    db.session.delete(label)
+    db.session.commit()
+    return redirect(url_for("labels", id=current_user.id))
+
 @app.route("/labels/add" , methods=["POST"])
 @login_required
 def labels_add():
@@ -337,44 +346,44 @@ def add():
     lsist = ''
     form = addtaskForm() 
     if request.method == "POST":
-    # try:
-        punctuation='!?,.:;"\')(_-'
-        new_day ='' # Creating empty string
-        for i in form.date.data:
-            if(i not in punctuation):
-                        new_day += i
-        new_day = new_day.split()
+        try:
+            punctuation='!?,.:;"\')(_-'
+            new_day ='' # Creating empty string
+            for i in form.date.data:
+                if(i not in punctuation):
+                            new_day += i
+            new_day = new_day.split()
 
-        month = new_day[0]
-        day = new_day[1]
-        year = new_day[-1]
-        date = f'{month} {day} {year}'
-        if form.name.data.isspace():
-            flash("Please enter a valid name")
-            return redirect(url_for("today", form=form))
-        else:
-            labels = request.form.getlist('labels')
-            if labels == []:
-                labels = ''
-                labels=labels
-            for label in labels:
-                lsist = lsist + label + "|"
-            new_todo = Todo(name=form.name.data, complete=False, description=form.description.data, start=form.time.data, date=date, month=month, day=day, year=year, poster_id=current_user.id, labels=lsist)
-            
-            curr_month = datetime.date.today().strftime("%B")
-            curr_year = datetime.date.today().strftime("%Y")
-            now = datetime.datetime.now()
-            curr_day = now.day
+            month = new_day[0]
+            day = new_day[1]
+            year = new_day[-1]
+            date = f'{month} {day} {year}'
+            if form.name.data.isspace():
+                flash("Please enter a valid name")
+                return redirect(url_for("today", form=form))
+            else:
+                labels = request.form.getlist('labels')
+                if labels == []:
+                    labels = ''
+                    labels=labels
+                for label in labels:
+                    lsist = lsist + label + "|"
+                new_todo = Todo(name=form.name.data, complete=False, description=form.description.data, start=form.time.data, date=date, month=month, day=day, year=year, poster_id=current_user.id, labels=lsist)
+                
+                curr_month = datetime.date.today().strftime("%B")
+                curr_year = datetime.date.today().strftime("%Y")
+                now = datetime.datetime.now()
+                curr_day = now.day
 
-            curr_date = f"{curr_month} {curr_day} {curr_year}"
-            if date != curr_date:
-                flash(f'Task Added')
-            db.session.add(new_todo)
-            db.session.commit()
+                curr_date = f"{curr_month} {curr_day} {curr_year}"
+                if date != curr_date:
+                    flash(f'Task Added')
+                db.session.add(new_todo)
+                db.session.commit()
+                return redirect(url_for("today", form=form))
+        except:
+            flash('There was an error when adding your task, Try again')
             return redirect(url_for("today", form=form))
-    # except:
-    #     flash('There was an error when adding your task, Try agains')
-    #     return redirect(url_for("today", form=form))
     else:
         flash('There was an error when adding your task, Try again')
         return redirect(url_for("today", form=form))
@@ -688,6 +697,7 @@ def delete_task(todo_id):
         return redirect(url_for("today"))
     else:
         return redirect(url_for('today'))
+
 
 @app.errorhandler(404)
 def page_not_found(e):

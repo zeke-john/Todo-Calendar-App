@@ -84,56 +84,69 @@
     <div class="ui vertical segment">
         <h1 class="ui center aligned header" style="font-size: 45px;"> {{labelname.name}} </h1>
     </div>
-    <br>
     {% for todo in todo_list %}
 
-    <div class="ui white segment Change">
-        <table class="ui celled table">
-          <body>
-          <tr> 
-              {% if todo.start == '' %}
-                <td class="thirteen wide column"><h4> ㅤ{{todo.name}} </a></h4></td>
-              </tr>
-            </body>
-          </table>
-              {% endif %}
-              {% if todo.start != '' %}
-              <td class="thirteen wide column"><h4> ㅤ{{todo.name}} ㅤ </a></h4></td>
-              <td class="one wide column"> <h5>ㅤ {{todo.start}} </h5></td>
-            </tr>
-          </body>
-        </table>
-              {% endif %}
-    {% if todo.description != '' %}
-    <div class="ui compact segment">
-      <p>{{todo.description|safe}}</p>
-    </div>      
-    {% endif %}
+    {% if todo.complete == False %}
+    <div class="ui vertical segment">
+      <span class='others'>
+        <p style=" color:rgb(255, 0, 0); font-size:13px; font-weight:bold; margin:0;">{{todo.start}} </p>
+        </span>
+        <span class='otherss'>
+          <a href="/update/{{ todo.id }}" class="circular ui tiny basic icon button">
+            <i class="icon check"></i>
+          </a>
+          </span>
+      <h3 style="margin: 0px;">   {{todo.name}} </h3>
+      <span class='others'>
+        <a href="/delete/{{ todo.id }}" class="circular ui tiny basic icon button">
+          <i class="icon remove"></i>
+        </a>
+        <a href="{{url_for('edit_task', todo_id=todo.id )}}" class="circular ui tiny basic icon button">
+          <i class="icon edit"></i>
+        </a>
+        </span> 
+      <p style="color:rgb(38, 38, 38); margin:0;">    {{todo.description}} </p>
+      <script>
+        complete = false
+      </script>         
+      {% endif %} 
+      {% if todo.complete == True %}
+      <div class="ui disabled vertical segment">
+        <span class='others'>
+          <p style=" color:rgb(255, 0, 0); font-size:13px; font-weight:bold; margin:0;"><s>{{todo.start}}</s> </p>
+          </span>
+          <span class='otherss'>
+            <a href="/update/{{ todo.id }}" class="circular ui tiny basic icon button">
+              <i class="icon check"></i>
+            </a>
+            </span>
+        <h3 style="margin: 0px;">   <s>{{todo.name}}</s> </h3> 
+        <span class='others'>
+          <a href="/delete/{{ todo.id }}" class="circular ui tiny basic icon button">
+            <i class="icon remove"></i>
+          </a>
+          <a href="{{url_for('edit_task', todo_id=todo.id )}}" class="circular ui tiny basic icon button">
+            <i class="icon edit"></i>
+          </a>
+          </span>
+        <p style="color:rgb(38, 38, 38); margin:0;">    <s>{{todo.description}} </s></p>
+      <script>
+        complete = true
+      </script>
+      {% endif %}
+    </div>  
     <style>
       .ui.white.segment.Change:hover  { 
-        background-color: rgb(252, 252, 252)!important;
+        background-color: rgb(253, 253, 253)!important;
         color: rgb(0, 0, 0)!important;
     }
-    </style>        
-        {% if todo.complete == False %}
-        <span class="ui gray label">Status: Not Complete</span> 
-        <script>
-          complete = false
-        </script>
-
-        
-        {% else %}
-        <span  class="ui green label" >Status: Completed</span>
-        <script>
-          complete = true
-        </script>
-        {% endif %}
-        
-        <br>
-        <br>
-        <a class="ui linkedin button" href="/update/{{ todo.id }}"   >Update Status</a>
-        <a class="ui google plus  button" href="/delete/{{ todo.id }}"> Remove</a>
-        <a class="ui black icon button" href="{{url_for('edit_task', todo_id=todo.id )}}"> <i class="edit icon"></i></a>
+    .others { 
+      float: right;
+    }
+    .otherss { 
+      float: left;
+    }
+    </style>      
       <script>
         function convertTime12To24(time) {
             var hours   = Number(time.match(/^(\d+)/)[1]);
@@ -213,9 +226,6 @@
         }
 
     </script>
-
-  </div>
-<div>
     {% endfor %}
     <br>
 </body>
