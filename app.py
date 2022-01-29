@@ -21,7 +21,7 @@ from wtforms.widgets import TextArea
 from wtforms import StringField, SubmitField, PasswordField, ValidationError, TimeField, SelectMultipleField
 import re
 from lxml import html
-
+import ast
 
 app = Flask(__name__)
 ckeditor = CKEditor(app)
@@ -71,7 +71,7 @@ class Todo(db.Model):
 
 class addtaskForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
-    description = StringField("Description")
+    description = StringField("Description")    
     time = StringField("Start Time")
     date = StringField("Date", validators=[DataRequired()])
     labels = StringField()
@@ -309,6 +309,7 @@ def edit_task(todo_id):
     else:
         return redirect(url_for("today"))
 
+
 @app.route("/labels/view/<int:labels_id>" , methods=["POST", "GET"])
 @login_required
 def labels_view(labels_id):
@@ -317,13 +318,14 @@ def labels_view(labels_id):
     todoist = Todo.query.all()
     todo_list = Todo.query.filter_by(labels=label_to_see.id).all()
     for todos in todoist:
-        todos.labels = todos.labels.split('|')
+        todos.labels = todos.labels.split(',')
         todos.labels=todos.labels
         for todos.labels in todos.labels:
             if str(todos.labels) == str(label_to_see.id):
                 todo_list = Todo.query.filter_by(labels=label_to_see.id).all()
                 return render_template("labelsView.html", form=form, labelname=label_to_see, todo_list=todo_list)
     return render_template("labelsView.html", form=form, labelname=label_to_see, todo_list=todo_list)
+
 
 @app.route("/today")
 @login_required
@@ -333,7 +335,6 @@ def today():
     curr_year = datetime.date.today().strftime("%Y")
     now = datetime.datetime.now()
     curr_day = now.day
-    
     curr_date = f"{curr_month} {curr_day} {curr_year}"
     home_todo_list = Todo.query.filter_by(date=curr_date).all() #where date = to the present
     labels_list = Labels.query.all()
@@ -367,17 +368,9 @@ def add():
                     labels = ''
                     labels=labels
                 for label in labels:
-                    lsist = lsist + label + "|"
+                    lsist = lsist + label + ","
                 new_todo = Todo(name=form.name.data, complete=False, description=form.description.data, start=form.time.data, date=date, month=month, day=day, year=year, poster_id=current_user.id, labels=lsist)
-                
-                curr_month = datetime.date.today().strftime("%B")
-                curr_year = datetime.date.today().strftime("%Y")
-                now = datetime.datetime.now()
-                curr_day = now.day
 
-                curr_date = f"{curr_month} {curr_day} {curr_year}"
-                if date != curr_date:
-                    flash(f'Task Added')
                 db.session.add(new_todo)
                 db.session.commit()
                 return redirect(url_for("today", form=form))
@@ -531,8 +524,8 @@ def calendarDay(day_hover, monthuser, yearuser):
     date_user = f"{monthuser} {day_hover} {yearuser}"  
 
     calendar_todo_list = Todo.query.filter(Todo.date.endswith(date_user)).all()
-
-    return render_template('calendarDay.html', monthuser=monthuser , calendar_todo_list=calendar_todo_list, day_hover=day_hover, yearuser=yearuser)
+    labels_list = Labels.query.all()
+    return render_template('calendarDay.html', monthuser=monthuser , calendar_todo_list=calendar_todo_list, day_hover=day_hover, yearuser=yearuser,labels_list=labels_list)
 
 
 @app.route('/deleteUser/<int:id>')
@@ -697,6 +690,33 @@ def delete_task(todo_id):
         return redirect(url_for("today"))
     else:
         return redirect(url_for('today'))
+
+
+@app.route("/labels/view/update/<int:todo_id>")
+@login_required
+def update_task_labels(todo_id):
+    post_to_delete = Todo.query.get_or_404(todo_id)
+    id = current_user.id
+    if id == post_to_delete.poster.id:
+        todo = Todo.query.filter_by(id=todo_id).first()
+        todo.complete = not todo.complete
+        db.session.commit()
+        return redirect(url_for("labels_view"))
+    else:
+        return redirect(url_for("labels_view"))
+
+@app.route("/labels/view/delete/<int:todo_id>")
+@login_required
+def delete_task_labels(todo_id):
+    post_to_delete = Todo.query.get_or_404(todo_id)
+    id = current_user.id
+    if id == post_to_delete.poster.id:
+        todo = Todo.query.filter_by(id=todo_id).first()
+        db.session.delete(todo)
+        db.session.commit()
+        return redirect(url_for("labels_view"))
+    else:
+        return redirect(url_for('labels_view'))
 
 
 @app.errorhandler(404)
