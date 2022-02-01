@@ -98,155 +98,6 @@
           date = weekday + " " + new Date().toLocaleDateString('en-US', options);
           document.getElementById("date").innerText = date;
           </script>
-        <form class="ui form" action="/add" method="post">
-            <div class="field">
-              <style>
-                .left {
-                  position: absolute;
-                  top: 10; right: 100px; left:0px; 
-                  
-                }
-                .right {
-                    float: right
-                    
-                }
-                .input-group {
-                    display: table;
-                position: relative;
-                  z-index: 2;
-                  float: left;
-                  width: 100%;
-                  margin-bottom: 0;
-                  
-
-                    vertical-align: middle;
-                }
-
-                .input-group-btn{
-                  display: table-cell;
-                    width: 1%;
-                  white-space: nowrap;
-                  vertical-align: middle;
-                }
-                
-                .form-control{
-                    display: table-cell;
-                    width: 100%;
-                    
-                }
-
-                .button1 {
-                background: grey;
-                animation-name: none;
-                animation-duration: 999s;
-                animation-iteration-count: infinite;
-                }
-                @keyframes flash {
-                0% {
-                    background: grey;
-                }
-                0% {
-                    background: grey;
-                }
-              }
-
-              .button2 {
-                background: grey;
-                animation-name: none;
-                animation-duration: 999s;
-                animation-iteration-count: infinite;
-                }
-                @keyframes flash {
-                0% {
-                    background: grey;
-                }
-                0% {
-                    background: grey;
-                }
-              }
-            </style>
-      </script>
-          <label>Name</label>
-              <div class="input-group">
-                <!-- <input  type="text" name="name" autocomplete="off" placeholder="Enter Name" id="name" spellcheck="true" maxlength="120" required> -->
-                {{ form.name( autocomplete="off", placeholder="Enter Name", id="name", spellcheck="true") }}
-              </div>
-                <br>
-                <br>
-                <br>  
-            <div class="field">
-              <label >Description</label>
-              <div class="input-group">
-                {{ form.description( autocomplete="off", placeholder="Enter description", id="description", spellcheck="true") }}
-                <br>
-              </div>
-                <br>
-                <br>
-                <br>
-                <div class="field">
-                  <label >Start Time</label>
-                  <div class="ui calendar" id="start">
-                    <div class="ui input left icon">
-                      <i class="time icon"></i>
-                      <!-- <input  type="text" name="start" autocomplete="off"  placeholder="Select Time" maxlength="5" required> -->
-                      {{ form.time( autocomplete="off", placeholder="Select Start Time") }}
-                      <script>
-                        $('#start').calendar({
-                            ampm: true  ,
-                            type: 'time',
-                            onChange: function (time, text) {
-                              var newValue = text;
-                            },
-                          });
-                        </script>
-                    </div>
-                    <br>
-                    <br>
-                    <div class="field">
-                    <label >Date</label>
-                    <div class="ui calendar" id="day">
-                      <div class="ui input left icon">
-                        <i class="calendar icon"></i>
-                        <!-- <input type="text" name="day" autocomplete="off" placeholder="Select Date" required> -->
-                        {{ form.date( autocomplete="off", placeholder="Select Date") }}
-                        <script>
-                          const day_options = { 
-                              day: 'numeric', 
-                          };  
-                          daydisplay = new Date().toLocaleDateString('en-US', day_options);
-                          const month_options = { 
-                              month: 'long', 
-                          };  
-                          monthdisplay = new Date().toLocaleDateString('en-US', month_options);
-                          const year_option = { 
-                              year: 'numeric',
-                          };  
-                          yeardisplay = new Date().toLocaleDateString('en-US', year_option);
-                          less = monthdisplay + ", " + daydisplay + " " + yeardisplay
-                          var today = new Date();
-                          $('#day').calendar({
-                            type: 'date',
-                            minDate: new Date(today.getFullYear(), today.getMonth(), today.getDate()) 
-                          });
-                        </script>
-                      </div>
-                    <br>
-                    <br>
-                    <div class="field">
-                      <label >Assign Labels</label>
-                      <select class="ui fluid search dropdown" multiple="multiple" name="labels" id="multi">
-                        <option value="">Select Label</option>
-                        {% for labels in labels_list %}
-                        <option value="{{labels.id}}">{{labels.name}}</option>
-                        {% endfor %}
-                      </select>
-                      
-                    </div>
-                    
-            </form>
-              {{ form.submit(class="ui brown button") }}   
-        </form>
-
         {% for todo in home_todo_list %}
         {% if todo.poster_id == current_user.id %}
         {% if todo.complete == False %}
@@ -340,24 +191,121 @@
     .otherss { 
       float: left;
     }
+    #textarea{
+    background: transparent;
+    border: none;
+    outline: none;    
+    resize: none;
+  }
     </style> 
 
+    <div class="ui container">
+      <div class="ui special modal">
+        <div class="header">
+          Add a Task
+        </div>
+        <div class="content">
+          <div class="ui form">
+            <div class="field">
+                <div class="ui multiple dropdown">
+                  <input type="hidden" name="filters">
+                  <span class="text" style='color:rgba(140, 140, 140, 0.784);'>Labels</span>
+                  <div class="menu">
+                    <input class="search input" style="    background: transparent;
+                    border: none;
+                    outline: none;    
+                    resize: none;
+                    margin:0%;" type="text" placeholder="Search">
+                    <div class="scrolling menu">
+                      {% for labels in labels_list %}
+                      <option class="item" data-value={{labels.id}}>
+                        {{labels.name}}
+                      </option>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+                <div class="ui transparent black fluid input">
+                      {{ form.name( autocomplete="off", placeholder="Name", id="name", spellcheck="true") }}
+                    </div>
+              <textarea id='textarea' name="description" placeholder="Description" spellcheck="true" autocomplete="off" ></textarea>
 
+              <div class='otherss'>
+              <div class="ui calendar" id="start">
+                <input class="ui basic button" name="start" placeholder='Time' autocomplete='off' style="width: 91px;"></input>
+                <script>
+                  $('#start').calendar({
+                      ampm: true  ,
+                      type: 'time',
+                      onChange: function (time, text) {
+                        var newValue = text;
+                      },
+                    });
+                  </script>
+              </div>
+            </div>
+            <div class='otherss'>
+              <div class="ui calendar"  id="day">
+                <input class="ui basic button" name="day" placeholder='Date' autocomplete='off' style="width: 160px;"></input>
+                <script>
+                  const day_options = { 
+                      day: 'numeric', 
+                  };  
+                  daydisplay = new Date().toLocaleDateString('en-US', day_options);
+                  const month_options = { 
+                      month: 'long', 
+                  };  
+                  monthdisplay = new Date().toLocaleDateString('en-US', month_options);
+                  const year_option = { 
+                      year: 'numeric',
+                  };  
+                  yeardisplay = new Date().toLocaleDateString('en-US', year_option);
+                  less = monthdisplay + ", " + daydisplay + " " + yeardisplay
+                  var today = new Date();
+                  $('#day').calendar({
+                    type: 'date',
+                    minDate: new Date(today.getFullYear(), today.getMonth(), today.getDate()) 
+                  });
+                </script>
+              </div>
+            </div>
+            <a class="ui basic button">Inbox</a>
+              <div class='others'>
+                <a class="circular ui basic icon button">
+                  <i class="icon alarm"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="actions">
+          <div class="ui brown cancel button" >Back</div>
+          <div class="ui yellow button">Add Task</div>
+        </div>
+      </div>
+      
+    </div>
     <div class="ui vertical segment">
+    </div>
+    <br>
       <span class='otherss'>
+        
         <a class="circular ui tiny basic icon button" id="taskbuttton" style="margin: 0px;">
           <i class="icon plus"></i>
         </a>
     <script>
-        $('#taskbuttton').click(function(){
-            $('.ui.modal').modal('show');
-        });
+    
+    $('#taskbuttton').click(function(){
+    $('.ui.modal')
+    .modal({
+        closable: false
+    }).modal('show');
+  });
     </script>
 
       
       </span>
       <h3 style="margin: 4px; display: inline-block;"> Add a task</h3> 
-  </div>
 </body>
 
 </html>
