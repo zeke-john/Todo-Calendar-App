@@ -68,15 +68,6 @@ class Todo(db.Model):
     #create forenign key to link users to tasks
     poster_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-
-class addtaskForm(FlaskForm):
-    name = StringField("Name", validators=[DataRequired()])
-    description = StringField("Description")    
-    time = StringField("Start Time")
-    date = StringField("Date", validators=[DataRequired()])
-    labels = StringField()
-    submit = SubmitField("Add Task")
-
 class Notes(db.Model):  
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text(65535635655))
@@ -330,7 +321,6 @@ def labels_view(labels_id):
 @app.route("/today")
 @login_required
 def today():
-    form = addtaskForm() 
     curr_month = datetime.date.today().strftime("%B")
     curr_year = datetime.date.today().strftime("%Y")
     now = datetime.datetime.now()
@@ -338,52 +328,40 @@ def today():
     curr_date = f"{curr_month} {curr_day} {curr_year}"
     home_todo_list = Todo.query.filter_by(date=curr_date).all() #where date = to the present
     labels_list = Labels.query.all()
-    return render_template("today.html", home_todo_list=home_todo_list, form=form,labels_list=labels_list)
+    return render_template("today.html", home_todo_list=home_todo_list, labels_list=labels_list)
 
 
 @app.route("/add", methods=["POST"] )
 @login_required
 def add():  
     lsist = ''
-    form = addtaskForm() 
-    if request.method == "POST":
-        try:
-            date = request.form.get('day')
-            punctuation='!?,.:;"\')(_-'
-            new_day ='' # Creating empty string
-            for i in form.date.data:
-                if(i not in punctuation):
-                            new_day += i
-            new_day = new_day.split()
+    date = request.form.get('date')
+    punctuation='!?,.:;"\')(_-'
+    new_day ='' # Creating empty string
+    for i in date:
+        if(i not in punctuation):
+                    new_day += i
+    new_day = new_day.split()
 
-            month = new_day[0]
-            day = new_day[1]
-            year = new_day[-1]
-            date = f'{month} {day} {year}'
-            if form.name.data.isspace():
-                flash("Please enter a valid name")
-                return redirect(url_for("today", form=form))
-            else:
-                labels = request.form.getlist('labels')
-                name = request.form.get('name')
-                description = request.form.get('description')
-                start = request.form.get('start')
-                if labels == []:
-                    labels = ''
-                    labels=labels
-                for label in labels:
-                    lsist = lsist + label + ","
-                new_todo = Todo(name=name, complete=False, description=description, start=start, date=date, month=month, day=day, year=year, poster_id=current_user.id, labels=lsist)
-
-                db.session.add(new_todo)
-                db.session.commit()
-                return redirect(url_for("today", form=form))
-        except:
-            flash('There was an error when adding your task, Try again')
-            return redirect(url_for("today", form=form))
-    else:
-        flash('There was an error when adding your task, Try again')
-        return redirect(url_for("today", form=form))
+    month = new_day[0]
+    day = new_day[1]
+    year = new_day[-1]
+    date = f'{month} {day} {year}'
+    labels = request.form.getlist('labels')
+    name = request.form.get('name')
+    description = request.form.get('description')
+    start = request.form.get('start')
+    if labels == []:
+        labels = ''
+        labels=labels
+    for label in labels:
+        lsist = lsist + label + ","
+    if name and date:
+        new_todo = Todo(name=name, complete=False, description=description, start=start, date=date, month=month, day=day, year=year, poster_id=current_user.id, labels=lsist)
+        db.session.add(new_todo)
+        db.session.commit()
+        return redirect(url_for("today"))
+    return jsonify({'error':'Please fill out the name and/or the date'})
 
 @app.route("/notes/<int:id>" , methods=["POST", "GET"])
 @login_required

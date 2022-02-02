@@ -191,12 +191,12 @@
     .otherss { 
       float: left;
     }
-    #textarea{
+    /* #textarea{
     background: transparent;
     border: none;
     outline: none;    
     resize: none;
-  }
+  } */
     </style> 
 
     <div class="ui container">
@@ -212,7 +212,7 @@
                   <span class="text" style='color:rgba(140, 140, 140, 0.784);'>Labels  <i class="dropdown icon"></i></span>
                   <div class="menu">
                     <input class="search input" style="background: transparent;border: none; outline: none;    resize: none; margin:0%;" type="text" placeholder="Search">
-                    <div class="scrolling menu" name="labels">
+                    <div class="scrolling menu" name="labels" id="labels">
                       {% for labels in labels_list %}
                       <option class="item" data-value={{labels.id}}>
                         {{labels.name}}
@@ -222,27 +222,29 @@
                   </div>
                 </div>
                 <div class="ui transparent black fluid input">
-                      {{ form.name( autocomplete="off", placeholder="Name", id="name", spellcheck="true") }}
-                    </div>
-              <textarea id='textarea' name="description" placeholder="Description" spellcheck="true" autocomplete="off" ></textarea>
-
+                      <input type="text" name="name" autocomplete="off" placeholder="Name" id="name" spellcheck="true" required>
+                </div>
+              <textarea style='background: transparent; border: none; outline: none; resize: none;' name="description" placeholder="Description" spellcheck="true" autocomplete="off" id='description'></textarea>
               <div class='otherss'>
-              <div class="ui calendar" id="start">
-                <input class="ui basic button" name="start" placeholder='Time' autocomplete='off' style="width: 91px;"></input>
+              <div class="ui calendar" id="starttime" place='Time'>
+                <input class="ui basic button" name="starttime" id='time' autocomplete='off'  placeholder='Time' style="width: 100px;" ></input>
+              </div>
+              
                 <script>
-                  $('#start').calendar({
-                      ampm: true  ,
+                  $('#starttime').calendar({
+                      ampm: true,
                       type: 'time',
+                      today: true, 
                       onChange: function (time, text) {
                         var newValue = text;
                       },
                     });
                   </script>
-              </div>
+              
             </div>
             <div class='otherss'>
               <div class="ui calendar"  id="day">
-                <input class="ui basic button" name="day" placeholder='Date' autocomplete='off' style="width: 160px;" required></input>
+                <input  class="ui basic button" name="day" id='date' placeholder='Date' autocomplete='off' style="width: 160px;"  required></input>
                 <script>
                   const day_options = { 
                       day: 'numeric', 
@@ -260,23 +262,26 @@
                   var today = new Date();
                   $('#day').calendar({
                     type: 'date',
+                    today: true,
                     minDate: new Date(today.getFullYear(), today.getMonth(), today.getDate()) 
                   });
                 </script>
               </div>
             </div>
-            <a class="ui basic button">Inbox</a>
-              <div class='others'>
-                <a class="circular ui basic icon button">
-                  <i class="icon alarm"></i>
-                </a>
-              </div>
+             
+              <a class="circular ui basic icon button" style='float:right;'>
+                <i class="icon alarm"></i>
+              </a>
+            </div>
+          </div>
+          <div class="ui negative message" style="display:none;" id="errorAlert">
+            <div class="header">
             </div>
           </div>
         </div>
         <div class="actions">
           <div class="ui brown cancel button" >Back</div>
-          <div class="ui yellow button">Add Task</div>
+          <button type='submit' class="ui yellow button">Add Task</button>
         </div>
       </div>
       
@@ -285,7 +290,6 @@
     </div>
     <br>
       <span class='otherss'>
-        
         <a class="circular ui tiny basic icon button" id="taskbuttton" style="margin: 0px;">
           <i class="icon plus"></i>
         </a>
