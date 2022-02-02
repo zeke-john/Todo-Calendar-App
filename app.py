@@ -348,6 +348,7 @@ def add():
     form = addtaskForm() 
     if request.method == "POST":
         try:
+            date = request.form.get('day')
             punctuation='!?,.:;"\')(_-'
             new_day ='' # Creating empty string
             for i in form.date.data:
@@ -364,12 +365,15 @@ def add():
                 return redirect(url_for("today", form=form))
             else:
                 labels = request.form.getlist('labels')
+                name = request.form.get('name')
+                description = request.form.get('description')
+                start = request.form.get('start')
                 if labels == []:
                     labels = ''
                     labels=labels
                 for label in labels:
                     lsist = lsist + label + ","
-                new_todo = Todo(name=form.name.data, complete=False, description=form.description.data, start=form.time.data, date=date, month=month, day=day, year=year, poster_id=current_user.id, labels=lsist)
+                new_todo = Todo(name=name, complete=False, description=description, start=start, date=date, month=month, day=day, year=year, poster_id=current_user.id, labels=lsist)
 
                 db.session.add(new_todo)
                 db.session.commit()

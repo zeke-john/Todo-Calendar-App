@@ -209,14 +209,10 @@
             <div class="field">
                 <div class="ui multiple dropdown">
                   <input type="hidden" name="filters">
-                  <span class="text" style='color:rgba(140, 140, 140, 0.784);'>Labels</span>
+                  <span class="text" style='color:rgba(140, 140, 140, 0.784);'>Labels  <i class="dropdown icon"></i></span>
                   <div class="menu">
-                    <input class="search input" style="    background: transparent;
-                    border: none;
-                    outline: none;    
-                    resize: none;
-                    margin:0%;" type="text" placeholder="Search">
-                    <div class="scrolling menu">
+                    <input class="search input" style="background: transparent;border: none; outline: none;    resize: none; margin:0%;" type="text" placeholder="Search">
+                    <div class="scrolling menu" name="labels">
                       {% for labels in labels_list %}
                       <option class="item" data-value={{labels.id}}>
                         {{labels.name}}
@@ -246,7 +242,7 @@
             </div>
             <div class='otherss'>
               <div class="ui calendar"  id="day">
-                <input class="ui basic button" name="day" placeholder='Date' autocomplete='off' style="width: 160px;"></input>
+                <input class="ui basic button" name="day" placeholder='Date' autocomplete='off' style="width: 160px;" required></input>
                 <script>
                   const day_options = { 
                       day: 'numeric', 
