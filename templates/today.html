@@ -21,14 +21,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo App - Today</title>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css">
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
     <link href="https://cdn.rawgit.com/mdehoog/Semantic-UI/6e6d051d47b598ebab05857545f242caf2b4b48c/dist/semantic.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
     <script src="https://cdn.rawgit.com/mdehoog/Semantic-UI/6e6d051d47b598ebab05857545f242caf2b4b48c/dist/semantic.min.js"></script>
+
+    <script src="/static/jsp/addtask.js"></script>
   </head>
 
 <body>  
@@ -191,12 +191,6 @@
     .otherss { 
       float: left;
     }
-    /* #textarea{
-    background: transparent;
-    border: none;
-    outline: none;    
-    resize: none;
-  } */
     </style> 
 
     <div class="ui container">
@@ -205,14 +199,15 @@
           Add a Task
         </div>
         <div class="content">
-          <div class="ui form">
+          <form class="ui form">
             <div class="field">
                 <div class="ui multiple dropdown">
-                  <input type="hidden" name="filters">
-                  <span class="text" style='color:rgba(140, 140, 140, 0.784);'>Labels  <i class="dropdown icon"></i></span>
+                  <input type="hidden" name="filters" id="tasklabels">
+                  <span class="text" style='color:rgba(159, 159, 159, 0.784);'>Labels<i class="dropdown icon"></i></span>
                   <div class="menu">
                     <input class="search input" style="background: transparent;border: none; outline: none;    resize: none; margin:0%;" type="text" placeholder="Search">
-                    <div class="scrolling menu" name="labels" id="labels">
+                    <div class="scrolling menu" name="labels">
+                      
                       {% for labels in labels_list %}
                       <option class="item" data-value={{labels.id}}>
                         {{labels.name}}
@@ -221,13 +216,16 @@
                     </div>
                   </div>
                 </div>
+                
                 <div class="ui transparent black fluid input">
-                      <input type="text" name="name" autocomplete="off" placeholder="Name" id="name" spellcheck="true" required>
+                      <input type="text" name="name" autocomplete="off" placeholder="Name" id="name" spellcheck="true">
                 </div>
               <textarea style='background: transparent; border: none; outline: none; resize: none;' name="description" placeholder="Description" spellcheck="true" autocomplete="off" id='description'></textarea>
+
+              <div class="ui container">
               <div class='otherss'>
-              <div class="ui calendar" id="starttime" place='Time'>
-                <input class="ui basic button" name="starttime" id='time' autocomplete='off'  placeholder='Time' style="width: 100px;" ></input>
+              <div class="ui calendar" id="starttime">
+                <input class="ui basic button" name="starttime" autocomplete='off'  placeholder='Time' style="width: 100px;" id='time'></input>
               </div>
               
                 <script>
@@ -244,7 +242,9 @@
             </div>
             <div class='otherss'>
               <div class="ui calendar"  id="day">
-                <input  class="ui basic button" name="day" id='date' placeholder='Date' autocomplete='off' style="width: 160px;"  required></input>
+                <input  class="ui basic button" name="day" autocomplete='off' placeholder='Date' style="width: 154.5px;" id="taskdate"></input>
+              </div>
+
                 <script>
                   const day_options = { 
                       day: 'numeric', 
@@ -266,28 +266,37 @@
                     minDate: new Date(today.getFullYear(), today.getMonth(), today.getDate()) 
                   });
                 </script>
-              </div>
+
             </div>
              
-              <a class="circular ui basic icon button" style='float:right;'>
+              <a class="circular ui basic icon button" style='float:right;flex-wrap: wrap; margin:0.5;'>
                 <i class="icon alarm"></i>
               </a>
+              <a class="circular ui basic icon button" style='float:right;flex-wrap: wrap; margin:0.25;'>
+                <i class="icon inbox"></i>
+              </a>
+            </div>
+            </div>
+            <div>
+              <br>
+              <div class="ui olive message" style="display:none;" id="successAlert">
+                <div class="header">
+                </div>
+              </div>
+              <div class="ui negative message" style="display:none;" id="errorAlert">
+                <div class="header">
+                </div>
+              </div>
             </div>
           </div>
-          <div class="ui negative message" style="display:none;" id="errorAlert">
-            <div class="header">
-            </div>
+          <div class="actions">
+            <a class="ui brown button" href='/today'>Back</a>
+            <button type="submit" class="ui yellow button">Add Task</button>
           </div>
-        </div>
-        <div class="actions">
-          <div class="ui brown cancel button" >Back</div>
-          <button type='submit' class="ui yellow button">Add Task</button>
-        </div>
-      </div>
-      
+        </form>
+  </div>
     </div>
-    <div class="ui vertical segment">
-    </div>
+
     <br>
       <span class='otherss'>
         <a class="circular ui tiny basic icon button" id="taskbuttton" style="margin: 0px;">

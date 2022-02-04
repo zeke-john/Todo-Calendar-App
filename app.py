@@ -334,34 +334,29 @@ def today():
 @app.route("/add", methods=["POST"] )
 @login_required
 def add():  
-    lsist = ''
-    date = request.form.get('date')
-    punctuation='!?,.:;"\')(_-'
-    new_day ='' # Creating empty string
-    for i in date:
-        if(i not in punctuation):
-                    new_day += i
-    new_day = new_day.split()
-
-    month = new_day[0]
-    day = new_day[1]
-    year = new_day[-1]
-    date = f'{month} {day} {year}'
-    labels = request.form.getlist('labels')
-    name = request.form.get('name')
-    description = request.form.get('description')
-    start = request.form.get('start')
-    if labels == []:
-        labels = ''
-        labels=labels
-    for label in labels:
-        lsist = lsist + label + ","
-    if name and date:
-        new_todo = Todo(name=name, complete=False, description=description, start=start, date=date, month=month, day=day, year=year, poster_id=current_user.id, labels=lsist)
+    name = request.form['name']
+    description = request.form['description']
+    time = request.form['time']
+    taskdate = request.form['taskdate']
+    tasklabels = request.form['tasklabels']
+    if name and taskdate:
+        punctuation='!?,.:;"\')(_-'
+        new_day ='' # Creating empty string
+        for i in str(taskdate):
+            if(i not in punctuation):
+                        new_day += i
+        new_day = new_day.split()
+        print(new_day)
+        month = new_day[0]
+        day = new_day[1]
+        year = new_day[-1]
+        date = f'{month} {day} {year}'
+        new_todo = Todo(name=name, complete=False, description=description, start=time, date=date, month=month, day=day, year=year, poster_id=current_user.id, labels=tasklabels)
         db.session.add(new_todo)
         db.session.commit()
-        return redirect(url_for("today"))
-    return jsonify({'error':'Please fill out the name and/or the date'})
+        return jsonify({'name' : 'Task Added'})
+
+    return jsonify({'error' : 'Please fill out the name and date of your task'})
 
 @app.route("/notes/<int:id>" , methods=["POST", "GET"])
 @login_required
