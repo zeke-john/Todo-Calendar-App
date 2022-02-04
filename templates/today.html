@@ -86,7 +86,9 @@
       </div>
   {% endfor %}
         <h1 class="ui center aligned header" style="font-size: 45px;">Today</h1>
-        <h3 style="font-weight: 100; font-size: 25px;"  class="ui center aligned header" id="date" > </h3>
+        <div class="ui vertical segment">
+          <h3 style="font-weight: 100; font-size: 25px;"  class="ui center aligned header" id="date" > </h3>
+        </div>
         <script>
           var dateObj = new Date()
           var weekday = dateObj.toLocaleString("default", { weekday: "long" })
@@ -296,7 +298,6 @@
         </form>
   </div>
     </div>
-
     <br>
       <span class='otherss'>
         <a class="circular ui tiny basic icon button" id="taskbuttton" style="margin: 0px;">

@@ -317,6 +317,33 @@ def labels_view(labels_id):
                 return render_template("labelsView.html", form=form, labelname=label_to_see, todo_list=todo_list)
     return render_template("labelsView.html", form=form, labelname=label_to_see, todo_list=todo_list)
 
+@app.route("/labels/view/<labels_id>/update/<int:todo_id>")
+@login_required
+def update_task_labels(todo_id,labels_id):
+    post_to_delete = Todo.query.get_or_404(todo_id)
+    label_to_see = Labels.query.get_or_404(labels_id)
+    id = current_user.id
+    if id == post_to_delete.poster.id:
+        todo = Todo.query.filter_by(id=todo_id).first()
+        todo.complete = not todo.complete
+        db.session.commit()
+        return redirect(url_for("labels_view", labels_id=label_to_see.id))
+    else:
+        return redirect(url_for("labels_view",labels_id=label_to_see.id))
+
+@app.route("/labels/view/<labels_id>/delete/<int:todo_id>")
+@login_required
+def delete_task_labels(todo_id,labels_id):
+    post_to_delete = Todo.query.get_or_404(todo_id)
+    label_to_see = Labels.query.get_or_404(labels_id)
+    id = current_user.id
+    if id == post_to_delete.poster.id:
+        todo = Todo.query.filter_by(id=todo_id).first()
+        db.session.delete(todo)
+        db.session.commit()
+        return redirect(url_for("labels_view",labels_id=label_to_see.id))
+    else:
+        return redirect(url_for('labels_view',labels_id=label_to_see.id))
 
 @app.route("/today")
 @login_required
@@ -668,32 +695,6 @@ def delete_task(todo_id):
     else:
         return redirect(url_for('today'))
 
-
-@app.route("/labels/view/update/<int:todo_id>")
-@login_required
-def update_task_labels(todo_id):
-    post_to_delete = Todo.query.get_or_404(todo_id)
-    id = current_user.id
-    if id == post_to_delete.poster.id:
-        todo = Todo.query.filter_by(id=todo_id).first()
-        todo.complete = not todo.complete
-        db.session.commit()
-        return redirect(url_for("labels_view"))
-    else:
-        return redirect(url_for("labels_view"))
-
-@app.route("/labels/view/delete/<int:todo_id>")
-@login_required
-def delete_task_labels(todo_id):
-    post_to_delete = Todo.query.get_or_404(todo_id)
-    id = current_user.id
-    if id == post_to_delete.poster.id:
-        todo = Todo.query.filter_by(id=todo_id).first()
-        db.session.delete(todo)
-        db.session.commit()
-        return redirect(url_for("labels_view"))
-    else:
-        return redirect(url_for('labels_view'))
 
 
 @app.errorhandler(404)
