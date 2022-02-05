@@ -40,7 +40,6 @@ const dateString = firstDayOfMonth.toLocaleDateString('en-us', {
 const paddingDays = weekdays.indexOf(dateString.split(', ')[0]);    
 
 document.getElementById('monthDisplay').innerText = 
-
 `${dt.toLocaleDateString('en-us', { month: 'long' })} ${year}`;
 calendar.innerText = '';
 
@@ -57,14 +56,8 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     if (i - paddingDays === day && nav === 0) {
         daySquare.id = 'currentDay';
     }
-    const month_options = { 
-        month: 'long', 
-    };  
-    monthdisplay = new Date().toLocaleDateString('en-US', month_options);
-    const year_option = { 
-        year: 'numeric',
-    };  
-    yeardisplay = new Date().toLocaleDateString('en-US', year_option);
+    var monthdisplay = (`${dt.toLocaleDateString('en-us', { month: 'long' })}`)
+    var yeardisplay = `${year}`
 
     let toString = date_of_todo.toString()
     let split = toString.split(/[!,?,.]/);
@@ -78,43 +71,29 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     split.forEach((element) => {
         if (" 39" + monthdisplay +  " " + daySquare.id + " " +yeardisplay + "s" + "39" == element || "39" + monthdisplay +  " " + daySquare.id + " " +yeardisplay + "s" + "39" == element) {
             daySquare.id = 'compTasks';
-            console.log(element)
         }
     });
 
     if(daySquare.id !='currentDay' && daySquare.id != 'less'){
         function sendUserInfo(){
             var day_hover = daySquare.id
-            // console.log(day_hover)
             if (day_hover == 'HasTasks' || day_hover == 'compTasks'){   
                 day_hover = i - paddingDays
             }
-            var dateObj = new Date()
-            var monthuser = dateObj.toLocaleString("default", { month: "long" })
-            var yearuser = dateObj.toLocaleString("default", { year: "numeric" })
-            const options = { 
-                month: 'long',
-                year: 'numeric' 
-            };
+            var monthuser = `${dt.toLocaleDateString('en-us', { month: 'numeric' })}`
+            var yearuser = `${year}`
 
             const request = new XMLHttpRequest()
             request.open('POST',   `/calendar/${JSON.stringify(day_hover)}/${JSON.stringify(monthuser)}/${JSON.stringify(yearuser)}`)
             request.onload = () => {
-                const month_options = { 
-                    month: 'long', 
-                };  
-                monthdisplay = new Date().toLocaleDateString('en-US', month_options);
-                const year_option = { 
-                    year: 'numeric',
-                };  
-                
-                yeardisplay = new Date().toLocaleDateString('en-US', year_option);
-                dateuser = monthdisplay + " " + day_hover + ", " + yeardisplay
+                var monthuser = `${dt.toLocaleDateString('en-us', { month: 'long' })}`
+                var yearuser = `${year}`
+                dateuser = monthuser + " " + day_hover + ", " + yearuser
                 dateuser = dateuser
-
                 localStorage.setItem("date", dateuser);
             }
             request.send()
+            
             daySquare.addEventListener('click', () => location = `/calendar/${JSON.stringify(day_hover)}/${JSON.stringify(monthuser)}/${JSON.stringify(yearuser)}`);
         }
         sendUserInfo()
@@ -122,7 +101,7 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     } 
     
     if (daySquare.id == 'currentDay'){
-        daySquare.addEventListener('click', () => location = "http://192.168.1.16:2000/today");
+        daySquare.addEventListener('click', () => location = "http://192.168.1.11:5000/today");
     }
     if (daySquare.id == 'less'){
         daySquare.addEventListener('click', () => location = "#");
@@ -138,5 +117,16 @@ for(let i = 1; i <= paddingDays + daysInMonth; i++) {
     calendar.appendChild(daySquare);    
 }
 }
+function initButtons() {
+    document.getElementById('nextbutton').addEventListener('click', ()=> {
+        nav++;
+        load();
+    });
+    document.getElementById('backbutton').addEventListener('click', () => {
+        nav--;
+        load();
+    });
+    }
 
+initButtons()
 load();

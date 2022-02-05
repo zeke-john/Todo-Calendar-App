@@ -22,6 +22,7 @@ from wtforms import StringField, SubmitField, PasswordField, ValidationError, Ti
 import re
 from lxml import html
 import ast
+import datetime
 
 app = Flask(__name__)
 ckeditor = CKEditor(app)
@@ -519,18 +520,82 @@ def calendar():
 @app.route('/calendar/<day_hover>/<monthuser>/<yearuser>', methods=['POST', 'GET'])
 @login_required
 def calendarDay(day_hover, monthuser, yearuser):
-    
-    curr_month = datetime.date.today().strftime("%B")
-    monthuser = curr_month
+    monthuser = json.loads(monthuser)
     day_hover = json.loads(day_hover)
-    day_hover = day_hover
+    datetime_object = datetime.datetime.strptime(str(monthuser), "%m")
+    full_month_name = datetime_object.strftime("%B")
     yearuser = json.loads(yearuser)
-    date_user = f"{monthuser} {day_hover} {yearuser}"  
-
-    calendar_todo_list = Todo.query.filter(Todo.date.endswith(date_user)).all()
+    date_user = f"{full_month_name} {day_hover} {yearuser}"  
+    calendar_todo_list = Todo.query.filter(Todo.date == date_user).all()
     labels_list = Labels.query.all()
-    return render_template('calendarDay.html', monthuser=monthuser , calendar_todo_list=calendar_todo_list, day_hover=day_hover, yearuser=yearuser,labels_list=labels_list)
+    return render_template('calendarDay.html', calendar_todo_list=calendar_todo_list, day_hover=day_hover, monthuser=monthuser , yearuser=yearuser,labels_list=labels_list)
 
+@app.route('/calendar/<day_hover>/<monthuser>/<yearuser>/update/<int:todo_id>', methods=['POST', 'GET'])
+@login_required
+def update_cal(day_hover, monthuser, yearuser,todo_id):
+    post_to_delete = Todo.query.get_or_404(todo_id)
+    id = current_user.id
+    if id == post_to_delete.poster.id:
+        monthuser = json.loads(monthuser)
+        day_hover = json.loads(day_hover)
+        yearuser = json.loads(yearuser)
+        todo = Todo.query.filter_by(id=todo_id).first()
+        todo.complete = not todo.complete
+        db.session.commit()
+        return redirect(url_for("calendarDay", yearuser=yearuser, monthuser=monthuser, day_hover=day_hover, todo_id=todo_id ))
+    else:
+        return redirect(url_for("today"))
+
+@app.route('/calendar/<day_hover>/<monthuser>/<yearuser>/delete/<int:todo_id>', methods=['POST', 'GET'])
+@login_required
+def delete_cal(todo_id, day_hover, monthuser, yearuser):
+    post_to_delete = Todo.query.get_or_404(todo_id)
+    id = current_user.id
+    if id == post_to_delete.poster.id:
+        day_hover = json.loads(day_hover)
+        monthuser = json.loads(monthuser)
+        yearuser = json.loads(yearuser)
+
+        todo = Todo.query.filter_by(id=todo_id).first()
+        db.session.delete(todo)
+        db.session.commit()
+        return redirect(url_for("calendarDay", yearuser=yearuser, monthuser=monthuser, day_hover=day_hover, todo_id=todo_id ))
+    else:
+        return redirect(url_for("today"))
+
+@app.route("/calendar/<day_hover>/<monthuser>/<yearuser>/edit/<int:todo_id>", methods=["GET", "POST"])
+@login_required
+def edit_cal(todo_id, day_hover, monthuser, yearuser ):
+    post_to_delete = Todo.query.get_or_404(todo_id)
+    id = current_user.id
+    if id == post_to_delete.poster.id:
+        curr_month = datetime.date.today().strftime("%B")
+        day_hover = json.loads(day_hover)
+        monthuser = curr_month
+        yearuser = json.loads(yearuser)
+        form = EditForm()
+        name_to_update = Todo.query.get_or_404(todo_id)
+        if request.method == "POST":
+            name_to_update.name = request.form['name']
+            name_to_update.description = request.form['description']
+            name_to_update.start = request.form['start']
+            try:
+                db.session.commit()
+                flash("Task Updated")
+                return render_template("editCal.html", 
+                form=form, 
+                name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
+            except:
+                flash("Error!  Looks like there was a problem... Try again!")
+                return render_template("editCal.html", 
+                form=form, 
+                name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
+        else:
+            return render_template("editCal.html", 
+                form=form, 
+                name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
+    else:
+        return redirect(url_for("today"))
 
 @app.route('/deleteUser/<int:id>')
 @login_required
@@ -597,77 +662,6 @@ def change_token(token):
             db.session.commit()
             flash("Your password has been updated, now you can login")
     return render_template("reset_password.html", form=form)
-
-
-@app.route('/calendar/<day_hover>/<monthuser>/<yearuser>/update/<int:todo_id>', methods=['POST', 'GET'])
-@login_required
-def update_cal(todo_id, day_hover, monthuser, yearuser):
-    post_to_delete = Todo.query.get_or_404(todo_id)
-    id = current_user.id
-    if id == post_to_delete.poster.id:
-        curr_month = datetime.date.today().strftime("%B")
-        day_hover = json.loads(day_hover)
-        monthuser = curr_month
-        yearuser = json.loads(yearuser)
-
-        todo = Todo.query.filter_by(id=todo_id).first()
-        todo.complete = not todo.complete
-        db.session.commit()
-        return redirect(url_for("calendarDay", yearuser=yearuser, monthuser=monthuser, day_hover=day_hover, todo_id=todo_id ))
-    else:
-        return redirect(url_for("today"))
-
-@app.route('/calendar/<day_hover>/<monthuser>/<yearuser>/delete/<int:todo_id>', methods=['POST', 'GET'])
-@login_required
-def delete_cal(todo_id, day_hover, monthuser, yearuser):
-    post_to_delete = Todo.query.get_or_404(todo_id)
-    id = current_user.id
-    if id == post_to_delete.poster.id:
-        curr_month = datetime.date.today().strftime("%B")
-        day_hover = json.loads(day_hover)
-        monthuser = curr_month
-        yearuser = json.loads(yearuser)
-
-        todo = Todo.query.filter_by(id=todo_id).first()
-        db.session.delete(todo)
-        db.session.commit()
-        return redirect(url_for("calendarDay", yearuser=yearuser, monthuser=monthuser, day_hover=day_hover, todo_id=todo_id ))
-    else:
-        return redirect(url_for("today"))
-
-@app.route("/calendar/<day_hover>/<monthuser>/<yearuser>/edit/<int:todo_id>", methods=["GET", "POST"])
-@login_required
-def edit_cal(todo_id, day_hover, monthuser, yearuser ):
-    post_to_delete = Todo.query.get_or_404(todo_id)
-    id = current_user.id
-    if id == post_to_delete.poster.id:
-        curr_month = datetime.date.today().strftime("%B")
-        day_hover = json.loads(day_hover)
-        monthuser = curr_month
-        yearuser = json.loads(yearuser)
-        form = EditForm()
-        name_to_update = Todo.query.get_or_404(todo_id)
-        if request.method == "POST":
-            name_to_update.name = request.form['name']
-            name_to_update.description = request.form['description']
-            name_to_update.start = request.form['start']
-            try:
-                db.session.commit()
-                flash("Task Updated")
-                return render_template("editCal.html", 
-                form=form, 
-                name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
-            except:
-                flash("Error!  Looks like there was a problem... Try again!")
-                return render_template("editCal.html", 
-                form=form, 
-                name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
-        else:
-            return render_template("editCal.html", 
-                form=form, 
-                name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
-    else:
-        return redirect(url_for("today"))
 
 @app.route("/update/<int:todo_id>")
 @login_required
