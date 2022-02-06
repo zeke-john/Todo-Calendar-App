@@ -271,37 +271,6 @@ def labels_add():
         flash("There was an error when making your label, Try again")
         return redirect(url_for("labels", form=form, id=current_user.id))
 
-@app.route("/edit/<int:todo_id>", methods=["GET", "POST"])
-@login_required
-def edit_task(todo_id):
-    post_to_delete = Todo.query.get_or_404(todo_id)
-    id = current_user.id
-    if id == post_to_delete.poster.id:
-        form = EditForm()
-        name_to_update = Todo.query.get_or_404(todo_id)
-        if request.method == "POST":
-            name_to_update.name = request.form['name']
-            name_to_update.description = request.form['description']
-            name_to_update.start = request.form['start']
-            try:
-                db.session.commit()
-                flash("Task Updated")
-                return render_template("editTask.html", 
-                form=form, 
-                name_to_update=name_to_update)
-            except:
-                flash("Error!  Looks like there was a problem... Try again!")
-                return render_template("editTask.html", 
-                form=form, 
-                name_to_update=name_to_update)
-        else:
-            return render_template("editTask.html", 
-                form=form, 
-                name_to_update=name_to_update)
-    else:
-        return redirect(url_for("today"))
-
-
 @app.route("/labels/view/<int:labels_id>" , methods=["POST", "GET"])
 @login_required
 def labels_view(labels_id):
@@ -385,6 +354,36 @@ def add():
         return jsonify({'name' : 'Task Added'})
 
     return jsonify({'error' : 'Please fill out the name and date of your task'})
+
+@app.route("/edit/<int:todo_id>", methods=["GET", "POST"])
+@login_required
+def edit_task(todo_id):
+    post_to_delete = Todo.query.get_or_404(todo_id)
+    id = current_user.id
+    if id == post_to_delete.poster.id:
+        form = EditForm()
+        name_to_update = Todo.query.get_or_404(todo_id)
+        if request.method == "POST":
+            name_to_update.name = request.form['name']
+            name_to_update.description = request.form['description']
+            name_to_update.start = request.form['start']
+            try:
+                db.session.commit()
+                flash("Task Updated")
+                return render_template("editTask.html", 
+                form=form, 
+                name_to_update=name_to_update)
+            except:
+                flash("Error!  Looks like there was a problem... Try again!")
+                return render_template("editTask.html", 
+                form=form, 
+                name_to_update=name_to_update)
+        else:
+            return render_template("editTask.html", 
+                form=form, 
+                name_to_update=name_to_update)
+    else:
+        return redirect(url_for("today"))
 
 @app.route("/notes/<int:id>" , methods=["POST", "GET"])
 @login_required

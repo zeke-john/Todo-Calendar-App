@@ -113,9 +113,11 @@
                 <a href="/delete/{{ todo.id }}" class="circular ui tiny basic icon button">
                   <i class="icon remove"></i>
                 </a>
-                <a href="{{url_for('edit_task', todo_id=todo.id )}}" class="circular ui tiny basic icon button">
+
+                <a class="circular ui tiny basic icon button" href="{{url_for('edit_task', todo_id=todo.id )}}">
                   <i class="icon edit"></i>
                 </a>
+
                 </span> 
             <div>
           <span style="margin: 0px; font-size: 1.30em; font-weight: bold;">  {{todo.name}} </span>
@@ -196,12 +198,12 @@
     </style> 
 
     <div class="ui container">
-      <div class="ui special modal">
+      <div class="ui special modal" id='addtaskmodal'>
         <div class="header">
           Add a Task
         </div>
         <div class="content">
-          <form class="ui form">
+          <form class="ui form" id='addtask'>
             <div class="field">
                 <div class="ui multiple dropdown">
                   <input type="hidden" name="filters" id="tasklabels">
@@ -306,7 +308,7 @@
     <script>
     
     $('#taskbuttton').click(function(){
-    $('.ui.modal')
+    $('#addtaskmodal')
     .modal({
         closable: false
     }).modal('show');

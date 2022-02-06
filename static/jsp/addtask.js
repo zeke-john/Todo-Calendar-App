@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-	$('form').on('submit', function(event) {
+	$('#addtask').on('submit', function(event) {
 
 		$.ajax({
 			data : {
