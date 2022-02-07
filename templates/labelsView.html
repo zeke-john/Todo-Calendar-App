@@ -102,6 +102,7 @@
             </span> 
         <div>
       <span style="margin: 0px; font-size: 1.30em; font-weight: bold;">  {{todo.name}} </span>
+      <span style="color:rgb(255, 0, 0); margin:0px;">  {{todo.date}}</span>
       {% for labels in labels_list %}
       {% for todolabels in todo.labels.split(',') if todolabels.strip() %}
       {% if todolabels|int == labels.id|int %}
@@ -138,6 +139,7 @@
             </span> 
         <div>
         <span style="margin: 0px; font-size: 1.30em; font-weight: bold;">  <s>{{todo.name}}</s></span>
+        <span style="color:rgb(255, 0, 0); margin:0px;">  <s>{{todo.date}}</s></span>
         {% for labels in labels_list %}
         {% for todolabels in todo.labels.split(',') if todolabels.strip() %}
         {% if todolabels|int == labels.id|int %}
