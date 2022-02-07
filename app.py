@@ -343,7 +343,6 @@ def add():
             if(i not in punctuation):
                         new_day += i
         new_day = new_day.split()
-        print(new_day)
         month = new_day[0]
         day = new_day[1]
         year = new_day[-1]
@@ -360,28 +359,43 @@ def add():
 def edit_task(todo_id):
     post_to_delete = Todo.query.get_or_404(todo_id)
     id = current_user.id
+    labels_list = Labels.query.all()
     if id == post_to_delete.poster.id:
         form = EditForm()
         name_to_update = Todo.query.get_or_404(todo_id)
         if request.method == "POST":
             name_to_update.name = request.form['name']
             name_to_update.description = request.form['description']
-            name_to_update.start = request.form['start']
+            name_to_update.start = request.form['starttime']
+            taskdate=request.form['day']
+            name_to_update.labels=request.form['filters']
+            punctuation='!?,.:;"\')(_-'
+            new_day ='' # Creating empty string
+            for i in str(taskdate):
+                if(i not in punctuation):
+                            new_day += i
+            new_day = new_day.split()
+            print(new_day)
+            month = new_day[0]
+            day = new_day[1]
+            year = new_day[-1]
+            date = f'{month} {day} {year}'
+            name_to_update.date = date
             try:
                 db.session.commit()
                 flash("Task Updated")
                 return render_template("editTask.html", 
                 form=form, 
-                name_to_update=name_to_update)
+                name_to_update=name_to_update,labels_list=labels_list,taskdate=taskdate)
             except:
                 flash("Error!  Looks like there was a problem... Try again!")
                 return render_template("editTask.html", 
                 form=form, 
-                name_to_update=name_to_update)
+                name_to_update=name_to_update,labels_list=labels_list,taskdate=taskdate)
         else:
             return render_template("editTask.html", 
                 form=form, 
-                name_to_update=name_to_update)
+                name_to_update=name_to_update,labels_list=labels_list)
     else:
         return redirect(url_for("today"))
 
@@ -567,32 +581,46 @@ def delete_cal(todo_id, day_hover, monthuser, yearuser):
 def edit_cal(todo_id, day_hover, monthuser, yearuser ):
     post_to_delete = Todo.query.get_or_404(todo_id)
     id = current_user.id
+    labels_list = Labels.query.all()
     if id == post_to_delete.poster.id:
-        curr_month = datetime.date.today().strftime("%B")
         day_hover = json.loads(day_hover)
-        monthuser = curr_month
+        monthuser = json.loads(monthuser)
         yearuser = json.loads(yearuser)
         form = EditForm()
         name_to_update = Todo.query.get_or_404(todo_id)
         if request.method == "POST":
             name_to_update.name = request.form['name']
             name_to_update.description = request.form['description']
-            name_to_update.start = request.form['start']
+            name_to_update.start = request.form['starttime']
+            taskdate=request.form['day']
+            name_to_update.labels=request.form['filters']
+            punctuation='!?,.:;"\')(_-'
+            new_day ='' # Creating empty string
+            for i in str(taskdate):
+                if(i not in punctuation):
+                            new_day += i
+            new_day = new_day.split()
+            print(new_day)
+            month = new_day[0]
+            day = new_day[1]
+            year = new_day[-1]
+            date = f'{month} {day} {year}'
+            name_to_update.date = date
             try:
                 db.session.commit()
                 flash("Task Updated")
                 return render_template("editCal.html", 
                 form=form, 
-                name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
+                name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id,labels_list=labels_list,taskdate=taskdate)
             except:
                 flash("Error!  Looks like there was a problem... Try again!")
                 return render_template("editCal.html", 
                 form=form, 
-                name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
+                name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id,labels_list=labels_list,taskdate=taskdate)
         else:
             return render_template("editCal.html", 
                 form=form, 
-                name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id)
+                name_to_update=name_to_update, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, todo_id=todo_id,labels_list=labels_list)
     else:
         return redirect(url_for("today"))
 
@@ -702,9 +730,6 @@ def page_not_found(e):
 def page_not_found(e):
     return render_template("401.html")
 
-@app.errorhandler(400)
-def page_not_found(e):
-    return render_template("400.html")
 
 @app.errorhandler(403)
 def page_not_found(e):
@@ -733,4 +758,4 @@ def page_not_found(e):
 if __name__ == "__main__":
     db.create_all()
     app.run(debug=True, host=os.getenv('IP', '0.0.0.0'),
-            port=int(os.getenv('PORT', 5000)))
+            port=int(os.getenv('PORT', 3000)))

@@ -45,7 +45,6 @@
         <a class="ui header item" style="font-weight: 300; font-size: 16px;" href="/today ">Today</a>
         <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/calendar ">Calendar</a>
         <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/notes/{{current_user.id}} ">Notes</a>
-        <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/today">Back</a>
         <div class="right menu"  style="padding-right: 10px;" >
             <div class="ui pointing dropdown link item">
                 <a style="font-weight: 300; font-size: 16px; color: black;"> ‎‎‎ ‎ ‎‎‎‎‎ ‎‎‎ ‎‎‎ ‎ ‎‎{{current_user.name}}‎‎‎ ‎‎‎ ‎‎‎ ‎ ‎‎‎‎‎ ‎ ‎‎</a> 
@@ -63,10 +62,10 @@
         </script>
         <div style="margin-top: 100px;" class="ui container">
         {% for message in get_flashed_messages() %}
-            <div class="ui center aligned teal message">
+            <div class="ui center aligned green message">
                 <i class="close icon"></i>
                 <div>
-                    <h3 style="color: black;">
+                    <h3 style="color: rgb(0, 45, 7);">
                         {{message}}
                     </h3>
                 </div>
@@ -91,11 +90,11 @@
             <div class="content">
                 <div class="field">
                     <div class="ui multiple dropdown">
-                        <input type="hidden" name="filters" id="tasklabels">
+                        <input type="hidden" name="filters" id="tasklabels" value="{{name_to_update.labels}}" >
                         <span class="text" style='color:rgba(159, 159, 159, 0.784);'>Labels<i class="dropdown icon"></i></span>
                         <div class="menu">
                         <input class="search input" style="background: transparent;border: none; outline: none;    resize: none; margin:0%;" type="text" placeholder="Search">
-                        <div class="scrolling menu" name="labels">
+                        <div class="scrolling menu">
                             
                             {% for labels in labels_list %}
                             <option class="item" data-value={{labels.id}}>
@@ -107,14 +106,14 @@
                     </div>
                     
                     <div class="ui transparent black fluid input">
-                            <input type="text" name="name" autocomplete="off" placeholder="Name" id="name" spellcheck="true">
+                            <input type="text" name="name" autocomplete="off" placeholder="Name" id="name" value="{{name_to_update.name}}"  spellcheck="true">
                     </div>
-                    <textarea style='background: transparent; border: none; outline: none; resize: none;' name="description" placeholder="Description" spellcheck="true" autocomplete="off" id='description'></textarea>
+                    <textarea style='background: transparent; border: none; outline: none; resize: none;' name="description"  placeholder="Description" spellcheck="true" autocomplete="off" id='description'>{{name_to_update.description}}</textarea>
     
                     <div class="ui container">
                     <div class='otherss'>
                     <div class="ui calendar" id="starttime">
-                    <input class="ui basic button" name="starttime" autocomplete='off'  placeholder='Time' style="width: 100px;" id='time'></input>
+                    <input class="ui basic button" name="starttime" autocomplete='off' value="{{name_to_update.start}}"  placeholder='Time' style="width: 100px;" id='time'></input>
                     </div>
                     
                     <script>
@@ -143,7 +142,7 @@
                     </style> 
                 <div class='otherss'>
                     <div class="ui calendar"  id="day">
-                    <input  class="ui basic button" name="day" autocomplete='off' placeholder='Date' style="width: 154.5px;" id="taskdate"></input>
+                    <input  class="ui basic button" name="day" autocomplete='off' placeholder='Date' style="width: 154.5px;" id="taskdate" value="{{name_to_update.date}}" required></input>
                     </div>
     
                     <script>
@@ -194,7 +193,8 @@
                     
                 </div>
                 </div>
-                <button class="ui basic black button" type="submit">   Save   </button>
+                <button class="ui yellow button" type="submit">Save</button>
+                <a class="ui brown button" href="/today">Back</a>
         </form>
 
     </div>

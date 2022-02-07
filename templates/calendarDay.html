@@ -85,7 +85,7 @@
                         <a href="/calendar/{{day_hover}}/{{monthuser}}/{{yearuser}}/delete/{{ todo.id }}" class="circular ui tiny basic icon button">
                           <i class="icon remove"></i>
                         </a>
-                        <a href="{{url_for('edit_task', todo_id=todo.id )}}" class="circular ui tiny basic icon button">
+                        <a href="{{url_for('edit_cal', todo_id=todo.id, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, )}}" class="circular ui tiny basic icon button">
                           <i class="icon edit"></i>
                         </a>
                         </span> 
@@ -124,7 +124,7 @@
                       <a href="/calendar/{{day_hover}}/{{monthuser}}/{{yearuser}}/delete/{{ todo.id }}" class="circular ui tiny basic icon button">
                         <i class="icon remove"></i>
                       </a>
-                      <a href="{{url_for('edit_task', todo_id=todo.id )}}" class="circular ui tiny basic icon button">
+                      <a href="{{url_for('edit_cal', todo_id=todo.id, day_hover=day_hover , monthuser=monthuser, yearuser=yearuser, )}}" class="circular ui tiny basic icon button">
                         <i class="icon edit"></i>
                       </a>
                       </span> 
