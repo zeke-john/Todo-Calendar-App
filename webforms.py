@@ -65,3 +65,7 @@ class ResetPasswordForm(FlaskForm):
 class AddLabelForm(FlaskForm):
     name = StringField("Label Name", validators=[DataRequired()])
     submit = SubmitField("Add Label")
+
+class EditLabelForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()])
+    submit = SubmitField("Save")

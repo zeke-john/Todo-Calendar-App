@@ -19,7 +19,7 @@
 
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Todo App - Labels</title>
+        <title>Todo App - Edit Label</title>
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css">
         <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
@@ -81,28 +81,7 @@
             </script>
         </div>
     {% endfor %}
-    <h1 class="ui center aligned header" style="font-size: 45px; ">Labels </h1>
-
-
-    <form class="form" action="/labels/add" method="POST">
-    <div class="field">
-        <h4>Add a new label</h4>
-        <div class="ui fluid input">
-                {{ form.name(autocomplete="off", placeholder="Enter a name") }}
-            </div>
-        </form>
-        <br>
-        <button class="ui brown labeled icon button" type="submit">
-            <i class="plus icon"></i>
-            Add label
-        </button>
-    </div>
-    </form>
-    <br>
-    <br>
-    <div class="ui vertical segment">
-        <h1 class="ui aligned header" style="font-size: 35px; ">Created Labels</h1>
-    </div>
+    <h1 class="ui center aligned header" style="font-size: 45px; ">Edit Label</h1>
     <style>
     .text:hover {
         text-decoration: underline rgb(11, 4, 0);
@@ -111,24 +90,17 @@
         float: right;
     }
     </style>
-    {% for labels in labels_list %}
-    <div class="ui vertical segment listitem block">
-        <a class="text" style="font-size: 23px; color: black; font-weight:500;" href="/labels/view/{{labels.id}}" > {{labels.name}} </a>
-        <span class='others'>
-            <a href="/delete/label/{{labels.id}}" class="circular ui tiny basic icon button">
-            <i class="icon remove"></i>
-            </a>
 
-            <a href="/edit/label/{{labels.id}}" class="circular ui tiny basic icon button" id="editbuttton" value="{{labels.id}}">
-                <i class="icon edit"></i>
-            </a>
-            
-            </span>
-    </div>
-    {% endfor %}
-
-    <div class="ui vertical segment listitem block">
-    </div>
-    </div>
+    <form class="ui form" action="/edit/label/{{labels_id}}" method="post">
+        <div class="ui vertical segment listitem block">
+            <h4>Label name</h4>
+            <div class="ui fluid input">
+                <input name="name"type="text" autocomplete="off" placeholder="Name" id="name" value="{{name_to_update.name}}"  spellcheck="true" required> 
+            </div>
+            <br>        
+            <button class="ui yellow button" type="submit">Save</button>
+            <a class="ui brown button" href="/labels/{{current_user.id}}">Back</a>   
+        </div>
+    </form>
 </body>
 </html>

@@ -234,7 +234,6 @@ def labels(id):
 @app.route("/delete/label/<int:label_id>")
 @login_required
 def delete_label(label_id):
-    post_to_delete = Labels.query.get_or_404(label_id)
     label = Labels.query.filter_by(id=label_id).first()
     db.session.delete(label)
     db.session.commit()
@@ -344,6 +343,44 @@ def edit_task_labels(todo_id,labels_id):
             return render_template("editTasklabels.html", 
                 form=form, 
                 name_to_update=name_to_update,labels_list=labels_list,labels_id=label_to_see.id)
+
+@app.route("/edit/label/<int:label_id>", methods=["GET", "POST"])
+@login_required
+def edit_label(label_id):
+    label_to_see = Labels.query.get_or_404(label_id)
+    form = EditLabelForm()
+    name_to_update = Labels.query.get_or_404(label_id)
+    if request.method == "POST":
+        if form.name.data.isspace():
+            flash("Please enter a valid name")
+            return redirect(url_for('edit_label', form=form, name_to_update=name_to_update,label_id=label_to_see.id))
+        if '[' in form.name.data:
+            flash("Please enter a valid name")
+            return redirect(url_for('edit_label', form=form, name_to_update=name_to_update,label_id=label_to_see.id))
+        if ']' in form.name.data:
+            flash("Please enter a valid name")
+            return redirect(url_for('edit_label', form=form, name_to_update=name_to_update,label_id=label_to_see.id))
+        if ',' in form.name.data:
+            flash("Please enter a valid name")
+            return redirect(url_for('edit_label', form=form, name_to_update=name_to_update,label_id=label_to_see.id))
+        else:
+            form.name.data =  form.name.data.replace(" ", "_")
+            name_to_update.name = form.name.data
+        try:
+            db.session.commit()
+            flash("Label Updated")
+            return render_template("editlabels.html", 
+            form=form, 
+            name_to_update=name_to_update,labels_id=label_to_see.id)
+        except:
+            flash("Error!  Looks like there was a problem... Try again!")
+            return render_template("editlabels.html", 
+            form=form, 
+            name_to_update=name_to_update,labels_id=label_to_see.id)
+    else:
+        return render_template("editlabels.html", 
+            form=form, 
+            name_to_update=name_to_update,labels_id=label_to_see.id)
 
 @app.route("/labels/view/<labels_id>/delete/<int:todo_id>")
 @login_required
