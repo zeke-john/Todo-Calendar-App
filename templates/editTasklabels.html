@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <link rel="apple-touch-icon" sizes="60x60" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="57x57" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="shortcut icon" href="{{url_for('static', filename='img/logo.png') }}" type="image/x-icon">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App - Edit Task</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.rawgit.com/mdehoog/Semantic-UI/6e6d051d47b598ebab05857545f242caf2b4b48c/dist/semantic.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+    <script src="https://cdn.rawgit.com/mdehoog/Semantic-UI/6e6d051d47b598ebab05857545f242caf2b4b48c/dist/semantic.min.js"></script>
+
+</head>
+
+<body>   
+    <div class="ui borderless stackable top fixed menu">
+        <img src="/static/img/logo.png" style="width: 60px; height: 55px; padding-left: 10px; padding-top: 5px; padding-bottom: 5px; padding-right: 0px;" >
+        <div class="item">
+            <a href="/">
+                <div class="ui header" style="font-size: 20px;" >
+                Todo App
+                </div>
+            </a>
+        </div>
+        <a class="ui header item" style="font-weight: 300; font-size: 16px;" href="/today ">Today</a>
+        <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/calendar ">Calendar</a>
+        <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/notes/{{current_user.id}} ">Notes</a>
+        <div class="right menu"  style="padding-right: 10px;" >
+            <div class="ui pointing dropdown link item">
+                <a style="font-weight: 300; font-size: 16px; color: black;"> ‎‎‎ ‎ ‎‎‎‎‎ ‎‎‎ ‎‎‎ ‎ ‎‎{{current_user.name}}‎‎‎ ‎‎‎ ‎‎‎ ‎ ‎‎‎‎‎ ‎ ‎‎</a> 
+            <div class="ui simple menu">
+                <a class="item"  href='/logout'>Logout</a>
+                <a class="item"  href='/userInfo'>Account Info</a>
+            </div>
+            </div>
+        </div>  
+        </div>
+        <script> 
+            $(document).ready(function(){
+            $('.ui.dropdown') .dropdown();
+        });
+        </script>
+        <div style="margin-top: 100px;" class="ui container">
+        {% for message in get_flashed_messages() %}
+            <div class="ui center aligned green message">
+                <i class="close icon"></i>
+                <div>
+                    <h3 style="color: rgb(0, 45, 7);">
+                        {{message}}
+                    </h3>
+                </div>
+                <script>
+                    $('.message .close')
+                        .on('click', function() {
+                            $(this)
+                            .closest('.message')
+                            .transition('fade')
+                            ;
+                        })
+                        ;
+                </script>
+            </div>
+        {% endfor %}
+        <br>
+        <div class="ui vertical segment">
+            <h1 class="ui aligned header" style="font-size: 45px;">Edit Task</h1>
+        </div>
+        <br>
+        <form class="ui form" action="/labels/view/{{labels_id}}/edit/{{name_to_update.id}}" method="post">
+            <div class="content">
+                <div class="field">
+                    <div class="ui multiple dropdown">
+                        <input type="hidden" name="filters" id="tasklabels" value="{{name_to_update.labels}}" >
+                        <span class="text" style='color:rgba(159, 159, 159, 0.784);'>Labels<i class="dropdown icon"></i></span>
+                        <div class="menu">
+                        <input class="search input" style="background: transparent;border: none; outline: none;    resize: none; margin:0%;" type="text" placeholder="Search">
+                        <div class="scrolling menu">
+                            
+                            {% for labels in labels_list %}
+                            <option class="item" data-value={{labels.id}}>
+                            {{labels.name}}
+                            </option>
+                            {% endfor %}
+                        </div>
+                        </div>
+                    </div>
+                    
+                    <div class="ui transparent black fluid input">
+                            <input type="text" name="name" autocomplete="off" placeholder="Name" id="name" value="{{name_to_update.name}}"  spellcheck="true">
+                    </div>
+                    <textarea style='background: transparent; border: none; outline: none; resize: none;' name="description"  placeholder="Description" spellcheck="true" autocomplete="off" id='description'>{{name_to_update.description}}</textarea>
+    
+                    <div class="ui container">
+                    <div class='otherss'>
+                    <div class="ui calendar" id="starttime">
+                    <input class="ui basic button" name="starttime" autocomplete='off' value="{{name_to_update.start}}"  placeholder='Time' style="width: 100px;" id='time'></input>
+                    </div>
+                    
+                    <script>
+                        $('#starttime').calendar({
+                            ampm: true,
+                            type: 'time',
+                            today: true, 
+                            onChange: function (time, text) {
+                            var newValue = text;
+                            },
+                        });
+                        </script>
+                    
+                </div>
+                <style>
+                    .ui.white.segment.Change:hover  { 
+                    background-color: rgb(253, 253, 253)!important;
+                    color: rgb(0, 0, 0)!important;
+                    }
+                    .others { 
+                    float: right;
+                    }
+                    .otherss { 
+                    float: left;
+                    }
+                    </style> 
+                <div class='otherss'>
+                    <div class="ui calendar"  id="day">
+                    <input  class="ui basic button" name="day" autocomplete='off' placeholder='Date' style="width: 154.5px;" id="taskdate" value="{{name_to_update.date}}" required></input>
+                    </div>
+    
+                    <script>
+                        const day_options = { 
+                            day: 'numeric', 
+                        };  
+                        daydisplay = new Date().toLocaleDateString('en-US', day_options);
+                        const month_options = { 
+                            month: 'long', 
+                        };  
+                        monthdisplay = new Date().toLocaleDateString('en-US', month_options);
+                        const year_option = { 
+                            year: 'numeric',
+                        };  
+                        yeardisplay = new Date().toLocaleDateString('en-US', year_option);
+                        less = monthdisplay + ", " + daydisplay + " " + yeardisplay
+                        var today = new Date();
+                        $('#day').calendar({
+                        type: 'date',
+                        today: true,
+                        minDate: new Date(today.getFullYear(), today.getMonth(), today.getDate()) 
+                        });
+                    </script>
+    
+                </div>
+                 
+                    <a class="circular ui basic icon button" style='float:right;flex-wrap: wrap; margin:0.5;'>
+                    <i class="icon alarm"></i>
+                    </a>
+                    <a class="circular ui basic icon button" style='float:right;flex-wrap: wrap; margin:0.25;'>
+                    <i class="icon inbox"></i>
+                    </a>
+                </div>
+                </div>
+                <div class="ui vertical segment">
+                    
+                </div>
+                <div>
+                    <br>
+                    <div class="ui olive message" style="display:none;" id="successAlert">
+                    <div class="header">
+                    </div>
+                    </div>
+                    <div class="ui negative message" style="display:none;" id="errorAlert">
+                    <div class="header">
+                    </div>
+                    </div>
+                    
+                </div>
+                </div>
+                <button class="ui yellow button" type="submit">Save</button>
+                <a class="ui brown button" href="/labels/view/{{labels_id}}">Back</a>
+        </form>
+
+    </div>
+</body>
+
+</html>

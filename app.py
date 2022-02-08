@@ -301,6 +301,50 @@ def update_task_labels(todo_id,labels_id):
     else:
         return redirect(url_for("labels_view",labels_id=label_to_see.id))
 
+@app.route("/labels/view/<labels_id>/edit/<int:todo_id>", methods=["GET", "POST"])
+@login_required
+def edit_task_labels(todo_id,labels_id):
+    post_to_delete = Todo.query.get_or_404(todo_id)
+    label_to_see = Labels.query.get_or_404(labels_id)
+    id = current_user.id
+    labels_list = Labels.query.all()
+    if id == post_to_delete.poster.id:
+        form = EditForm()
+        name_to_update = Todo.query.get_or_404(todo_id)
+        if request.method == "POST":
+            name_to_update.name = request.form['name']
+            name_to_update.description = request.form['description']
+            name_to_update.start = request.form['starttime']
+            taskdate=request.form['day']
+            name_to_update.labels=request.form['filters']
+            punctuation='!?,.:;"\')(_-'
+            new_day ='' # Creating empty string
+            for i in str(taskdate):
+                if(i not in punctuation):
+                            new_day += i
+            new_day = new_day.split()
+            print(new_day)
+            month = new_day[0]
+            day = new_day[1]
+            year = new_day[-1]
+            date = f'{month} {day} {year}'
+            name_to_update.date = date
+            try:
+                db.session.commit()
+                flash("Task Updated")
+                return render_template("editTasklabels.html", 
+                form=form, 
+                name_to_update=name_to_update,labels_list=labels_list,taskdate=taskdate,labels_id=label_to_see.id)
+            except:
+                flash("Error!  Looks like there was a problem... Try again!")
+                return render_template("editTasklabels.html", 
+                form=form, 
+                name_to_update=name_to_update,labels_list=labels_list,taskdate=taskdate,labels_id=label_to_see.id)
+        else:
+            return render_template("editTasklabels.html", 
+                form=form, 
+                name_to_update=name_to_update,labels_list=labels_list,labels_id=label_to_see.id)
+
 @app.route("/labels/view/<labels_id>/delete/<int:todo_id>")
 @login_required
 def delete_task_labels(todo_id,labels_id):
