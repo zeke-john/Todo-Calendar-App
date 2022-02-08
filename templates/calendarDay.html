@@ -77,7 +77,7 @@
                 {% if todo.complete == False %}
                 <div class="ui vertical segment">
                     <span class='otherss'>
-                      <a href='/calendar/{{day_hover}}/"{{monthuser}}"/{{yearuser}}/update/{{ todo.id }}' class="circular ui tiny basic icon button">
+                      <a href='/calendar/{{day_hover}}/"{{monthuser}}"/{{yearuser}}/update/{{ todo.id }}' style="margin: -3px;" class="circular ui tiny basic icon button">
                         <i class="icon check"></i>
                       </a>
                       </span>
@@ -90,7 +90,7 @@
                         </a>
                         </span> 
                     <div>
-                  <span style="margin: 0px; font-size: 1.30em; font-weight: bold;">  {{todo.name}} </span>
+                  <span style="margin: 0px; font-size: 1.30em; font-weight: bold;">   {{todo.name}} </span>
                   {% for labels in labels_list %}
                   {% for todolabels in todo.labels.split(',') if todolabels.strip() %}
                   {% if todolabels|int == labels.id|int %}
@@ -99,13 +99,13 @@
                   {% endfor %}
                   {% endfor %}
                   {% if todo.start != '' %}
-                  <p style=" color:rgb(255, 0, 0); font-size:12px; font-weight:bold; margin:0px;">  {{todo.start}} </p>
+                  <p style=" color:rgb(255, 0, 0); font-size:12px; font-weight:bold; margin:0px;">    {{todo.start}} </p>
                   {% if todo.description != '' %}
-                  <p style="color:rgb(38, 38, 38); margin:0px;">            {{todo.description}}</p>
+                  <p style="color:rgb(38, 38, 38); margin:0px;">           {{todo.description}}</p>
                   {% endif %}
                   {% endif %}
                   {% if todo.description != '' and todo.start == '' %}
-                  <p style="color:rgb(38, 38, 38); margin:0px;">   {{todo.description}}</p>
+                  <p style="color:rgb(38, 38, 38); margin:0px;">    {{todo.description}}</p>
                   {% endif %}
                 </div>
                   <script>
@@ -116,7 +116,7 @@
               {% if todo.complete == True %}
               <div class="ui disabled vertical segment">
                   <span class='otherss'>
-                    <a href='/calendar/{{day_hover}}/{{monthuser}}/{{yearuser}}/update/{{ todo.id }}' class="circular ui tiny basic icon button">
+                    <a href='/calendar/{{day_hover}}/{{monthuser}}/{{yearuser}}/update/{{ todo.id }}' style="margin: -3px;" class="circular ui tiny basic icon button">
                       <i class="icon check"></i>
                     </a>
                     </span>
@@ -129,7 +129,7 @@
                       </a>
                       </span> 
                   <div>
-                <span style="margin: 0px; font-size: 1.30em; font-weight: bold;">  <s>{{todo.name}}</s></span>
+                <span style="margin: 0px; font-size: 1.30em; font-weight: bold;">   <s>{{todo.name}}</s></span>
                 {% for labels in labels_list %}
                 {% for todolabels in todo.labels.split(',') if todolabels.strip() %}
                 {% if todolabels|int == labels.id|int %}
@@ -138,13 +138,13 @@
                 {% endfor %}
                 {% endfor %}
                 {% if todo.start != '' %}
-                <p style=" color:rgb(255, 0, 0); font-size:12px; font-weight:bold; margin:0px;">  <s>{{todo.start}}</s> </p>
+                <p style=" color:rgb(255, 0, 0); font-size:12px; font-weight:bold; margin:0px;">    <s>{{todo.start}}</s> </p>
                 {% if todo.description != '' %}
-                <p style="color:rgb(38, 38, 38); margin:0px;">            <s>{{todo.description}}</s></p>
+                <p style="color:rgb(38, 38, 38); margin:0px;">           <s>{{todo.description}}</s></p>
                 {% endif %}
                 {% endif %}
                 {% if todo.description != '' and todo.start == '' %}
-                <p style="color:rgb(38, 38, 38); margin:0px;">   <s>{{todo.description}}</s></p>
+                <p style="color:rgb(38, 38, 38); margin:0px;">    <s>{{todo.description}}</s></p>
                 {% endif %}
               </div>
                 <script>
