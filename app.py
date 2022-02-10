@@ -54,6 +54,8 @@ def load_user(user_id):
 class Labels(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text(4294967295), nullable=False)
+    #create forenign key to link users to tasks
+    poster_labels_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -85,6 +87,7 @@ class Users(db.Model, UserMixin):
     password_hash2 = db.Column(db.String(128))
     posts = db.relationship('Todo', backref="poster")
     post_notes = db.relationship('Notes', backref="poster_notes")
+    post_labels = db.relationship('Labels', backref="poster_labels")
 
     def get_reset_token(self, expires_sec=300):
         s = Serializer(app.config['SECRET_KEY'], expires_sec)
@@ -101,7 +104,7 @@ class Users(db.Model, UserMixin):
 
     @property
     def password(self):
-        raise AttributeError('password is not a readable attribute!')
+        raise AttributeError('L bozo')
 
     @password.setter
     def password(self, password):
@@ -234,10 +237,14 @@ def labels(id):
 @app.route("/delete/label/<int:label_id>")
 @login_required
 def delete_label(label_id):
-    label = Labels.query.filter_by(id=label_id).first()
-    db.session.delete(label)
-    db.session.commit()
-    return redirect(url_for("labels", id=current_user.id))
+    post_to_delete = Labels.query.get_or_404(label_id)
+    id = current_user.id
+    if id == post_to_delete.poster_labels.id:
+        label = Labels.query.filter_by(id=label_id).first()
+        db.session.delete(label)
+        db.session.commit()
+        return redirect(url_for("labels", id=current_user.id))
+    return redirect(url_for("today"))
 
 @app.route("/labels/add" , methods=["POST"])
 @login_required
@@ -259,7 +266,7 @@ def labels_add():
                 return redirect(url_for('labels', form=form, id=current_user.id))
             else:
                 form.name.data =  form.name.data.replace(" ", "_")
-                new_label = Labels(name=form.name.data)
+                new_label = Labels(name=form.name.data, poster_labels_id=current_user.id)
                 db.session.add(new_label)
                 db.session.commit()
                 return redirect(url_for('labels', form=form, id=current_user.id))
@@ -350,37 +357,42 @@ def edit_label(label_id):
     label_to_see = Labels.query.get_or_404(label_id)
     form = EditLabelForm()
     name_to_update = Labels.query.get_or_404(label_id)
-    if request.method == "POST":
-        if form.name.data.isspace():
-            flash("Please enter a valid name")
-            return redirect(url_for('edit_label', form=form, name_to_update=name_to_update,label_id=label_to_see.id))
-        if '[' in form.name.data:
-            flash("Please enter a valid name")
-            return redirect(url_for('edit_label', form=form, name_to_update=name_to_update,label_id=label_to_see.id))
-        if ']' in form.name.data:
-            flash("Please enter a valid name")
-            return redirect(url_for('edit_label', form=form, name_to_update=name_to_update,label_id=label_to_see.id))
-        if ',' in form.name.data:
-            flash("Please enter a valid name")
-            return redirect(url_for('edit_label', form=form, name_to_update=name_to_update,label_id=label_to_see.id))
+    post_to_delete = Labels.query.get_or_404(label_id)
+    id = current_user.id
+    if id == post_to_delete.poster_labels.id:
+        if request.method == "POST":
+            if form.name.data.isspace():
+                flash("Please enter a valid name")
+                return redirect(url_for('edit_label', form=form, name_to_update=name_to_update,label_id=label_to_see.id))
+            if '[' in form.name.data:
+                flash("Please enter a valid name")
+                return redirect(url_for('edit_label', form=form, name_to_update=name_to_update,label_id=label_to_see.id))
+            if ']' in form.name.data:
+                flash("Please enter a valid name")
+                return redirect(url_for('edit_label', form=form, name_to_update=name_to_update,label_id=label_to_see.id))
+            if ',' in form.name.data:
+                flash("Please enter a valid name")
+                return redirect(url_for('edit_label', form=form, name_to_update=name_to_update,label_id=label_to_see.id))
+            else:
+                form.name.data =  form.name.data.replace(" ", "_")
+                name_to_update.name = form.name.data
+            try:
+                db.session.commit()
+                flash("Label Updated")
+                return render_template("editlabels.html", 
+                form=form, 
+                name_to_update=name_to_update,labels_id=label_to_see.id)
+            except:
+                flash("Error!  Looks like there was a problem... Try again!")
+                return render_template("editlabels.html", 
+                form=form, 
+                name_to_update=name_to_update,labels_id=label_to_see.id)
         else:
-            form.name.data =  form.name.data.replace(" ", "_")
-            name_to_update.name = form.name.data
-        try:
-            db.session.commit()
-            flash("Label Updated")
             return render_template("editlabels.html", 
-            form=form, 
-            name_to_update=name_to_update,labels_id=label_to_see.id)
-        except:
-            flash("Error!  Looks like there was a problem... Try again!")
-            return render_template("editlabels.html", 
-            form=form, 
-            name_to_update=name_to_update,labels_id=label_to_see.id)
+                form=form, 
+                name_to_update=name_to_update,labels_id=label_to_see.id)
     else:
-        return render_template("editlabels.html", 
-            form=form, 
-            name_to_update=name_to_update,labels_id=label_to_see.id)
+        return redirect(url_for("today"))
 
 @app.route("/labels/view/<labels_id>/delete/<int:todo_id>")
 @login_required

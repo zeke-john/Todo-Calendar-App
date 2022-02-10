@@ -213,9 +213,11 @@
                     <div class="scrolling menu" name="labels">
                       
                       {% for labels in labels_list %}
+                      {% if labels.poster_labels_id == current_user.id %}
                       <option class="item" data-value={{labels.id}}>
                         {{labels.name}}
                       </option>
+                      {% endif %}
                       {% endfor %}
                     </div>
                   </div>

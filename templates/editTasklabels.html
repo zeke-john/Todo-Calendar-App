@@ -96,11 +96,13 @@
                         <input class="search input" style="background: transparent;border: none; outline: none;    resize: none; margin:0%;" type="text" placeholder="Search">
                         <div class="scrolling menu">
                             
-                            {% for labels in labels_list %}
-                            <option class="item" data-value={{labels.id}}>
+                        {% for labels in labels_list %}
+                        {% if labels.poster_labels_id == current_user.id %}
+                        <option class="item" data-value={{labels.id}}>
                             {{labels.name}}
-                            </option>
-                            {% endfor %}
+                        </option>
+                        {% endif %}
+                        {% endfor %}
                         </div>
                         </div>
                     </div>

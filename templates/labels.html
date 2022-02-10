@@ -112,6 +112,7 @@
     }
     </style>
     {% for labels in labels_list %}
+    {% if labels.poster_labels_id == current_user.id %}
     <div class="ui vertical segment listitem block">
         <a class="text" style="font-size: 23px; color: black; font-weight:500;" href="/labels/view/{{labels.id}}" > {{labels.name}} </a>
         <span class='others'>
@@ -125,6 +126,7 @@
             
             </span>
     </div>
+    {% endif %}
     {% endfor %}
 
     <div class="ui vertical segment listitem block">

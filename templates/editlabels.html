@@ -82,6 +82,7 @@
         </div>
     {% endfor %}
     <h1 class="ui center aligned header" style="font-size: 45px; ">Edit Label</h1>
+    
     <style>
     .text:hover {
         text-decoration: underline rgb(11, 4, 0);
@@ -97,10 +98,10 @@
             <div class="ui fluid input">
                 <input name="name"type="text" autocomplete="off" placeholder="Name" id="name" value="{{name_to_update.name}}"  spellcheck="true" required> 
             </div>
-            <br>        
+            <br>          
             <button class="ui yellow button" type="submit">Save</button>
-            <a class="ui brown button" href="/labels/{{current_user.id}}">Back</a>   
-        </div>
+            <a class="ui brown button" href="/labels/{{current_user.id}}">Back</a> 
+    </div>
     </form>
 </body>
 </html>
