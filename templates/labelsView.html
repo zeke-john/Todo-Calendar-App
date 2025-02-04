@@ -30,37 +30,54 @@
         <script src="https://cdn.rawgit.com/mdehoog/Semantic-UI/6e6d051d47b598ebab05857545f242caf2b4b48c/dist/semantic.min.js"></script>
 </head>
 <body>
-<div class="ui borderless stackable top fixed menu">
-    <img src="/static/img/logo.png" style="width: 60px; height: 55px; padding-left: 10px; padding-top: 5px; padding-bottom: 5px; padding-right: 0px;" >
-    <div class="item">
-        <a href="/">
-        <div class="ui header" style="font-size: 20px;" >
-        Todo App
-        </div>
+  <style>
+    #sidenav {
+    background-color:rgb(253, 253, 253);
+    }
+</style>
+
+<div class="context example">
+<div class="ui inverted top attached demo borderless menu"  style="width:101vw">
+       <a class="item" id="open">
+     <i class="large sidebar icon"></i>
     </a>
+    <a class="item" href="/today">
+    <i class="inverted large home outline icon"></i>
+    </a>
+    <div class="inverted right menu"  style="padding-right: 10px;" >
+    <div class="ui pointing dropdown link item">
+        <a style="font-weight: 300; font-size: 16px; color: rgb(255, 255, 255);">     {{current_user.name}}      </a>
+    <div class="ui inverted simple menu" >
+        <a class="item"  href='/logout '  style="color: rgb(255, 255, 255);">Logout</a>
+        <a class="item"  href='/userInfo ' style="color: rgb(255, 255, 255);">Account Info</a>
     </div>
-    <a class="ui header item" style="font-weight: 300; font-size: 16px;" href="/today">Today</a>
-    <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/calendar ">Calendar</a>
-    <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/notes/{{current_user.id}}">Notes</a>
-    <a class="ui header item"  style="font-weight: 300; font-size: 16px;" href="/labels/{{current_user.id}}">Labels</a>
-    
-    <div class="right menu"  style="padding-right: 10px;" >
-        <div class="ui pointing dropdown link item">
-            <a style="font-weight: 300; font-size: 16px; color: black;"> ‎‎‎ ‎ ‎‎‎‎‎ ‎‎‎ ‎‎‎ ‎ ‎‎{{current_user.name}}‎‎‎ ‎‎‎ ‎‎‎ ‎ ‎‎‎‎‎ ‎ ‎‎</a> 
-        <div class="ui  menu">
-            <a class="item"  href='/logout '>Logout</a>
-            <a class="item"  href='/userInfo '>Account Info</a>
-        </div>
-        </div>
-    </div>  
+    </div>            
+</div>  
 </div>
-    <script> 
-        $(document).ready(function(){
-        $('.ui.dropdown') .dropdown();
-    });
-    </script>
-    </div>
-    <div style="margin-top: 110px;" class="ui container">
+<script> 
+$(document).ready(function(){
+$('.ui.dropdown') .dropdown();
+});
+</script>
+<div class="ui bottom attached segment" style="height:101vh">
+<div class="ui inverted labeled icon left borderless inline vertical sidebar menu" >
+    <a class="item"  href="/today">
+    <i class="inverted calendar outline
+    icon"></i> <p style="color:white;">Today</p>
+    </a>
+    <a class="item" href="/calendar">
+    <i class="inverted calendar alternate
+    icon"></i> <p style="color:white;" >Calendar</p>
+    </a>
+    <a class="item" href="/notes/{{current_user.id}}">
+    <i class="inverted book outline icon"></i> <p style="color:white;">Notes</p>
+    </a>
+    <a class="item" href="/labels/{{current_user.id}}">
+    <i class="inverted tags icon"></i> <p style="color:white;">Labels</p>
+    </a>
+</div>
+<div class="pusher">
+    <div style="margin-top: 90px;" class="ui container">
         {% for message in get_flashed_messages() %}
         <div class="ui center aligned teal message">
             <i class="close icon"></i>
@@ -177,5 +194,19 @@
   </style> 
 </div>
 <br>
+</div>
+<script>
+      // using context
+$('.context.example .ui.sidebar')
+  .sidebar({
+    context: $('.context.example .bottom.segment'),
+    dimPage: false,
+    transition: 'push',
+    exclusive: false,
+    closable: true
+  })
+  .sidebar('attach events', '.context.example .menu #open')
+;
+</script>
 </body>
 </html>

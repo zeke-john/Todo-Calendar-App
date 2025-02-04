@@ -29,9 +29,12 @@ ckeditor = CKEditor(app)
 dir_path = os.path.dirname(os.path.realpath(__file__))
 filename = os.path.join(dir_path, 'test_log.log')
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:CAez0208@localhost/todoapp?charset=utf8mb4'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:CAez0208@localhost/todoapp?charset=utf8mb4'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://neondb_owner:npg_SYVA1LXKtef0@ep-bold-sea-a437urkv-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
+
 migrate = Migrate(app, db)
 
 app.config['SECRET_KEY'] = '\xa1\x84\xce\xd8\xe8\xf2Z\xdfz\xa3p\x95S\x1e@9J\xa0R\xa4"\xca={'
@@ -42,8 +45,8 @@ login_manager.init_app(app)
 app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'zekejohn118@gmail.com'
-app.config['MAIL_PASSWORD'] = 'CAez0208'
+app.config['MAIL_USERNAME'] = 'sumanyai.com@gmail.com'
+app.config['MAIL_PASSWORD'] = 'mstg dzfc btts imuu'
 mail = Mail(app)
 login_manager.login_view = 'login'
 
@@ -115,7 +118,7 @@ class Users(db.Model, UserMixin):
 
 @app.route("/")
 def home():
-    return render_template("home.html")
+    return redirect(url_for("today"))
 
 @app.route("/signUp", methods=["GET", "POST"])
 def signUp():
@@ -171,7 +174,7 @@ def userInfo():
 
 def send_reset_email(user):
     token = user.get_reset_token()
-    msg = Message('Password Reset Request', sender="zekejohn118@gmail.com", recipients=[user.email])
+    msg = Message('Password Reset Request', sender="sumanyai.com@gmail.com", recipients=[user.email])
 
     msg.body = f'''To reset your Password for Todo App, visit the link to do so. It will expire in 5 minutes: {url_for('reset_token', token=token, _external = True)}
     
@@ -743,7 +746,7 @@ def deleteUser(id):
 
 def send_change_email(user):
     token = user.get_reset_token()
-    msg = Message('Password Change Request', sender="zekejohn118@gmail.com", recipients=[user.email])
+    msg = Message('Password Change Request', sender="sumanyai.com@gmail.com", recipients=[user.email])
 
     msg.body = f'''To Change your Password for Todo App, visit the link below. It will expire in 5 minutes:
     {url_for('change_token', token=token, _external = True)}
@@ -850,5 +853,5 @@ def page_not_found(e):
 
 if __name__ == "__main__":
     db.create_all()
-    app.run(debug=True, host=os.getenv('IP', '0.0.0.0'),
-            port=int(os.getenv('PORT', 3000)))
+    port = int(os.getenv('PORT', 3000))
+    app.run(debug=True, host='0.0.0.0', port=port) 

@@ -31,7 +31,7 @@ Mako==1.1.6
 MarkupSafe==2.0.1
 mysql-connector==2.2.9
 mysql-connector-python==8.0.17
-mysql-connector-python-rf==2.2.2
+# mysql-connector-python-rf==2.2.2
 oauthlib==3.1.1
 Pillow==8.3.2
 protobuf==3.19.1
@@ -51,3 +51,5 @@ urllib3==1.26.7
 Werkzeug==2.0.1
 WTForms==2.3.3
 zipp==3.6.0
+lxml
+gunicorn
