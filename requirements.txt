@@ -52,3 +52,4 @@ WTForms==2.3.3
 zipp==3.6.0
 lxml
 gunicorn
+psycopg2
