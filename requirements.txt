@@ -20,7 +20,6 @@ Flask-SQLAlchemy==2.5.1
 Flask-WTF==0.15.1
 google-auth==2.3.3
 google-auth-oauthlib==0.4.6
-greenlet==1.1.1
 idna==3.3
 importlib-metadata==4.8.2
 importlib-resources==5.4.0
